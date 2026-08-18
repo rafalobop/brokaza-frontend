@@ -1,0 +1,8 @@
+allowBuilds:
+  sharp: false
+  unrs-resolver: false
+
+# Hardening de supply-chain (react-doctor/require-pnpm-hardening)
+minimumReleaseAge: 2880 # 2 días — la mayoría de los paquetes maliciosos se detectan y despublican en <48h; un valor mayor (p. ej. 7 días) bloqueaba el install de Next.js recién publicado
+trustPolicy: no-downgrade # rechaza actualizaciones que debiliten señales de confianza (provenance/firmas)
+trustPolicyIgnoreAfter: 525600 # 1 año — evita falsos positivos en paquetes viejos y estables publicados antes de que existiera provenance en npm

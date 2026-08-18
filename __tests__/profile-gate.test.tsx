@@ -59,7 +59,9 @@ function fillForm() {
   fireEvent.change(screen.getByLabelText("Nombre"), { target: { value: "Juan" } });
   fireEvent.change(screen.getByLabelText("Apellido"), { target: { value: "Pérez" } });
   fireEvent.change(screen.getByLabelText("Teléfono"), { target: { value: "+5493815551234" } });
-  fireEvent.change(screen.getByLabelText("Inmobiliaria"), { target: { value: "Inmobiliaria Sur" } });
+  fireEvent.change(screen.getByLabelText("Inmobiliaria"), {
+    target: { value: "Inmobiliaria Sur" },
+  });
   fireEvent.change(screen.getByLabelText("Ciudad"), { target: { value: "Yerba Buena" } });
 }
 
@@ -103,7 +105,9 @@ describe("ProfileGate (KAN-167)", () => {
     fetchMock.mockResolvedValueOnce(localitiesResponse(["Yerba Buena"]));
 
     renderGate();
-    await waitFor(() => expect(screen.getByRole("option", { name: "Yerba Buena" })).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Yerba Buena" })).toBeInTheDocument(),
+    );
 
     fillForm();
 
@@ -129,12 +133,18 @@ describe("ProfileGate (KAN-167)", () => {
     fetchMock.mockResolvedValueOnce(localitiesResponse(["Yerba Buena"]));
 
     renderGate();
-    await waitFor(() => expect(screen.getByRole("option", { name: "Yerba Buena" })).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Yerba Buena" })).toBeInTheDocument(),
+    );
 
     fillForm();
 
     fetchMock.mockResolvedValueOnce(
-      mockResponse({ ok: false, status: 400, body: JSON.stringify({ error: "Teléfono inválido." }) }),
+      mockResponse({
+        ok: false,
+        status: 400,
+        body: JSON.stringify({ error: "Teléfono inválido." }),
+      }),
     );
 
     fireEvent.click(screen.getByRole("button", { name: /guardar y continuar/i }));

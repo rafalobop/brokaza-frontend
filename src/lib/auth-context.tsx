@@ -253,7 +253,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       sessionMessage,
       clearSessionMessage,
     }),
-    [state, refresh, logout, loggingOut, authError, clearAuthError, sessionMessage, clearSessionMessage],
+    [
+      state,
+      refresh,
+      logout,
+      loggingOut,
+      authError,
+      clearAuthError,
+      sessionMessage,
+      clearSessionMessage,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

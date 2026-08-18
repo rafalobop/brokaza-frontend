@@ -17,10 +17,69 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useState,
   type ReactNode,
 } from "react";
 import { apiClient } from "./api-client";
 import { onUnauthorized } from "./auth-events";
+
+const EXPIRED_LINK_MESSAGE =
+  "Tu link de acceso expiró o ya fue usado. Ingresá tu email para solicitar uno nuevo.";
+const INVALID_LINK_MESSAGE =
+  "El link de acceso no es válido. Ingresá tu email para solicitar uno nuevo.";
+
+/**
+ * Parsing del callback de magic-link (KAN-166), portado de
+ * `handleMagicLinkCallback`/`handleAuthErrorCallback` del dashboard legacy
+ * (`src/dashboard/app.js` líneas 403-457). El link de Supabase siempre
+ * redirige a la raíz de `APP_URL` con el token/error en el hash — nunca a
+ * un path aparte — así que esto vive en `AuthProvider` (se monta en la raíz
+ * del árbol) en vez de en una ruta dedicada. Ver `docs/magic-link-flow-design.md`.
+ */
+async function consumeAuthCallbackHash(
+  logTag = "[AUTH]",
+): Promise<{ exchanged: boolean; error: string | null }> {
+  if (typeof window === "undefined") return { exchanged: false, error: null };
+
+  const hash = window.location.hash;
+  if (!hash) return { exchanged: false, error: null };
+
+  const params = new URLSearchParams(hash.replace(/^#/, ""));
+
+  const errorCode = params.get("error_code");
+  if (hash.includes("error=")) {
+    window.history.replaceState(null, "", window.location.pathname);
+    console.warn(
+      `${logTag} El link de acceso llegó con un error:`,
+      errorCode,
+      params.get("error_description"),
+    );
+    return {
+      exchanged: false,
+      error: errorCode === "otp_expired" ? EXPIRED_LINK_MESSAGE : INVALID_LINK_MESSAGE,
+    };
+  }
+
+  const accessToken = params.get("access_token");
+  if (!hash.includes("access_token=") || !accessToken) {
+    return { exchanged: false, error: null };
+  }
+
+  window.history.replaceState(null, "", window.location.pathname);
+  console.log(`${logTag} Magic link callback detectado, intercambiando token...`);
+  try {
+    await apiClient("/api/auth/exchange-token", {
+      method: "POST",
+      body: JSON.stringify({ access_token: accessToken }),
+    });
+    console.log(`${logTag} Token intercambiado correctamente, sesión iniciada.`);
+    return { exchanged: true, error: null };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Error al intercambiar el token.";
+    console.error(`${logTag} Fallo al intercambiar token:`, message);
+    return { exchanged: false, error: message };
+  }
+}
 
 export type AuthStatus = "loading" | "authenticated" | "unauthenticated";
 
@@ -61,6 +120,14 @@ interface AuthContextValue extends AuthState {
   refresh: () => Promise<void>;
   /** Best-effort: limpia la sesión local aunque falle la llamada al backend. */
   logout: () => Promise<void>;
+  /**
+   * Mensaje del callback de magic-link (KAN-166) — link vencido/inválido, o
+   * fallo al intercambiar el token. Transitorio y de UI, no forma parte del
+   * modelo de sesión en sí (por eso no vive en el reducer). `LoginForm` lo
+   * muestra en el paso 1 al montar.
+   */
+  authError: string | null;
+  clearAuthError: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -72,6 +139,8 @@ interface SessionResponse {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const clearAuthError = useCallback(() => setAuthError(null), []);
 
   const refresh = useCallback(async () => {
     dispatch({ type: "SESSION_LOADING" });
@@ -100,7 +169,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    void refresh();
+    void (async () => {
+      const callbackResult = await consumeAuthCallbackHash();
+      if (callbackResult.error) {
+        setAuthError(callbackResult.error);
+      }
+      // Si hubo un exchange exitoso, este refresh() ya levanta la sesión
+      // recién creada; si no, es el bootstrap normal sin cambios.
+      await refresh();
+    })();
   }, [refresh]);
 
   useEffect(() => {
@@ -108,8 +185,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ ...state, refresh, logout }),
-    [state, refresh, logout],
+    () => ({ ...state, refresh, logout, authError, clearAuthError }),
+    [state, refresh, logout, authError, clearAuthError],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

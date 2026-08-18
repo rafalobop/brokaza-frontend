@@ -53,7 +53,9 @@ export function useMappingFields(): UseMappingFieldsResult {
       } catch (err) {
         if (!isMountedRef.current) return;
         const message =
-          err instanceof ApiError ? err.message : "Error al obtener los campos de mapeo de columnas.";
+          err instanceof ApiError
+            ? err.message
+            : "Error al obtener los campos de mapeo de columnas.";
         setError(message);
         setStatus("error");
       }

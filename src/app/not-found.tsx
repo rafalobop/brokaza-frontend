@@ -9,10 +9,7 @@ export default function NotFound() {
       <p className="max-w-md text-zinc-600 dark:text-zinc-400">
         La ruta que buscás no existe en el dashboard de Brokaza.
       </p>
-      <Link
-        href="/"
-        className="mt-2 text-sm font-medium underline underline-offset-4"
-      >
+      <Link href="/" className="mt-2 text-sm font-medium underline underline-offset-4">
         Volver al inicio
       </Link>
     </div>

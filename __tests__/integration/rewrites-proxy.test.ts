@@ -119,9 +119,7 @@ async function waitForServer(url: string, timeoutMs: number): Promise<void> {
     }
     await new Promise((r) => setTimeout(r, 500));
   }
-  throw new Error(
-    `Next.js dev server no levantó a tiempo en ${url}: ${String(lastError)}`,
-  );
+  throw new Error(`Next.js dev server no levantó a tiempo en ${url}: ${String(lastError)}`);
 }
 
 describe("proxy same-origin de Next.js hacia Express (KAN-150)", () => {
@@ -144,19 +142,15 @@ describe("proxy same-origin de Next.js hacia Express (KAN-150)", () => {
     backend = await startMockBackend();
     nextPort = await getFreePort();
 
-    nextProcess = spawn(
-      "npx",
-      ["--no-install", "next", "dev", "-p", String(nextPort)],
-      {
-        cwd: PROJECT_ROOT,
-        env: {
-          ...process.env,
-          BACKEND_ORIGIN: `http://127.0.0.1:${backend.port}`,
-        },
-        stdio: "pipe",
-        shell: true,
+    nextProcess = spawn("npx", ["--no-install", "next", "dev", "-p", String(nextPort)], {
+      cwd: PROJECT_ROOT,
+      env: {
+        ...process.env,
+        BACKEND_ORIGIN: `http://127.0.0.1:${backend.port}`,
       },
-    );
+      stdio: "pipe",
+      shell: true,
+    });
 
     nextProcess.stdout?.on("data", (d) => process.stdout.write(`[next] ${d}`));
     nextProcess.stderr?.on("data", (d) => process.stderr.write(`[next] ${d}`));
@@ -207,9 +201,7 @@ describe("proxy same-origin de Next.js hacia Express (KAN-150)", () => {
   });
 
   it("una ruta desconocida devuelve el 404 propio de Next.js, no el del backend", async () => {
-    const res = await httpGet(
-      `http://127.0.0.1:${nextPort}/esta-ruta-no-existe`,
-    );
+    const res = await httpGet(`http://127.0.0.1:${nextPort}/esta-ruta-no-existe`);
     expect(res.status).toBe(404);
     expect(res.body).not.toContain("backend not found");
   });

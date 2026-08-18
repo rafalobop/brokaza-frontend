@@ -245,3 +245,145 @@ describe("AuthProvider — callback de magic-link (KAN-166)", () => {
     expect(result.current.authError).toBeNull();
   });
 });
+
+describe("AuthProvider — logout y expiración de sesión (KAN-168)", () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  const AUTHENTICATED_SESSION = () =>
+    mockResponse({
+      ok: true,
+      status: 200,
+      body: JSON.stringify({
+        authenticated: true,
+        tenant: { id: "t1", email: "agente@brokaza.com" },
+      }),
+    });
+
+  it("logout() exitoso deja sessionMessage con el mensaje de cierre de sesión", async () => {
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+    fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION());
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+    await waitFor(() => expect(result.current.status).toBe("authenticated"));
+
+    fetchMock.mockResolvedValueOnce(mockResponse({ ok: true, status: 200, body: "null" }));
+
+    await act(async () => {
+      await result.current.logout();
+    });
+
+    expect(result.current.status).toBe("unauthenticated");
+    expect(result.current.sessionMessage).toBe("Cerraste sesión correctamente.");
+    expect(result.current.loggingOut).toBe(false);
+  });
+
+  it("logout() tolera una respuesta 204 No Content sin body (contrato futuro de /api/auth/logout)", async () => {
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+    fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION());
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+    await waitFor(() => expect(result.current.status).toBe("authenticated"));
+
+    // 204 No Content: sin body. `apiClient` ya lo tolera (text() vacío -> body
+    // null) sin que este contrato futuro del backend rompa nada del lado del
+    // cliente.
+    fetchMock.mockResolvedValueOnce(mockResponse({ ok: true, status: 204, body: "" }));
+
+    await act(async () => {
+      await result.current.logout();
+    });
+
+    expect(result.current.status).toBe("unauthenticated");
+    expect(result.current.sessionMessage).toBe("Cerraste sesión correctamente.");
+  });
+
+  it("dos invocaciones concurrentes de logout() no duplican la llamada de red (AC de sesiones concurrentes)", async () => {
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+    fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION());
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+    await waitFor(() => expect(result.current.status).toBe("authenticated"));
+
+    let resolveLogout: (() => void) | undefined;
+    fetchMock.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveLogout = () => resolve(mockResponse({ ok: true, status: 200, body: "null" }));
+        }),
+    );
+
+    let firstCall!: Promise<void>;
+    let secondCall!: Promise<void>;
+    act(() => {
+      firstCall = result.current.logout();
+      secondCall = result.current.logout();
+    });
+
+    await waitFor(() => expect(result.current.loggingOut).toBe(true));
+    expect(fetchMock).toHaveBeenCalledTimes(2); // bootstrap (session) + 1 sola llamada a logout
+    expect(fetchMock.mock.calls[1][0]).toBe("/api/auth/logout");
+
+    await act(async () => {
+      resolveLogout?.();
+      await Promise.all([firstCall, secondCall]);
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(result.current.status).toBe("unauthenticated");
+  });
+
+  it("una expiración de sesión (401) en medio de una sesión activa deja sessionMessage con el mensaje de expirado", async () => {
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+    fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION());
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+    await waitFor(() => expect(result.current.status).toBe("authenticated"));
+
+    fetchMock.mockResolvedValueOnce(
+      mockResponse({ ok: false, status: 401, body: JSON.stringify({ error: "No autenticado." }) }),
+    );
+
+    await act(async () => {
+      await expect(apiClient("/api/matches")).rejects.toMatchObject({ status: 401 });
+    });
+
+    await waitFor(() => expect(result.current.status).toBe("unauthenticated"));
+    expect(result.current.sessionMessage).toBe("Tu sesión expiró. Volvé a ingresar.");
+  });
+
+  it("un 401 tardío que llega después de un logout manual no pisa el mensaje de éxito ya mostrado", async () => {
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+    fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION());
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+    await waitFor(() => expect(result.current.status).toBe("authenticated"));
+
+    fetchMock.mockResolvedValueOnce(mockResponse({ ok: true, status: 200, body: "null" }));
+    await act(async () => {
+      await result.current.logout();
+    });
+    expect(result.current.sessionMessage).toBe("Cerraste sesión correctamente.");
+
+    // Un request que ya estaba en vuelo antes del logout (ej. un polling)
+    // resuelve recién ahora con 401 — el usuario ya no está "authenticated"
+    // en ese momento, así que no debe convertirse el mensaje de éxito en uno
+    // de expiración.
+    fetchMock.mockResolvedValueOnce(
+      mockResponse({ ok: false, status: 401, body: JSON.stringify({ error: "No autenticado." }) }),
+    );
+    await act(async () => {
+      await expect(apiClient("/api/matches")).rejects.toMatchObject({ status: 401 });
+    });
+
+    expect(result.current.sessionMessage).toBe("Cerraste sesión correctamente.");
+  });
+});

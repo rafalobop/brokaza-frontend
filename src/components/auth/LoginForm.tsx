@@ -15,7 +15,7 @@ import { useAuth } from "@/lib/auth-context";
 type Step = "request" | "sent";
 
 export function LoginForm() {
-  const { authError, clearAuthError } = useAuth();
+  const { authError, clearAuthError, sessionMessage, clearSessionMessage } = useAuth();
   const [step, setStep] = useState<Step>("request");
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -33,12 +33,14 @@ export function LoginForm() {
     if (!trimmedEmail || !trimmedEmail.includes("@")) {
       setError("Ingresá un email válido.");
       clearAuthError();
+      clearSessionMessage();
       return;
     }
 
     setSubmitting(true);
     setError(null);
     clearAuthError();
+    clearSessionMessage();
     try {
       await apiClient("/api/auth/request-magic-link", {
         method: "POST",
@@ -58,6 +60,7 @@ export function LoginForm() {
     setStep("request");
     setError(null);
     clearAuthError();
+    clearSessionMessage();
   }
 
   return (
@@ -72,6 +75,9 @@ export function LoginForm() {
               Te mandamos un link de acceso a tu email, sin contraseña.
             </p>
           </div>
+          {sessionMessage && !displayedError ? (
+            <p className="text-sm text-emerald-600 dark:text-emerald-400">{sessionMessage}</p>
+          ) : null}
           <label className="flex flex-col gap-1 text-sm">
             <span className="text-zinc-700 dark:text-zinc-300">Email</span>
             <input

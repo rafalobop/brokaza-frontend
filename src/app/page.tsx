@@ -5,7 +5,7 @@ import { ProfileGate } from "@/components/profile/ProfileGate";
 import { useAuth } from "@/lib/auth-context";
 
 export default function Home() {
-  const { status, tenant, logout } = useAuth();
+  const { status, tenant, logout, loggingOut } = useAuth();
 
   if (status === "loading") {
     return (
@@ -36,9 +36,10 @@ export default function Home() {
         <button
           type="button"
           onClick={() => void logout()}
-          className="mt-2 text-sm font-medium underline underline-offset-4"
+          disabled={loggingOut}
+          className="mt-2 text-sm font-medium underline underline-offset-4 disabled:opacity-60"
         >
-          Cerrar sesión
+          {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
         </button>
       </div>
     </ProfileGate>

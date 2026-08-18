@@ -38,7 +38,10 @@ const AUTHENTICATED_SESSION = () =>
   mockResponse({
     ok: true,
     status: 200,
-    body: JSON.stringify({ authenticated: true, tenant: { id: "t1", email: "agente@brokaza.com" } }),
+    body: JSON.stringify({
+      authenticated: true,
+      tenant: { id: "t1", email: "agente@brokaza.com" },
+    }),
   });
 
 function renderHarness() {

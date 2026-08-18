@@ -172,7 +172,8 @@ describe("AuthProvider — callback de magic-link (KAN-166)", () => {
   });
 
   it("hash con error=otp_expired limpia el hash y expone el mensaje de vencido", async () => {
-    window.location.hash = "#error=access_denied&error_code=otp_expired&error_description=Link+expired";
+    window.location.hash =
+      "#error=access_denied&error_code=otp_expired&error_description=Link+expired";
 
     global.fetch = jest
       .fn()

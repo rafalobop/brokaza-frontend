@@ -93,9 +93,7 @@ export function buildSnapshot(
   now: number = Date.now(),
 ): DashboardMetricsSnapshot {
   const durations = state.refetchDurationsMs.slice().sort((a, b) => a - b);
-  const avg = durations.length
-    ? durations.reduce((sum, v) => sum + v, 0) / durations.length
-    : 0;
+  const avg = durations.length ? durations.reduce((sum, v) => sum + v, 0) / durations.length : 0;
 
   return {
     windowMs: now - state.windowStartedAt,

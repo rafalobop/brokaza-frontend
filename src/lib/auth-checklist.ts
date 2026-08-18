@@ -39,7 +39,7 @@ export const AUTH_FUNCTIONAL_PARITY_CHECKLIST: AuthChecklistItem[] = [
     item: "Expiración de sesión",
     implementedIn: ["KAN-160", "KAN-168"],
     legacyReference:
-      "matchouse/src/routes/auth.ts GET /api/auth/session — nunca devuelve 401, siempre 200 con authenticated:false; el legacy no distinguía \"nunca logueado\" de \"sesión vencida\" en el bootstrap.",
+      'matchouse/src/routes/auth.ts GET /api/auth/session — nunca devuelve 401, siempre 200 con authenticated:false; el legacy no distinguía "nunca logueado" de "sesión vencida" en el bootstrap.',
     newImplementation: ["src/lib/auth-context.tsx"],
     verifiedBy: ["auth-context.test.tsx"],
   },
@@ -71,7 +71,16 @@ export const AUTH_FUNCTIONAL_PARITY_CHECKLIST: AuthChecklistItem[] = [
     implementedIn: ["KAN-160", "KAN-162", "KAN-168"],
     legacyReference:
       "matchouse/src/dashboard/app.js líneas 160-178 — monkey-patch invisible de window.fetch que deslogueaba ante cualquier 401.",
-    newImplementation: ["src/lib/auth-events.ts", "src/lib/api-client.ts", "src/lib/auth-context.tsx"],
-    verifiedBy: ["auth-events.test.ts", "api-client.test.ts", "auth-context.test.tsx", "session-message.test.tsx"],
+    newImplementation: [
+      "src/lib/auth-events.ts",
+      "src/lib/api-client.ts",
+      "src/lib/auth-context.tsx",
+    ],
+    verifiedBy: [
+      "auth-events.test.ts",
+      "api-client.test.ts",
+      "auth-context.test.tsx",
+      "session-message.test.tsx",
+    ],
   },
 ];

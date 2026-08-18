@@ -91,8 +91,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       const res = await apiClient<ProfileResponse>("/api/profile");
       dispatch({ type: "RESOLVED", profile: res.profile });
     } catch (error) {
-      const message =
-        error instanceof ApiError ? error.message : "No pudimos verificar tu perfil.";
+      const message = error instanceof ApiError ? error.message : "No pudimos verificar tu perfil.";
       dispatch({ type: "FAILED", error: message });
     }
   }, []);

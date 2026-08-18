@@ -78,7 +78,9 @@ describe("LoginForm (KAN-166)", () => {
       mockResponse({
         ok: false,
         status: 429,
-        body: JSON.stringify({ error: "Demasiados intentos. Esperá un minuto e intentá de nuevo." }),
+        body: JSON.stringify({
+          error: "Demasiados intentos. Esperá un minuto e intentá de nuevo.",
+        }),
       }),
     );
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { LoginForm } from "@/components/auth/LoginForm";
+import { MatchesDashboard } from "@/components/matches/MatchesDashboard";
 import { ProfileGate } from "@/components/profile/ProfileGate";
 import { useAuth } from "@/lib/auth-context";
 
@@ -25,22 +26,24 @@ export default function Home() {
 
   return (
     <ProfileGate>
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 bg-zinc-50 px-6 text-center dark:bg-black">
-        <h1 className="text-2xl font-semibold tracking-tight text-black dark:text-zinc-50">
-          Brokaza
-        </h1>
-        <p className="max-w-md text-zinc-600 dark:text-zinc-400">
-          Sesión iniciada como {tenant?.email}. El dashboard de matching se implementa en los
-          tickets siguientes de la Fase 1-2 del plan de migración.
-        </p>
-        <button
-          type="button"
-          onClick={() => void logout()}
-          disabled={loggingOut}
-          className="mt-2 text-sm font-medium underline underline-offset-4 disabled:opacity-60"
-        >
-          {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
-        </button>
+      <div className="flex flex-1 flex-col items-center bg-zinc-50 dark:bg-black">
+        <div className="flex w-full max-w-3xl flex-col items-center gap-1 px-4 pt-6 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight text-black dark:text-zinc-50">
+            Brokaza
+          </h1>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            Sesión iniciada como {tenant?.email}.
+          </p>
+          <button
+            type="button"
+            onClick={() => void logout()}
+            disabled={loggingOut}
+            className="text-sm font-medium underline underline-offset-4 disabled:opacity-60"
+          >
+            {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
+          </button>
+        </div>
+        <MatchesDashboard />
       </div>
     </ProfileGate>
   );

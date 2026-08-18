@@ -19,10 +19,12 @@
  * `fetchWithTimeout`. El status y el body parseado quedan disponibles en
  * `ApiError` para quien necesite reaccionar a un código puntual (ej. 401).
  *
- * No incluye el interceptor global de logout ante 401 — eso es un problema de
- * estado de sesión, no de transporte, y se resuelve en KAN-160 (cliente de
- * auth).
+ * El interceptor de 401 (KAN-160/KAN-162) vive en `auth-events.ts`: este
+ * módulo se mantiene agnóstico de React/estado de sesión, solo emite un
+ * evento con nombre ante cualquier 401 — no le importa quién escucha.
  */
+
+import { emitUnauthorized } from "./auth-events";
 
 export type ApiErrorKind = "validation" | "network" | "timeout" | "http";
 
@@ -143,6 +145,9 @@ export async function apiClient<T = unknown>(
   }
 
   if (!response.ok) {
+    if (response.status === 401) {
+      emitUnauthorized();
+    }
     const message = hasStringErrorField(body)
       ? body.error
       : `Error ${response.status}`;

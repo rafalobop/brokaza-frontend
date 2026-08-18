@@ -1,4 +1,5 @@
 import { apiClient, ApiError } from "@/lib/api-client";
+import { onUnauthorized } from "@/lib/auth-events";
 
 function mockResponse(init: {
   ok: boolean;
@@ -155,6 +156,41 @@ describe("apiClient (KAN-155)", () => {
     expect(
       (init.headers as Record<string, string>)["Content-Type"],
     ).toBeUndefined();
+  });
+
+  it("dispara el interceptor de 401 (auth-events) cuando la respuesta es 401", async () => {
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue(
+        mockResponse({ ok: false, status: 401, body: JSON.stringify({ error: "No autenticado." }) }),
+      );
+
+    const listener = jest.fn();
+    const unsubscribe = onUnauthorized(listener);
+
+    await expect(apiClient("/api/matches")).rejects.toMatchObject({
+      kind: "http",
+      status: 401,
+    });
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    unsubscribe();
+  });
+
+  it("NO dispara el interceptor de 401 ante otros status de error (ej. 403, 500)", async () => {
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue(mockResponse({ ok: false, status: 403, body: "" }));
+
+    const listener = jest.fn();
+    const unsubscribe = onUnauthorized(listener);
+
+    await expect(apiClient("/api/matches")).rejects.toMatchObject({
+      status: 403,
+    });
+    expect(listener).not.toHaveBeenCalled();
+
+    unsubscribe();
   });
 
   it("ApiError es instancia de Error (compatible con catch estándar)", async () => {

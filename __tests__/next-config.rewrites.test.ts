@@ -18,7 +18,7 @@ describe("next.config rewrites (KAN-150)", () => {
     }
 
     const rewrites = await nextConfig.rewrites();
-    const list = Array.isArray(rewrites) ? rewrites : rewrites.afterFiles ?? [];
+    const list = Array.isArray(rewrites) ? rewrites : (rewrites.afterFiles ?? []);
 
     expect(list).toEqual(
       expect.arrayContaining([
@@ -44,7 +44,7 @@ describe("next.config rewrites (KAN-150)", () => {
     }
 
     const rewrites = await nextConfig.rewrites();
-    const list = Array.isArray(rewrites) ? rewrites : rewrites.afterFiles ?? [];
+    const list = Array.isArray(rewrites) ? rewrites : (rewrites.afterFiles ?? []);
 
     const matchesEverything = list.some((rule) => rule.source === "/:path*");
     expect(matchesEverything).toBe(false);

@@ -1,11 +1,7 @@
 import { apiClient, ApiError } from "@/lib/api-client";
 import { onUnauthorized } from "@/lib/auth-events";
 
-function mockResponse(init: {
-  ok: boolean;
-  status: number;
-  body?: string;
-}): Response {
+function mockResponse(init: { ok: boolean; status: number; body?: string }): Response {
   return {
     ok: init.ok,
     status: init.status,
@@ -39,9 +35,7 @@ describe("apiClient (KAN-155)", () => {
   });
 
   it("tolera una respuesta 2xx sin body (ej. 204), devolviendo null", async () => {
-    global.fetch = jest
-      .fn()
-      .mockResolvedValue(mockResponse({ ok: true, status: 204, body: "" }));
+    global.fetch = jest.fn().mockResolvedValue(mockResponse({ ok: true, status: 204, body: "" }));
 
     const result = await apiClient("/api/logout", { method: "POST" });
 
@@ -66,9 +60,7 @@ describe("apiClient (KAN-155)", () => {
   });
 
   it("usa `Error <status>` como fallback cuando la respuesta de error no trae body.error", async () => {
-    global.fetch = jest
-      .fn()
-      .mockResolvedValue(mockResponse({ ok: false, status: 500, body: "" }));
+    global.fetch = jest.fn().mockResolvedValue(mockResponse({ ok: false, status: 500, body: "" }));
 
     await expect(apiClient("/api/matches")).rejects.toMatchObject({
       kind: "http",
@@ -87,26 +79,23 @@ describe("apiClient (KAN-155)", () => {
         }),
     );
 
-    await expect(
-      apiClient("/api/slow", { timeoutMs: 20, logTag: "[TEST]" }),
-    ).rejects.toMatchObject({
-      kind: "timeout",
-      message: "El servidor no respondió a tiempo. Probá de nuevo en unos segundos.",
-    });
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.stringContaining("[TEST]"),
+    await expect(apiClient("/api/slow", { timeoutMs: 20, logTag: "[TEST]" })).rejects.toMatchObject(
+      {
+        kind: "timeout",
+        message: "El servidor no respondió a tiempo. Probá de nuevo en unos segundos.",
+      },
     );
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining("[TEST]"));
   });
 
   it("lanza ApiError kind=network y loguea con logTag ante un error de conexión", async () => {
-    global.fetch = jest
-      .fn()
-      .mockRejectedValue(new TypeError("Failed to fetch"));
+    global.fetch = jest.fn().mockRejectedValue(new TypeError("Failed to fetch"));
 
-    await expect(
-      apiClient("/api/whoami", { logTag: "[NET]" }),
-    ).rejects.toMatchObject({ kind: "network", message: "Failed to fetch" });
+    await expect(apiClient("/api/whoami", { logTag: "[NET]" })).rejects.toMatchObject({
+      kind: "network",
+      message: "Failed to fetch",
+    });
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       expect.stringContaining("[NET]"),
@@ -136,9 +125,7 @@ describe("apiClient (KAN-155)", () => {
     });
 
     const [, init] = fetchMock.mock.calls[0];
-    expect((init.headers as Record<string, string>)["Content-Type"]).toBe(
-      "text/plain",
-    );
+    expect((init.headers as Record<string, string>)["Content-Type"]).toBe("text/plain");
   });
 
   it("no fuerza Content-Type cuando el body es FormData (ej. subida de archivos)", async () => {
@@ -153,17 +140,17 @@ describe("apiClient (KAN-155)", () => {
     await apiClient("/api/upload", { method: "POST", body: formData });
 
     const [, init] = fetchMock.mock.calls[0];
-    expect(
-      (init.headers as Record<string, string>)["Content-Type"],
-    ).toBeUndefined();
+    expect((init.headers as Record<string, string>)["Content-Type"]).toBeUndefined();
   });
 
   it("dispara el interceptor de 401 (auth-events) cuando la respuesta es 401", async () => {
-    global.fetch = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({ ok: false, status: 401, body: JSON.stringify({ error: "No autenticado." }) }),
-      );
+    global.fetch = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: false,
+        status: 401,
+        body: JSON.stringify({ error: "No autenticado." }),
+      }),
+    );
 
     const listener = jest.fn();
     const unsubscribe = onUnauthorized(listener);
@@ -178,9 +165,7 @@ describe("apiClient (KAN-155)", () => {
   });
 
   it("NO dispara el interceptor de 401 ante otros status de error (ej. 403, 500)", async () => {
-    global.fetch = jest
-      .fn()
-      .mockResolvedValue(mockResponse({ ok: false, status: 403, body: "" }));
+    global.fetch = jest.fn().mockResolvedValue(mockResponse({ ok: false, status: 403, body: "" }));
 
     const listener = jest.fn();
     const unsubscribe = onUnauthorized(listener);
@@ -194,9 +179,7 @@ describe("apiClient (KAN-155)", () => {
   });
 
   it("ApiError es instancia de Error (compatible con catch estándar)", async () => {
-    global.fetch = jest
-      .fn()
-      .mockResolvedValue(mockResponse({ ok: false, status: 404, body: "" }));
+    global.fetch = jest.fn().mockResolvedValue(mockResponse({ ok: false, status: 404, body: "" }));
 
     await expect(apiClient("/api/nope")).rejects.toBeInstanceOf(ApiError);
     await expect(apiClient("/api/nope")).rejects.toBeInstanceOf(Error);

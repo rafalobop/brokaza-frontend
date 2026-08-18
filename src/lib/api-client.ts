@@ -33,11 +33,7 @@ export class ApiError extends Error {
   readonly status?: number;
   readonly body?: unknown;
 
-  constructor(
-    message: string,
-    kind: ApiErrorKind,
-    options?: { status?: number; body?: unknown },
-  ) {
+  constructor(message: string, kind: ApiErrorKind, options?: { status?: number; body?: unknown }) {
     super(message);
     this.name = "ApiError";
     this.kind = kind;
@@ -78,12 +74,7 @@ export async function apiClient<T = unknown>(
   path: string,
   options: ApiClientOptions = {},
 ): Promise<T> {
-  const {
-    timeoutMs = DEFAULT_TIMEOUT_MS,
-    logTag = "[API]",
-    headers,
-    ...init
-  } = options;
+  const { timeoutMs = DEFAULT_TIMEOUT_MS, logTag = "[API]", headers, ...init } = options;
 
   if (typeof path !== "string" || !path.startsWith("/")) {
     throw new ApiError(
@@ -96,8 +87,7 @@ export async function apiClient<T = unknown>(
   // Content-Type con boundary — forzar "application/json" ahí rompería el
   // request. Ninguno de los dos wrappers legacy manejaba este caso porque no
   // lo necesitaban, pero KAN-216 (upload) sí va a consumir este cliente.
-  const isFormData =
-    typeof FormData !== "undefined" && init.body instanceof FormData;
+  const isFormData = typeof FormData !== "undefined" && init.body instanceof FormData;
   const mergedHeaders: HeadersInit = isFormData
     ? { ...headers }
     : { "Content-Type": "application/json", ...headers };
@@ -115,21 +105,20 @@ export async function apiClient<T = unknown>(
   } catch (error) {
     // `DOMException` (lo que tira `AbortController`) no siempre hereda de
     // `Error` según el entorno, así que se chequea `name` por duck-typing.
-    if (error && typeof error === "object" && "name" in error && (error as { name: unknown }).name === "AbortError") {
-      console.error(
-        `${logTag} Timeout de ${timeoutMs}ms esperando respuesta de ${path}`,
-      );
+    if (
+      error &&
+      typeof error === "object" &&
+      "name" in error &&
+      (error as { name: unknown }).name === "AbortError"
+    ) {
+      console.error(`${logTag} Timeout de ${timeoutMs}ms esperando respuesta de ${path}`);
       throw new ApiError(
         "El servidor no respondió a tiempo. Probá de nuevo en unos segundos.",
         "timeout",
       );
     }
     const err = error as Error;
-    console.error(
-      `${logTag} Error de red al conectar con ${path}:`,
-      err.name,
-      err.message,
-    );
+    console.error(`${logTag} Error de red al conectar con ${path}:`, err.name, err.message);
     throw new ApiError(err.message || "Error de red", "network");
   } finally {
     clearTimeout(timer);
@@ -148,9 +137,7 @@ export async function apiClient<T = unknown>(
     if (response.status === 401) {
       emitUnauthorized();
     }
-    const message = hasStringErrorField(body)
-      ? body.error
-      : `Error ${response.status}`;
+    const message = hasStringErrorField(body) ? body.error : `Error ${response.status}`;
     throw new ApiError(message, "http", { status: response.status, body });
   }
 

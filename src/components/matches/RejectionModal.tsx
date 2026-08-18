@@ -23,9 +23,8 @@ export interface RejectionModalProps {
 }
 
 export function RejectionModal({ onConfirm, onCancel }: RejectionModalProps) {
-  const [selected, setSelected] = useState<(typeof REJECTION_REASONS)[number]["value"]>(
-    "mal_filtrado",
-  );
+  const [selected, setSelected] =
+    useState<(typeof REJECTION_REASONS)[number]["value"]>("mal_filtrado");
   const [manualReason, setManualReason] = useState("");
 
   function handleConfirm() {

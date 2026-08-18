@@ -13,7 +13,10 @@ import { isZoneMatchReason, ZONE_MATCH_TOOLTIP } from "@/lib/match-zone-tooltip"
 import type { Match } from "@/lib/matches-api";
 
 const STATUS_BADGE: Record<Match["userReviewStatus"], { label: string; className: string }> = {
-  PENDING: { label: "Pendiente", className: "bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300" },
+  PENDING: {
+    label: "Pendiente",
+    className: "bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
+  },
   ACCEPTED: {
     label: "Aceptado",
     className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300",
@@ -55,7 +58,9 @@ export function MatchItem({ match, onAccept, onReject, actionsDisabled }: MatchI
       </summary>
 
       <div className="flex flex-col gap-3 border-t border-zinc-200 px-4 py-3 dark:border-zinc-800">
-        <p className="text-sm italic text-zinc-700 dark:text-zinc-300">&quot;{match.searchText}&quot;</p>
+        <p className="text-sm text-zinc-700 italic dark:text-zinc-300">
+          &quot;{match.searchText}&quot;
+        </p>
 
         {match.reasons.length > 0 ? (
           <ul className="flex list-inside list-disc flex-col gap-1 text-sm text-zinc-600 dark:text-zinc-400">

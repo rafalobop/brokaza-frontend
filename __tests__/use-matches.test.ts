@@ -30,7 +30,9 @@ describe("useMatches (KAN-189)", () => {
   it("carga los matches al montar (GET /api/matches)", async () => {
     global.fetch = jest
       .fn()
-      .mockResolvedValue(mockResponse({ ok: true, status: 200, body: { matches: [SAMPLE_MATCH] } }));
+      .mockResolvedValue(
+        mockResponse({ ok: true, status: 200, body: { matches: [SAMPLE_MATCH] } }),
+      );
 
     const { result } = renderHook(() => useMatches());
 

@@ -19,9 +19,7 @@ function buildMatch(overrides: Partial<Match>): Match {
 
 describe("MatchesSection (KAN-189)", () => {
   it("muestra el estado de carga", () => {
-    render(
-      <MatchesSection status="loading" matches={[]} error={null} sendFeedback={jest.fn()} />,
-    );
+    render(<MatchesSection status="loading" matches={[]} error={null} sendFeedback={jest.fn()} />);
     expect(screen.getByText(/Cargando matches/)).toBeInTheDocument();
   });
 
@@ -92,7 +90,10 @@ describe("MatchesSection (KAN-189)", () => {
   });
 
   it("muestra el motivo de un match rechazado", () => {
-    const match = buildMatch({ userReviewStatus: "REJECTED", feedbackReason: "Precio incompatible" });
+    const match = buildMatch({
+      userReviewStatus: "REJECTED",
+      feedbackReason: "Precio incompatible",
+    });
     render(
       <MatchesSection status="loaded" matches={[match]} error={null} sendFeedback={jest.fn()} />,
     );

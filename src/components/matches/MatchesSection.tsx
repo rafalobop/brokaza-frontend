@@ -127,7 +127,10 @@ export function MatchesSection({ status, matches, error, sendFeedback }: Matches
       )}
 
       {rejectingMatchId ? (
-        <RejectionModal onConfirm={handleConfirmReject} onCancel={() => setRejectingMatchId(null)} />
+        <RejectionModal
+          onConfirm={handleConfirmReject}
+          onCancel={() => setRejectingMatchId(null)}
+        />
       ) : null}
     </section>
   );

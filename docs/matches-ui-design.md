@@ -13,13 +13,13 @@ genérica del ticket. La UI de Matches hoy es **4 secciones independientes** en 
 página (no pestañas: `<details>` colapsables que pueden estar todas abiertas a la vez) +
 1 modal compartido:
 
-| Sección legacy | Endpoint(s) | Interacción |
-|---|---|---|
-| Nueva Búsqueda (siempre visible, no colapsable) | `POST /api/search` | Form de texto libre, contador de caracteres, validación de control chars |
-| Mis Búsquedas en Curso (`active_searches`) | `GET /api/searches`, `DELETE /api/searches/:id`, `POST /api/searches/:id/reactivate` | Archivar/reactivar |
-| Búsquedas con Resultados ("Últimos Matches") | `GET /api/matches`, `POST /api/matches/:id/feedback` | Orden, paginación, aceptar/rechazar (abre modal) |
-| Interesados en tus Propiedades | `GET /api/matches/incoming` | Solo lectura, links `wa.me`/`mailto` |
-| Modal de Rechazo (compartido por la sección de matches) | — (dispara `POST /api/matches/:id/feedback`) | Radio de motivos + input libre |
+| Sección legacy                                          | Endpoint(s)                                                                          | Interacción                                                              |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| Nueva Búsqueda (siempre visible, no colapsable)         | `POST /api/search`                                                                   | Form de texto libre, contador de caracteres, validación de control chars |
+| Mis Búsquedas en Curso (`active_searches`)              | `GET /api/searches`, `DELETE /api/searches/:id`, `POST /api/searches/:id/reactivate` | Archivar/reactivar                                                       |
+| Búsquedas con Resultados ("Últimos Matches")            | `GET /api/matches`, `POST /api/matches/:id/feedback`                                 | Orden, paginación, aceptar/rechazar (abre modal)                         |
+| Interesados en tus Propiedades                          | `GET /api/matches/incoming`                                                          | Solo lectura, links `wa.me`/`mailto`                                     |
+| Modal de Rechazo (compartido por la sección de matches) | — (dispara `POST /api/matches/:id/feedback`)                                         | Radio de motivos + input libre                                           |
 
 Las 4 secciones comparten el mismo disparador de refetch: el WS del contador de matches
 (`useRealtimeMatches`, KAN-187) + el polling de respaldo. Ver §4.
@@ -63,12 +63,12 @@ MatchesDashboard                    (orquestador de página — dueño de useRea
 
 Cada `*Section` es dueña de su propio hook de datos (`useActiveSearches`,
 `useMatches`, `useIncomingMatches`) — no hay un store global de "matches". Sigue el
-criterio de `react-state-management`: *"Colocate state — keep state as close to where
-it's used as possible"* / *"Don't over-globalize"*. A diferencia de Auth/Profile (KAN-160
+criterio de `react-state-management`: _"Colocate state — keep state as close to where
+it's used as possible"_ / _"Don't over-globalize"_. A diferencia de Auth/Profile (KAN-160
 – KAN-167), que sí son Context globales porque hacen falta en toda la app, los datos de
 Matches solo importan dentro de `MatchesDashboard` — no hay otra pantalla que los
 consuma. Precedente: `auth-context.tsx`/`profile-context.tsx` usan Context + `useReducer`
-porque *sí* son globales; acá cada hook usa `useState`/`useReducer` local sin Context.
+porque _sí_ son globales; acá cada hook usa `useState`/`useReducer` local sin Context.
 
 ## 4. Integración con `useRealtimeMatches` (KAN-187)
 
@@ -84,8 +84,7 @@ const { refetch: refetchIncoming } = useIncomingMatches();
 
 useRealtimeMatches({
   enabled: authStatus === "authenticated",
-  onRefetch: () =>
-    Promise.all([refetchMatches(), refetchActiveSearches(), refetchIncoming()]),
+  onRefetch: () => Promise.all([refetchMatches(), refetchActiveSearches(), refetchIncoming()]),
 });
 ```
 

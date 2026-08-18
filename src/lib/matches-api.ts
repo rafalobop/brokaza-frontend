@@ -1,13 +1,12 @@
 /**
- * Tipos + wrappers de `apiClient` para el módulo de Matches (KAN-189).
+ * Tipos + wrappers de `apiClient` para el módulo de Matches (KAN-189/190).
  *
- * Shape de `Match` tomado de `mapBlindMatchRowToDashboardShape`
- * (`matchouse/src/utils/blindMatchPersistence.ts`) — el backend no cambia
- * (§8 de `MIGRATION_PLAN.md`), solo se tipa acá lo que ya devuelve
- * `GET /api/matches`. Alcance de este archivo: solo los 2 endpoints que usa
- * la vista "Últimos Matches" (KAN-189). Los otros 4 endpoints del módulo
- * (`/api/matches/incoming`, `/api/searches*`) los agregan KAN-190/191 según
- * el layout de archivos de `docs/matches-ui-design.md` §7.
+ * Shapes tomados de `mapBlindMatchRowToDashboardShape` /
+ * `mapIncomingMatchRowToDashboardShape` (`matchouse/src/utils/blindMatchPersistence.ts`)
+ * — el backend no cambia (§8 de `MIGRATION_PLAN.md`), solo se tipa acá lo que
+ * ya devuelven `GET /api/matches` y `GET /api/matches/incoming`. Los 4
+ * endpoints de `/api/searches*` los agrega KAN-191 según el layout de
+ * archivos de `docs/matches-ui-design.md` §7.
  */
 
 import { apiClient } from "./api-client";
@@ -49,4 +48,35 @@ export function sendMatchFeedback(
     method: "POST",
     body: JSON.stringify({ status, reason }),
   });
+}
+
+/**
+ * Contacto congelado del buscador al momento del match (`searcher_snapshot`
+ * en el backend) — se completa desde `profiles` en `POST /api/search`, así
+ * que cualquier campo puede venir `null` si el buscador nunca lo cargó en su
+ * perfil (KAN-64).
+ */
+export interface IncomingMatchContact {
+  full_name: string | null;
+  phone_number: string | null;
+  agency_name: string | null;
+  email: string | null;
+}
+
+export interface IncomingMatch {
+  id: string;
+  fecha: string;
+  searchText: string;
+  searcherContact: IncomingMatchContact;
+  property: MatchProperty;
+  reasons: string[];
+  score: number;
+}
+
+interface IncomingMatchesResponse {
+  matches: IncomingMatch[];
+}
+
+export function getIncomingMatches(): Promise<IncomingMatchesResponse> {
+  return apiClient<IncomingMatchesResponse>("/api/matches/incoming");
 }

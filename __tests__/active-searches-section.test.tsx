@@ -1,0 +1,157 @@
+import { fireEvent, render, screen } from "@testing-library/react";
+import { ActiveSearchesSection } from "@/components/matches/ActiveSearchesSection";
+import type { ActiveSearch } from "@/lib/matches-api";
+
+function buildSearch(overrides: Partial<ActiveSearch>): ActiveSearch {
+  return {
+    id: "s1",
+    raw_text: "busco depto 2 dorm en alquiler",
+    criteria: { operation: "alquiler", zones: ["Barrio Sur"] },
+    status: "active",
+    created_at: "2026-01-01T00:00:00.000Z",
+    expires_at: "2026-01-08T00:00:00.000Z",
+    days_remaining: 5,
+    matches_count: 2,
+    ...overrides,
+  };
+}
+
+describe("ActiveSearchesSection (KAN-191)", () => {
+  let confirmSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    confirmSpy = jest.spyOn(window, "confirm").mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    confirmSpy.mockRestore();
+  });
+
+  it("muestra el estado de carga", () => {
+    render(
+      <ActiveSearchesSection
+        status="loading"
+        searches={[]}
+        error={null}
+        onArchive={jest.fn()}
+        onReactivate={jest.fn()}
+      />,
+    );
+    expect(screen.getByText(/Cargando búsquedas activas/)).toBeInTheDocument();
+  });
+
+  it("muestra el placeholder sin búsquedas activas", () => {
+    render(
+      <ActiveSearchesSection
+        status="loaded"
+        searches={[]}
+        error={null}
+        onArchive={jest.fn()}
+        onReactivate={jest.fn()}
+      />,
+    );
+    expect(screen.getByText(/No tenés búsquedas activas/)).toBeInTheDocument();
+  });
+
+  it("renderiza el resumen y el texto original de la búsqueda", () => {
+    const search = buildSearch({});
+    render(
+      <ActiveSearchesSection
+        status="loaded"
+        searches={[search]}
+        error={null}
+        onArchive={jest.fn()}
+        onReactivate={jest.fn()}
+      />,
+    );
+    expect(screen.getByText(/Alquiler.*Barrio Sur/)).toBeInTheDocument();
+    expect(screen.getByText('"busco depto 2 dorm en alquiler"')).toBeInTheDocument();
+  });
+
+  it("una búsqueda activa muestra Archivar pero no Reactivar", () => {
+    const search = buildSearch({ status: "active" });
+    render(
+      <ActiveSearchesSection
+        status="loaded"
+        searches={[search]}
+        error={null}
+        onArchive={jest.fn()}
+        onReactivate={jest.fn()}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "Archivar" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reactivar" })).not.toBeInTheDocument();
+  });
+
+  it("una búsqueda vencida muestra Reactivar y no el badge de días restantes", () => {
+    const search = buildSearch({ status: "expired", days_remaining: 0 });
+    render(
+      <ActiveSearchesSection
+        status="loaded"
+        searches={[search]}
+        error={null}
+        onArchive={jest.fn()}
+        onReactivate={jest.fn()}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "Reactivar" })).toBeInTheDocument();
+    expect(screen.queryByText(/restante/)).not.toBeInTheDocument();
+  });
+
+  it("Archivar pide confirmación y llama a onArchive si se confirma", () => {
+    const onArchive = jest.fn().mockResolvedValue(undefined);
+    const search = buildSearch({});
+    render(
+      <ActiveSearchesSection
+        status="loaded"
+        searches={[search]}
+        error={null}
+        onArchive={onArchive}
+        onReactivate={jest.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Archivar" }));
+
+    expect(confirmSpy).toHaveBeenCalled();
+    expect(onArchive).toHaveBeenCalledWith("s1");
+  });
+
+  it("Archivar no llama a onArchive si el usuario cancela la confirmación", () => {
+    confirmSpy.mockReturnValue(false);
+    const onArchive = jest.fn();
+    const search = buildSearch({});
+    render(
+      <ActiveSearchesSection
+        status="loaded"
+        searches={[search]}
+        error={null}
+        onArchive={onArchive}
+        onReactivate={jest.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Archivar" }));
+
+    expect(onArchive).not.toHaveBeenCalled();
+  });
+
+  it("Reactivar llama a onReactivate sin pedir confirmación", () => {
+    const onReactivate = jest.fn().mockResolvedValue(undefined);
+    const search = buildSearch({ status: "expired", days_remaining: 0 });
+    render(
+      <ActiveSearchesSection
+        status="loaded"
+        searches={[search]}
+        error={null}
+        onArchive={jest.fn()}
+        onReactivate={onReactivate}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Reactivar" }));
+
+    expect(onReactivate).toHaveBeenCalledWith("s1");
+    expect(confirmSpy).not.toHaveBeenCalled();
+  });
+});

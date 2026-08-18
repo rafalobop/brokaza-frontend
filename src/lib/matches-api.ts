@@ -1,12 +1,11 @@
 /**
- * Tipos + wrappers de `apiClient` para el módulo de Matches (KAN-189/190).
+ * Tipos + wrappers de `apiClient` para el módulo de Matches (KAN-189/190/191).
  *
- * Shapes tomados de `mapBlindMatchRowToDashboardShape` /
- * `mapIncomingMatchRowToDashboardShape` (`matchouse/src/utils/blindMatchPersistence.ts`)
- * — el backend no cambia (§8 de `MIGRATION_PLAN.md`), solo se tipa acá lo que
- * ya devuelven `GET /api/matches` y `GET /api/matches/incoming`. Los 4
- * endpoints de `/api/searches*` los agrega KAN-191 según el layout de
- * archivos de `docs/matches-ui-design.md` §7.
+ * Shapes de matches tomados de `mapBlindMatchRowToDashboardShape` /
+ * `mapIncomingMatchRowToDashboardShape`; shape de `ActiveSearch` tomado
+ * directamente de `matchouse/src/routes/search.ts` (`GET /api/searches`,
+ * líneas 291-302). El backend no cambia (§8 de `MIGRATION_PLAN.md`), solo se
+ * tipa acá lo que ya devuelve.
  */
 
 import { apiClient } from "./api-client";
@@ -79,4 +78,76 @@ interface IncomingMatchesResponse {
 
 export function getIncomingMatches(): Promise<IncomingMatchesResponse> {
   return apiClient<IncomingMatchesResponse>("/api/matches/incoming");
+}
+
+export type ActiveSearchStatus = "active" | "expired";
+
+/**
+ * Subset de `ExtractedRealEstateRequest` (backend, `services/ai.ts`) que
+ * efectivamente consume la UI (`buildSearchSummary` en el legacy,
+ * `matchouse/src/dashboard/app.js` líneas 1252-1266) — el objeto real trae
+ * más campos (`dormitorios_min`, `caracteristicas_claves`, etc.) que ninguna
+ * vista usa todavía.
+ */
+export interface ActiveSearchCriteria {
+  operation?: string;
+  property_type?: string;
+  zones?: string[];
+  bedrooms?: number;
+  max_budget?: number;
+  currency?: string;
+}
+
+export interface ActiveSearch {
+  id: string;
+  raw_text: string;
+  criteria: ActiveSearchCriteria | null;
+  status: ActiveSearchStatus;
+  created_at: string;
+  expires_at: string;
+  days_remaining: number;
+  matches_count: number;
+}
+
+interface ActiveSearchesResponse {
+  searches: ActiveSearch[];
+}
+
+export function getActiveSearches(): Promise<ActiveSearchesResponse> {
+  return apiClient<ActiveSearchesResponse>("/api/searches");
+}
+
+/**
+ * `POST /api/search` puede segmentar un mismo texto en varias búsquedas
+ * (Agente 0, backend) y solo devuelve un status 2xx cuando al menos un
+ * segmento tuvo éxito (`allFailed` en el backend fuerza 500/504) — el
+ * legacy (`app.js` líneas 1300-1338) no distingue ese detalle, solo mira
+ * `res.ok`/`data.error` para el mensaje genérico de éxito o error. `apiClient`
+ * ya convierte cualquier respuesta no-2xx en un `ApiError` con `message`
+ * tomado de `body.error`, así que acá no hace falta modelar el caso de
+ * error — solo la forma del body en éxito (`success` siempre `true` en 2xx).
+ * Se ignora el detalle de segmentación (`segmented`/`searches`), que ninguna
+ * vista consume todavía.
+ */
+export interface SubmitSearchResponse {
+  success: true;
+}
+
+export function submitSearch(text: string): Promise<SubmitSearchResponse> {
+  return apiClient<SubmitSearchResponse>("/api/search", {
+    method: "POST",
+    body: JSON.stringify({ text }),
+  });
+}
+
+export function archiveActiveSearch(searchId: string): Promise<{ success: true }> {
+  return apiClient<{ success: true }>(`/api/searches/${searchId}`, { method: "DELETE" });
+}
+
+export function reactivateActiveSearch(
+  searchId: string,
+): Promise<{ success: true; expires_at: string }> {
+  return apiClient<{ success: true; expires_at: string }>(`/api/searches/${searchId}/reactivate`, {
+    method: "POST",
+  });
 }

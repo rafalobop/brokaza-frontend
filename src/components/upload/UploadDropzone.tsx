@@ -1,24 +1,42 @@
 "use client";
 
 /**
- * `UploadDropzone` (KAN-216) — drag&drop + selector de archivo para subir el
- * Excel de cartera. Portado de `matchouse/src/dashboard/app.js` (líneas
- * 659-724, el dropzone; el modal de confirmación de mapeo, líneas 761-971,
- * queda para KAN-217).
+ * `UploadDropzone` (KAN-216/217) — drag&drop + selector de archivo para
+ * subir el Excel de cartera. Portado de `matchouse/src/dashboard/app.js`
+ * (líneas 659-724, el dropzone). Cuando el backend pide confirmar el mapeo
+ * de columnas (KAN-84), muestra el aviso + el botón "Revisar mapeo" que abre
+ * `MappingConfirmModal` (KAN-217, líneas 761-971 del legacy).
  */
 
 import { useCallback, useRef, useState } from "react";
 import { useUpload } from "@/lib/use-upload";
+import { MappingConfirmModal } from "./MappingConfirmModal";
 
 export function UploadDropzone() {
-  const { status, error, result, pendingSheets, upload, reset } = useUpload();
+  const {
+    status,
+    error,
+    result,
+    pendingSheets,
+    confirming,
+    confirmError,
+    upload,
+    confirmMapping,
+    reset,
+  } = useUpload();
   const [dragOver, setDragOver] = useState(false);
+  const [mappingModalOpen, setMappingModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploading = status === "uploading";
+  const needsMapping = status === "needs-mapping";
 
   const handleFiles = useCallback(
     (files: FileList | null) => {
       if (!files || files.length === 0) return;
+      // Cada subida arranca sin el modal abierto — si esta hace falta confirmación de mapeo, el
+      // agente vuelve a decidir explícitamente si quiere "Revisar mapeo" (AC3), no se le reabre
+      // automáticamente el estado del archivo anterior.
+      setMappingModalOpen(false);
       void upload(files[0]);
     },
     [upload],
@@ -51,6 +69,11 @@ export function UploadDropzone() {
     // Permite volver a elegir el mismo archivo dos veces seguidas (change no dispara si el
     // value no cambia) — mismo motivo que el legacy limpia `fileInput.value`.
     event.target.value = "";
+  }
+
+  function handleCancelMapping() {
+    setMappingModalOpen(false);
+    reset();
   }
 
   return (
@@ -111,22 +134,31 @@ export function UploadDropzone() {
         </p>
       ) : null}
 
-      {status === "needs-mapping" ? (
-        <p className="text-sm text-amber-600 dark:text-amber-400">
-          Necesitamos que confirmes el mapeo de columnas antes de cargar el archivo
-          {pendingSheets.length > 0
-            ? ` (${pendingSheets.length} hoja${pendingSheets.length > 1 ? "s" : ""} pendiente${
-                pendingSheets.length > 1 ? "s" : ""
-              }).`
-            : "."}
-        </p>
+      {needsMapping ? (
+        <div className="flex flex-col items-start gap-2">
+          <p className="text-sm text-amber-600 dark:text-amber-400">
+            Necesitamos que confirmes el mapeo de columnas antes de cargar el archivo
+            {pendingSheets.length > 0
+              ? ` (${pendingSheets.length} hoja${pendingSheets.length > 1 ? "s" : ""} pendiente${
+                  pendingSheets.length > 1 ? "s" : ""
+                }).`
+              : "."}
+          </p>
+          <button
+            type="button"
+            onClick={() => setMappingModalOpen(true)}
+            className="rounded-md bg-black px-3 py-1.5 text-xs font-medium text-white dark:bg-white dark:text-black"
+          >
+            Revisar mapeo
+          </button>
+        </div>
       ) : null}
 
       {status === "error" && error ? (
         <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
       ) : null}
 
-      {status !== "idle" && status !== "uploading" ? (
+      {status !== "idle" && status !== "uploading" && !needsMapping ? (
         <button
           type="button"
           onClick={reset}
@@ -134,6 +166,16 @@ export function UploadDropzone() {
         >
           Subir otro archivo
         </button>
+      ) : null}
+
+      {needsMapping && mappingModalOpen ? (
+        <MappingConfirmModal
+          sheets={pendingSheets}
+          confirming={confirming}
+          confirmError={confirmError}
+          onConfirm={(mappings) => void confirmMapping(mappings)}
+          onCancel={handleCancelMapping}
+        />
       ) : null}
     </section>
   );

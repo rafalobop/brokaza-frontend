@@ -157,4 +157,120 @@ describe("UploadDropzone (KAN-216)", () => {
       screen.getByText("Soltá el archivo acá o hacé click para elegirlo (.xlsx)"),
     ).toBeInTheDocument();
   });
+
+  describe("modal de confirmación de mapeo (KAN-217)", () => {
+    const PENDING_SHEET = {
+      sheetName: "Hoja1",
+      headers: ["Dirección", "Costo"],
+      headerSignature: "costo|dirección",
+      source: "heuristic" as const,
+      fields: [
+        { field: "domicilio", header: "Dirección", confidence: 1, ambiguous: false, candidates: [] },
+        { field: "precio", header: null, confidence: 0, ambiguous: false, candidates: [] },
+      ],
+      unresolvedRequiredFields: ["precio"],
+      ambiguousFields: [],
+    };
+    const MAPPING_FIELDS_BODY = {
+      version: 1,
+      fields: ["domicilio", "precio"],
+      required: ["domicilio", "precio"],
+    };
+
+    it("\"Revisar mapeo\" abre el modal; no se abre solo", async () => {
+      global.fetch = jest.fn().mockResolvedValueOnce(
+        mockResponse({
+          ok: true,
+          status: 200,
+          body: { requiresMappingConfirmation: true, sheets: [PENDING_SHEET] },
+        }),
+      );
+
+      render(<UploadDropzone />);
+      fireEvent.change(screen.getByTestId("upload-file-input"), {
+        target: { files: [excelFile()] },
+      });
+
+      await screen.findByRole("button", { name: "Revisar mapeo" });
+      expect(screen.queryByText("Confirmar mapeo de columnas")).not.toBeInTheDocument();
+
+      global.fetch = jest
+        .fn()
+        .mockResolvedValue(mockResponse({ ok: true, status: 200, body: MAPPING_FIELDS_BODY }));
+      fireEvent.click(screen.getByRole("button", { name: "Revisar mapeo" }));
+
+      expect(await screen.findByText("Confirmar mapeo de columnas")).toBeInTheDocument();
+    });
+
+    it("confirmar el mapeo desde el modal sube el archivo con POST /api/upload/confirm-mapping y cierra el modal al éxito", async () => {
+      const fetchMock = jest.fn();
+      global.fetch = fetchMock;
+      fetchMock.mockResolvedValueOnce(
+        mockResponse({
+          ok: true,
+          status: 200,
+          body: { requiresMappingConfirmation: true, sheets: [PENDING_SHEET] },
+        }),
+      );
+
+      render(<UploadDropzone />);
+      fireEvent.change(screen.getByTestId("upload-file-input"), {
+        target: { files: [excelFile()] },
+      });
+
+      fetchMock.mockResolvedValueOnce(
+        mockResponse({ ok: true, status: 200, body: MAPPING_FIELDS_BODY }),
+      );
+      fireEvent.click(await screen.findByRole("button", { name: "Revisar mapeo" }));
+      await screen.findByText("Confirmar mapeo de columnas");
+      await screen.findByText("Precio");
+
+      const selects = screen.getAllByRole("combobox");
+      fireEvent.change(selects[1], { target: { value: "Costo" } });
+
+      fetchMock.mockResolvedValueOnce(
+        mockResponse({ ok: true, status: 200, body: { success: true, count: 4, priceParseErrors: [] } }),
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Confirmar y cargar" }));
+
+      expect(await screen.findByText("¡Éxito! Se cargaron 4 propiedades.")).toBeInTheDocument();
+      expect(screen.queryByText("Confirmar mapeo de columnas")).not.toBeInTheDocument();
+
+      const [url, init] = fetchMock.mock.calls[2];
+      expect(url).toBe("/api/upload/confirm-mapping");
+      expect((init.body as FormData).get("mappings")).toBe(
+        JSON.stringify({ Hoja1: { domicilio: "Dirección", precio: "Costo" } }),
+      );
+    });
+
+    it("cancelar el modal vuelve la zona de subida a idle", async () => {
+      const fetchMock = jest.fn();
+      global.fetch = fetchMock;
+      fetchMock.mockResolvedValueOnce(
+        mockResponse({
+          ok: true,
+          status: 200,
+          body: { requiresMappingConfirmation: true, sheets: [PENDING_SHEET] },
+        }),
+      );
+
+      render(<UploadDropzone />);
+      fireEvent.change(screen.getByTestId("upload-file-input"), {
+        target: { files: [excelFile()] },
+      });
+
+      fetchMock.mockResolvedValueOnce(
+        mockResponse({ ok: true, status: 200, body: MAPPING_FIELDS_BODY }),
+      );
+      fireEvent.click(await screen.findByRole("button", { name: "Revisar mapeo" }));
+      await screen.findByText("Confirmar mapeo de columnas");
+
+      fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+
+      expect(screen.queryByText("Confirmar mapeo de columnas")).not.toBeInTheDocument();
+      expect(
+        screen.getByText("Soltá el archivo acá o hacé click para elegirlo (.xlsx)"),
+      ).toBeInTheDocument();
+    });
+  });
 });

@@ -1,16 +1,19 @@
 "use client";
 
 /**
- * `UploadDropzone` (KAN-216/217) — drag&drop + selector de archivo para
+ * `UploadDropzone` (KAN-216/217/218) — drag&drop + selector de archivo para
  * subir el Excel de cartera. Portado de `matchouse/src/dashboard/app.js`
  * (líneas 659-724, el dropzone). Cuando el backend pide confirmar el mapeo
  * de columnas (KAN-84), muestra el aviso + el botón "Revisar mapeo" que abre
- * `MappingConfirmModal` (KAN-217, líneas 761-971 del legacy).
+ * `MappingConfirmModal` (KAN-217, líneas 761-971 del legacy). Mientras
+ * `status === "uploading"` muestra la barra de progreso real (KAN-218,
+ * `UploadProgressBar`) alimentada por `useUpload().stage`.
  */
 
 import { useCallback, useRef, useState } from "react";
 import { useUpload } from "@/lib/use-upload";
 import { MappingConfirmModal } from "./MappingConfirmModal";
+import { UploadProgressBar } from "./UploadProgressBar";
 
 export function UploadDropzone() {
   const {
@@ -20,6 +23,7 @@ export function UploadDropzone() {
     pendingSheets,
     confirming,
     confirmError,
+    stage,
     upload,
     confirmMapping,
     reset,
@@ -42,14 +46,14 @@ export function UploadDropzone() {
     [upload],
   );
 
-  function handleDrop(event: React.DragEvent<HTMLDivElement>) {
+  function handleDrop(event: React.DragEvent<HTMLButtonElement>) {
     event.preventDefault();
     setDragOver(false);
     if (uploading) return;
     handleFiles(event.dataTransfer.files);
   }
 
-  function handleDragOver(event: React.DragEvent<HTMLDivElement>) {
+  function handleDragOver(event: React.DragEvent<HTMLButtonElement>) {
     event.preventDefault();
     if (uploading) return;
     setDragOver(true);
@@ -85,17 +89,10 @@ export function UploadDropzone() {
         </p>
       </div>
 
-      <div
-        role="button"
-        tabIndex={0}
+      <button
+        type="button"
         aria-label="Zona para arrastrar y soltar el archivo Excel de cartera"
         onClick={openFilePicker}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            openFilePicker();
-          }
-        }}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -113,7 +110,7 @@ export function UploadDropzone() {
             ? "Subiendo y procesando archivo..."
             : "Soltá el archivo acá o hacé click para elegirlo (.xlsx)"}
         </span>
-      </div>
+      </button>
 
       <input
         ref={fileInputRef}
@@ -125,6 +122,8 @@ export function UploadDropzone() {
         aria-label="Elegir archivo Excel de cartera"
         data-testid="upload-file-input"
       />
+
+      {uploading ? <UploadProgressBar stage={stage} /> : null}
 
       {status === "success" && result ? (
         <p className="text-sm text-emerald-600 dark:text-emerald-400">
@@ -173,6 +172,7 @@ export function UploadDropzone() {
           sheets={pendingSheets}
           confirming={confirming}
           confirmError={confirmError}
+          stage={stage}
           onConfirm={(mappings) => void confirmMapping(mappings)}
           onCancel={handleCancelMapping}
         />

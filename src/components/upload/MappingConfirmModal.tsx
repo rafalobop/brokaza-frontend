@@ -17,10 +17,12 @@
  * headers reales, no hace falta esperar.
  */
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useMappingFields } from "@/lib/use-mapping-fields";
 import type { ExcelMappingField } from "@/lib/mapping-fields-api";
 import type { PendingMappingSheet, SheetMappingSelections } from "@/lib/upload-api";
+import type { UploadStage } from "@/lib/upload-progress";
+import { UploadProgressBar } from "./UploadProgressBar";
 
 // Etiquetas de presentación — a diferencia de la lista de campos en sí (KAN-215), esto es texto
 // de UI puro, no un dato de negocio que deba salir del backend.
@@ -42,6 +44,8 @@ export interface MappingConfirmModalProps {
   sheets: PendingMappingSheet[];
   confirming: boolean;
   confirmError: string | null;
+  /** KAN-218: progreso real del reprocesamiento (`POST /api/upload/confirm-mapping`) vía WS. */
+  stage: UploadStage | null;
   onConfirm: (mappings: SheetMappingSelections) => void;
   onCancel: () => void;
 }
@@ -72,6 +76,7 @@ export function MappingConfirmModal({
   sheets,
   confirming,
   confirmError,
+  stage,
   onConfirm,
   onCancel,
 }: MappingConfirmModalProps) {
@@ -81,6 +86,9 @@ export function MappingConfirmModal({
   );
   const [validationError, setValidationError] = useState<string | null>(null);
   const fieldsLoaded = fieldsStatus === "loaded";
+  // `required` se consulta con `.has()` dentro del loop de sheets×fields más abajo — un Set
+  // evita repetir el scan lineal de `.includes()` en cada celda de la grilla.
+  const requiredSet = useMemo(() => new Set(required), [required]);
 
   function handleSelect(sheetName: string, field: ExcelMappingField, header: string) {
     setSelections((prev) => ({
@@ -140,7 +148,7 @@ export function MappingConfirmModal({
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {fields.map((field) => {
-                  const isRequired = required.includes(field);
+                  const isRequired = requiredSet.has(field);
                   const isUnresolvedRequired = sheet.unresolvedRequiredFields.includes(field);
                   const isAmbiguous = sheet.ambiguousFields.includes(field);
                   const value = selections[sheet.sheetName]?.[field] ?? "";
@@ -186,6 +194,8 @@ export function MappingConfirmModal({
             </div>
           ))}
         </div>
+
+        {confirming ? <UploadProgressBar stage={stage} /> : null}
 
         {validationError || confirmError ? (
           <p className="text-sm text-red-600 dark:text-red-400">

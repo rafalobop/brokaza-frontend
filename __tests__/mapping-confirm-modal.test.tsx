@@ -47,6 +47,7 @@ describe("MappingConfirmModal (KAN-217)", () => {
         sheets={[SHEET]}
         confirming={false}
         confirmError={null}
+        stage={null}
         onConfirm={jest.fn()}
         onCancel={jest.fn()}
       />,
@@ -69,6 +70,7 @@ describe("MappingConfirmModal (KAN-217)", () => {
         sheets={[SHEET]}
         confirming={false}
         confirmError={null}
+        stage={null}
         onConfirm={onConfirm}
         onCancel={jest.fn()}
       />,
@@ -90,6 +92,7 @@ describe("MappingConfirmModal (KAN-217)", () => {
         sheets={[SHEET]}
         confirming={false}
         confirmError={null}
+        stage={null}
         onConfirm={onConfirm}
         onCancel={jest.fn()}
       />,
@@ -113,6 +116,7 @@ describe("MappingConfirmModal (KAN-217)", () => {
         sheets={[SHEET]}
         confirming={false}
         confirmError="El mapeo confirmado no resuelve los campos requeridos: precio"
+        stage={null}
         onConfirm={jest.fn()}
         onCancel={jest.fn()}
       />,
@@ -132,6 +136,7 @@ describe("MappingConfirmModal (KAN-217)", () => {
         sheets={[SHEET]}
         confirming={false}
         confirmError={null}
+        stage={null}
         onConfirm={jest.fn()}
         onCancel={onCancel}
       />,
@@ -147,6 +152,7 @@ describe("MappingConfirmModal (KAN-217)", () => {
         sheets={[SHEET]}
         confirming={true}
         confirmError={null}
+        stage={null}
         onConfirm={jest.fn()}
         onCancel={jest.fn()}
       />,

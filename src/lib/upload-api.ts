@@ -3,10 +3,8 @@
  *
  * Shapes tomados de `matchouse/src/routes/upload.ts` (KAN-142) — el backend
  * no cambia, solo se tipa acá lo que ya devuelve. El caso
- * `requiresMappingConfirmation` (KAN-84) es la respuesta 200 que dispara la
- * UI de confirmación de mapeo de columnas (KAN-217, todavía no
- * implementada) — este ticket solo necesita distinguirlo del éxito, no
- * construir esa UI.
+ * `requiresMappingConfirmation` (KAN-84) es la respuesta 200 que dispara el
+ * modal de confirmación de mapeo de columnas (KAN-217, `MappingConfirmModal`).
  */
 
 import { apiClient } from "./api-client";
@@ -64,6 +62,30 @@ export function uploadExcelFile(file: File): Promise<UploadResponse> {
   const formData = new FormData();
   formData.append("excelFile", file);
   return apiClient<UploadResponse>("/api/upload", {
+    method: "POST",
+    body: formData,
+    timeoutMs: UPLOAD_TIMEOUT_MS,
+    logTag: "[UPLOAD]",
+  });
+}
+
+/** Mapeo de columnas confirmado/corregido por el agente, una entrada por hoja pendiente (KAN-217). */
+export type SheetMappingSelections = Record<string, Partial<Record<ExcelMappingField, string | null>>>;
+
+/**
+ * `POST /api/upload/confirm-mapping` (KAN-84/KAN-217) — reenvía el mismo archivo más el mapeo
+ * final elegido por el agente. Responde igual que `uploadExcelFile` en éxito (nunca vuelve a
+ * pedir confirmación: si el mapeo confirmado no resuelve los campos requeridos de alguna hoja,
+ * el backend responde 400, que `apiClient` ya convierte en `ApiError`).
+ */
+export function confirmColumnMapping(
+  file: File,
+  mappings: SheetMappingSelections,
+): Promise<UploadSuccessResponse> {
+  const formData = new FormData();
+  formData.append("excelFile", file);
+  formData.append("mappings", JSON.stringify(mappings));
+  return apiClient<UploadSuccessResponse>("/api/upload/confirm-mapping", {
     method: "POST",
     body: formData,
     timeoutMs: UPLOAD_TIMEOUT_MS,

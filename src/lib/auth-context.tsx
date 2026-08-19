@@ -22,66 +22,17 @@ import {
   type ReactNode,
 } from "react";
 import { apiClient } from "./api-client";
+import { consumeAuthCallbackHash } from "./auth-callback";
 import { onUnauthorized } from "./auth-events";
 
-const EXPIRED_LINK_MESSAGE =
-  "Tu link de acceso expiró o ya fue usado. Ingresá tu email para solicitar uno nuevo.";
-const INVALID_LINK_MESSAGE =
-  "El link de acceso no es válido. Ingresá tu email para solicitar uno nuevo.";
 const LOGOUT_SUCCESS_MESSAGE = "Cerraste sesión correctamente.";
 const SESSION_EXPIRED_MESSAGE = "Tu sesión expiró. Volvé a ingresar.";
 
-/**
- * Parsing del callback de magic-link (KAN-166), portado de
- * `handleMagicLinkCallback`/`handleAuthErrorCallback` del dashboard legacy
- * (`src/dashboard/app.js` líneas 403-457). El link de Supabase siempre
- * redirige a la raíz de `APP_URL` con el token/error en el hash — nunca a
- * un path aparte — así que esto vive en `AuthProvider` (se monta en la raíz
- * del árbol) en vez de en una ruta dedicada. Ver `docs/magic-link-flow-design.md`.
- */
-async function consumeAuthCallbackHash(
-  logTag = "[AUTH]",
-): Promise<{ exchanged: boolean; error: string | null }> {
-  if (typeof window === "undefined") return { exchanged: false, error: null };
-
-  const hash = window.location.hash;
-  if (!hash) return { exchanged: false, error: null };
-
-  const params = new URLSearchParams(hash.replace(/^#/, ""));
-
-  const errorCode = params.get("error_code");
-  if (hash.includes("error=")) {
-    window.history.replaceState(null, "", window.location.pathname);
-    console.warn(
-      `${logTag} El link de acceso llegó con un error:`,
-      errorCode,
-      params.get("error_description"),
-    );
-    return {
-      exchanged: false,
-      error: errorCode === "otp_expired" ? EXPIRED_LINK_MESSAGE : INVALID_LINK_MESSAGE,
-    };
-  }
-
-  const accessToken = params.get("access_token");
-  if (!hash.includes("access_token=") || !accessToken) {
-    return { exchanged: false, error: null };
-  }
-
-  window.history.replaceState(null, "", window.location.pathname);
-  console.log(`${logTag} Magic link callback detectado, intercambiando token...`);
-  try {
-    await apiClient("/api/auth/exchange-token", {
-      method: "POST",
-      body: JSON.stringify({ access_token: accessToken }),
-    });
-    console.log(`${logTag} Token intercambiado correctamente, sesión iniciada.`);
-    return { exchanged: true, error: null };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Error al intercambiar el token.";
-    console.error(`${logTag} Fallo al intercambiar token:`, message);
-    return { exchanged: false, error: message };
-  }
+function exchangeTenantToken(accessToken: string): Promise<unknown> {
+  return apiClient("/api/auth/exchange-token", {
+    method: "POST",
+    body: JSON.stringify({ access_token: accessToken }),
+  });
 }
 
 export type AuthStatus = "loading" | "authenticated" | "unauthenticated";
@@ -217,7 +168,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     void (async () => {
-      const callbackResult = await consumeAuthCallbackHash();
+      const callbackResult = await consumeAuthCallbackHash(exchangeTenantToken);
       if (callbackResult.error) {
         setAuthError(callbackResult.error);
       }

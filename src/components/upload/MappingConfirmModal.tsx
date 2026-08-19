@@ -126,8 +126,8 @@ export function MappingConfirmModal({
             Confirmar mapeo de columnas
           </h3>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            No pudimos reconocer con confianza todas las columnas de tu Excel. Elegí manualmente
-            qué columna corresponde a cada campo.
+            No pudimos reconocer con confianza todas las columnas de tu Excel. Elegí manualmente qué
+            columna corresponde a cada campo.
           </p>
         </div>
 
@@ -163,12 +163,16 @@ export function MappingConfirmModal({
                         }
                       >
                         {FIELD_LABELS[field]}
-                        {isRequired ? <span className="text-red-600 dark:text-red-400"> *</span> : null}
+                        {isRequired ? (
+                          <span className="text-red-600 dark:text-red-400"> *</span>
+                        ) : null}
                       </span>
                       <select
                         value={value ?? ""}
                         disabled={!fieldsLoaded || confirming}
-                        onChange={(event) => handleSelect(sheet.sheetName, field, event.target.value)}
+                        onChange={(event) =>
+                          handleSelect(sheet.sheetName, field, event.target.value)
+                        }
                         className={`rounded-md border bg-white px-2 py-1 text-sm text-black outline-none disabled:opacity-60 dark:bg-zinc-900 dark:text-zinc-50 ${
                           isUnresolvedRequired
                             ? "border-red-400 dark:border-red-600"

@@ -79,7 +79,10 @@ export interface Debounced<T extends (...args: never[]) => void> {
   cancel: () => void;
 }
 
-export function debounce<T extends (...args: never[]) => void>(fn: T, delayMs: number): Debounced<T> {
+export function debounce<T extends (...args: never[]) => void>(
+  fn: T,
+  delayMs: number,
+): Debounced<T> {
   let timer: ReturnType<typeof setTimeout> | null = null;
 
   const debounced = ((...args: Parameters<T>) => {

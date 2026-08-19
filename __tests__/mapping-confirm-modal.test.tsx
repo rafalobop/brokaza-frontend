@@ -123,13 +123,11 @@ describe("MappingConfirmModal (KAN-217)", () => {
     );
 
     expect(
-      await screen.findByText(
-        "El mapeo confirmado no resuelve los campos requeridos: precio",
-      ),
+      await screen.findByText("El mapeo confirmado no resuelve los campos requeridos: precio"),
     ).toBeInTheDocument();
   });
 
-  it("\"Cancelar\" llama a onCancel", async () => {
+  it('"Cancelar" llama a onCancel', async () => {
     const onCancel = jest.fn();
     render(
       <MappingConfirmModal

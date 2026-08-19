@@ -69,7 +69,13 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
   it("abre un socket a /ws al empezar a subir y lo cierra al terminar", async () => {
     global.fetch = jest
       .fn()
-      .mockResolvedValue(mockResponse({ ok: true, status: 200, body: { success: true, count: 1, priceParseErrors: [] } }));
+      .mockResolvedValue(
+        mockResponse({
+          ok: true,
+          status: 200,
+          body: { success: true, count: 1, priceParseErrors: [] },
+        }),
+      );
 
     const { result } = renderHook(() => useUpload());
 
@@ -106,7 +112,9 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     const socket = mockSockets[0];
 
     act(() => {
-      socket.emit("message", { data: JSON.stringify({ type: "upload_status", stage: "parsing_headers" }) });
+      socket.emit("message", {
+        data: JSON.stringify({ type: "upload_status", stage: "parsing_headers" }),
+      });
     });
     act(() => {
       jest.advanceTimersByTime(150);
@@ -114,14 +122,22 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     expect(result.current.stage).toBe("parsing_headers");
 
     act(() => {
-      socket.emit("message", { data: JSON.stringify({ type: "upload_status", stage: "syncing_database" }) });
+      socket.emit("message", {
+        data: JSON.stringify({ type: "upload_status", stage: "syncing_database" }),
+      });
     });
     act(() => {
       jest.advanceTimersByTime(150);
     });
     expect(result.current.stage).toBe("syncing_database");
 
-    resolveFetch(mockResponse({ ok: true, status: 200, body: { success: true, count: 1, priceParseErrors: [] } }));
+    resolveFetch(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { success: true, count: 1, priceParseErrors: [] },
+      }),
+    );
     await waitFor(() => expect(result.current.status).toBe("success"));
   });
 
@@ -140,9 +156,15 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     const socket = mockSockets[0];
 
     act(() => {
-      socket.emit("message", { data: JSON.stringify({ type: "upload_status", stage: "parsing_headers" }) });
-      socket.emit("message", { data: JSON.stringify({ type: "upload_status", stage: "resolving_column_mapping" }) });
-      socket.emit("message", { data: JSON.stringify({ type: "upload_status", stage: "parsing_rows" }) });
+      socket.emit("message", {
+        data: JSON.stringify({ type: "upload_status", stage: "parsing_headers" }),
+      });
+      socket.emit("message", {
+        data: JSON.stringify({ type: "upload_status", stage: "resolving_column_mapping" }),
+      });
+      socket.emit("message", {
+        data: JSON.stringify({ type: "upload_status", stage: "parsing_rows" }),
+      });
     });
 
     // Antes de que venza el debounce, `stage` todavía no se actualizó ninguna vez.
@@ -153,14 +175,26 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     });
     expect(result.current.stage).toBe("parsing_rows");
 
-    resolveFetch(mockResponse({ ok: true, status: 200, body: { success: true, count: 1, priceParseErrors: [] } }));
+    resolveFetch(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { success: true, count: 1, priceParseErrors: [] },
+      }),
+    );
     await waitFor(() => expect(result.current.status).toBe("success"));
   });
 
   it("ignora mensajes que no son upload_status", async () => {
     global.fetch = jest
       .fn()
-      .mockResolvedValue(mockResponse({ ok: true, status: 200, body: { success: true, count: 1, priceParseErrors: [] } }));
+      .mockResolvedValue(
+        mockResponse({
+          ok: true,
+          status: 200,
+          body: { success: true, count: 1, priceParseErrors: [] },
+        }),
+      );
 
     const { result } = renderHook(() => useUpload());
     act(() => {
@@ -179,7 +213,13 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
   it("reset() vuelve stage a null", async () => {
     global.fetch = jest
       .fn()
-      .mockResolvedValue(mockResponse({ ok: true, status: 200, body: { success: true, count: 1, priceParseErrors: [] } }));
+      .mockResolvedValue(
+        mockResponse({
+          ok: true,
+          status: 200,
+          body: { success: true, count: 1, priceParseErrors: [] },
+        }),
+      );
 
     const { result } = renderHook(() => useUpload());
     act(() => {

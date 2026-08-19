@@ -54,7 +54,11 @@ describe("useUpload#confirmMapping (KAN-217)", () => {
     const result = await uploadIntoNeedsMapping(fetchMock);
 
     fetchMock.mockResolvedValueOnce(
-      mockResponse({ ok: true, status: 200, body: { success: true, count: 5, priceParseErrors: [] } }),
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { success: true, count: 5, priceParseErrors: [] },
+      }),
     );
 
     await act(async () => {
@@ -83,7 +87,7 @@ describe("useUpload#confirmMapping (KAN-217)", () => {
       mockResponse({
         ok: false,
         status: 400,
-        body: { error: 'El mapeo confirmado no resuelve los campos requeridos: precio' },
+        body: { error: "El mapeo confirmado no resuelve los campos requeridos: precio" },
       }),
     );
 

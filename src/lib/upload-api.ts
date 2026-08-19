@@ -70,7 +70,10 @@ export function uploadExcelFile(file: File): Promise<UploadResponse> {
 }
 
 /** Mapeo de columnas confirmado/corregido por el agente, una entrada por hoja pendiente (KAN-217). */
-export type SheetMappingSelections = Record<string, Partial<Record<ExcelMappingField, string | null>>>;
+export type SheetMappingSelections = Record<
+  string,
+  Partial<Record<ExcelMappingField, string | null>>
+>;
 
 /**
  * `POST /api/upload/confirm-mapping` (KAN-84/KAN-217) — reenvía el mismo archivo más el mapeo

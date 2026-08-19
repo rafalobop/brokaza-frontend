@@ -109,16 +109,20 @@ describe("UploadDropzone (KAN-216)", () => {
 
     fireEvent.change(input, { target: { files: [new File(["x"], "cartera.csv")] } });
 
-    expect(
-      screen.getByText("Solo se permiten archivos Excel (.xlsx)."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Solo se permiten archivos Excel (.xlsx).")).toBeInTheDocument();
     expect(global.fetch).not.toHaveBeenCalled();
   });
 
   it("muestra el error del backend si la subida falla", async () => {
-    global.fetch = jest.fn().mockResolvedValue(
-      mockResponse({ ok: false, status: 500, body: { error: "Error interno al procesar el archivo." } }),
-    );
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue(
+        mockResponse({
+          ok: false,
+          status: 500,
+          body: { error: "Error interno al procesar el archivo." },
+        }),
+      );
 
     render(<UploadDropzone />);
     const input = screen.getByTestId("upload-file-input") as HTMLInputElement;
@@ -162,7 +166,7 @@ describe("UploadDropzone (KAN-216)", () => {
     ).toBeInTheDocument();
   });
 
-  it("\"Subir otro archivo\" reinicia el estado a idle tras un resultado", async () => {
+  it('"Subir otro archivo" reinicia el estado a idle tras un resultado', async () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
@@ -190,7 +194,13 @@ describe("UploadDropzone (KAN-216)", () => {
       headerSignature: "costo|dirección",
       source: "heuristic" as const,
       fields: [
-        { field: "domicilio", header: "Dirección", confidence: 1, ambiguous: false, candidates: [] },
+        {
+          field: "domicilio",
+          header: "Dirección",
+          confidence: 1,
+          ambiguous: false,
+          candidates: [],
+        },
         { field: "precio", header: null, confidence: 0, ambiguous: false, candidates: [] },
       ],
       unresolvedRequiredFields: ["precio"],
@@ -202,7 +212,7 @@ describe("UploadDropzone (KAN-216)", () => {
       required: ["domicilio", "precio"],
     };
 
-    it("\"Revisar mapeo\" abre el modal; no se abre solo", async () => {
+    it('"Revisar mapeo" abre el modal; no se abre solo', async () => {
       global.fetch = jest.fn().mockResolvedValueOnce(
         mockResponse({
           ok: true,
@@ -254,7 +264,11 @@ describe("UploadDropzone (KAN-216)", () => {
       fireEvent.change(selects[1], { target: { value: "Costo" } });
 
       fetchMock.mockResolvedValueOnce(
-        mockResponse({ ok: true, status: 200, body: { success: true, count: 4, priceParseErrors: [] } }),
+        mockResponse({
+          ok: true,
+          status: 200,
+          body: { success: true, count: 4, priceParseErrors: [] },
+        }),
       );
       fireEvent.click(screen.getByRole("button", { name: "Confirmar y cargar" }));
 

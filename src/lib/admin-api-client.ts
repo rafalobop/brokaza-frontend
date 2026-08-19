@@ -9,9 +9,6 @@
 
 import { apiClient, type ApiClientOptions } from "./api-client";
 
-export function adminApiClient<T = unknown>(
-  path: string,
-  options?: ApiClientOptions,
-): Promise<T> {
+export function adminApiClient<T = unknown>(path: string, options?: ApiClientOptions): Promise<T> {
   return apiClient<T>(`/admin${path}`, options);
 }

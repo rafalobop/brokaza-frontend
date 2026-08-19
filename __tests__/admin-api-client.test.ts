@@ -18,15 +18,14 @@ describe("adminApiClient (KAN-239)", () => {
   it("antepone /admin al path antes de delegar en apiClient", async () => {
     const fetchMock = jest
       .fn()
-      .mockResolvedValue(mockResponse({ ok: true, status: 200, body: JSON.stringify({ ok: true }) }));
+      .mockResolvedValue(
+        mockResponse({ ok: true, status: 200, body: JSON.stringify({ ok: true }) }),
+      );
     global.fetch = fetchMock;
 
     await adminApiClient("/api/auth/session");
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/admin/api/auth/session",
-      expect.objectContaining({}),
-    );
+    expect(fetchMock).toHaveBeenCalledWith("/admin/api/auth/session", expect.objectContaining({}));
   });
 
   it("propaga el body parseado (misma semántica que apiClient)", async () => {

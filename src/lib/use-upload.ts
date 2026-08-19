@@ -102,7 +102,10 @@ export function useUpload(): UseUploadResult {
   const openStatusSocket = useCallback(() => {
     if (typeof window === "undefined") return;
 
-    const debouncedSetStage = debounce((nextStage: UploadStage) => setStage(nextStage), UPLOAD_STAGE_DEBOUNCE_MS);
+    const debouncedSetStage = debounce(
+      (nextStage: UploadStage) => setStage(nextStage),
+      UPLOAD_STAGE_DEBOUNCE_MS,
+    );
     debouncedSetStageRef.current = debouncedSetStage;
 
     const socket = new WebSocket(buildMatchCountSocketUrl(window.location));

@@ -39,10 +39,7 @@ describe("AdminAuthProvider / useAdminAuth (KAN-239)", () => {
 
     await waitFor(() => expect(result.current.status).toBe("authenticated"));
     expect(result.current.admin).toEqual({ email: "admin@brokaza.com" });
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/admin/api/auth/session",
-      expect.objectContaining({}),
-    );
+    expect(fetchMock).toHaveBeenCalledWith("/admin/api/auth/session", expect.objectContaining({}));
   });
 
   it("bootstrap: sin sesión -> status 'unauthenticated'", async () => {

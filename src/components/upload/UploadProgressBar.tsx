@@ -6,7 +6,11 @@
  * `stage` ya resuelto por el hook y no sabe nada de sockets.
  */
 
-import { UPLOAD_STAGE_LABELS, uploadStageProgressPercent, type UploadStage } from "@/lib/upload-progress";
+import {
+  UPLOAD_STAGE_LABELS,
+  uploadStageProgressPercent,
+  type UploadStage,
+} from "@/lib/upload-progress";
 
 export interface UploadProgressBarProps {
   stage: UploadStage | null;

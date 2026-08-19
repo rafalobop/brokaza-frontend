@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Hook `useUpload` (KAN-216/217) — estado de la subida de un Excel de
+ * Hook `useUpload` (KAN-216/217/218) — estado de la subida de un Excel de
  * cartera: `idle` -> `uploading` -> `success` | `error` | `needs-mapping`.
  *
  * Validación de extensión client-side (mismo criterio que el legacy,
@@ -19,10 +19,22 @@
  * NO saca al usuario de `needs-mapping` — se queda en el modal con
  * `confirmError` seteado, para que pueda corregir la selección sin perder el
  * archivo ni tener que volver a elegirlo.
+ *
+ * `stage` (KAN-218) es puramente decorativo: mientras `upload()`/`confirmMapping()`
+ * están en curso, abre una conexión WS a `/ws` (mismo endpoint que
+ * `useRealtimeMatches`, KAN-187/KAN-88 — se reusa `buildMatchCountSocketUrl`,
+ * que no tiene nada específico de matches pese al nombre, solo arma la URL)
+ * y escucha los eventos `upload_status` que emite el backend
+ * (`broadcastUploadStatus`, KAN-137) durante el pipeline real de
+ * `POST /api/upload`/`confirm-mapping`. El resultado final (éxito/error/
+ * needs-mapping) sigue viniendo 100% de la respuesta HTTP, nunca del WS — si
+ * el socket no conecta o se cae, la subida igual termina normalmente, solo
+ * sin barra de progreso intermedia.
  */
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "./api-client";
+import { buildMatchCountSocketUrl } from "./realtime-matches";
 import {
   confirmColumnMapping,
   uploadExcelFile,
@@ -30,6 +42,13 @@ import {
   type SheetMappingSelections,
   type UploadSuccessResponse,
 } from "./upload-api";
+import {
+  debounce,
+  parseUploadStatusMessage,
+  UPLOAD_STAGE_DEBOUNCE_MS,
+  type Debounced,
+  type UploadStage,
+} from "./upload-progress";
 
 const ALLOWED_EXTENSION = ".xlsx";
 
@@ -42,6 +61,7 @@ export interface UseUploadResult {
   pendingSheets: PendingMappingSheet[];
   confirming: boolean;
   confirmError: string | null;
+  stage: UploadStage | null;
   upload: (file: File) => Promise<void>;
   confirmMapping: (mappings: SheetMappingSelections) => Promise<void>;
   reset: () => void;
@@ -62,41 +82,87 @@ export function useUpload(): UseUploadResult {
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [confirmError, setConfirmError] = useState<string | null>(null);
+  const [stage, setStage] = useState<UploadStage | null>(null);
 
-  const upload = useCallback(async (file: File) => {
-    const validationError = validateExtension(file);
-    if (validationError) {
-      setStatus("error");
-      setError(validationError);
+  const socketRef = useRef<WebSocket | null>(null);
+  const messageHandlerRef = useRef<((event: MessageEvent) => void) | null>(null);
+  const debouncedSetStageRef = useRef<Debounced<(stage: UploadStage) => void> | null>(null);
+
+  const closeStatusSocket = useCallback(() => {
+    debouncedSetStageRef.current?.cancel();
+    debouncedSetStageRef.current = null;
+    if (socketRef.current && messageHandlerRef.current) {
+      socketRef.current.removeEventListener("message", messageHandlerRef.current);
+    }
+    messageHandlerRef.current = null;
+    socketRef.current?.close();
+    socketRef.current = null;
+  }, []);
+
+  const openStatusSocket = useCallback(() => {
+    if (typeof window === "undefined") return;
+
+    const debouncedSetStage = debounce((nextStage: UploadStage) => setStage(nextStage), UPLOAD_STAGE_DEBOUNCE_MS);
+    debouncedSetStageRef.current = debouncedSetStage;
+
+    const socket = new WebSocket(buildMatchCountSocketUrl(window.location));
+    const handleMessage = (event: MessageEvent) => {
+      const nextStage = parseUploadStatusMessage(event.data);
+      if (nextStage) debouncedSetStage(nextStage);
+    };
+    socket.addEventListener("message", handleMessage);
+    messageHandlerRef.current = handleMessage;
+    socketRef.current = socket;
+  }, []);
+
+  // Cierre de red de seguridad si el componente se desmonta con una subida en curso.
+  useEffect(() => {
+    return () => {
+      closeStatusSocket();
+    };
+  }, [closeStatusSocket]);
+
+  const upload = useCallback(
+    async (file: File) => {
+      const validationError = validateExtension(file);
+      if (validationError) {
+        setStatus("error");
+        setError(validationError);
+        setResult(null);
+        setPendingSheets([]);
+        setPendingFile(null);
+        return;
+      }
+
+      setStatus("uploading");
+      setError(null);
       setResult(null);
       setPendingSheets([]);
       setPendingFile(null);
-      return;
-    }
+      setConfirmError(null);
+      setStage(null);
+      openStatusSocket();
 
-    setStatus("uploading");
-    setError(null);
-    setResult(null);
-    setPendingSheets([]);
-    setPendingFile(null);
-    setConfirmError(null);
-
-    try {
-      const res = await uploadExcelFile(file);
-      if ("requiresMappingConfirmation" in res) {
-        setStatus("needs-mapping");
-        setPendingSheets(res.sheets);
-        setPendingFile(file);
-        return;
+      try {
+        const res = await uploadExcelFile(file);
+        if ("requiresMappingConfirmation" in res) {
+          setStatus("needs-mapping");
+          setPendingSheets(res.sheets);
+          setPendingFile(file);
+          return;
+        }
+        setStatus("success");
+        setResult(res);
+      } catch (err) {
+        const message = err instanceof ApiError ? err.message : "Error al subir el archivo.";
+        setStatus("error");
+        setError(message);
+      } finally {
+        closeStatusSocket();
       }
-      setStatus("success");
-      setResult(res);
-    } catch (err) {
-      const message = err instanceof ApiError ? err.message : "Error al subir el archivo.";
-      setStatus("error");
-      setError(message);
-    }
-  }, []);
+    },
+    [openStatusSocket, closeStatusSocket],
+  );
 
   const confirmMapping = useCallback(
     async (mappings: SheetMappingSelections) => {
@@ -104,6 +170,9 @@ export function useUpload(): UseUploadResult {
 
       setConfirming(true);
       setConfirmError(null);
+      setStage(null);
+      openStatusSocket();
+
       try {
         const res = await confirmColumnMapping(pendingFile, mappings);
         setStatus("success");
@@ -116,12 +185,14 @@ export function useUpload(): UseUploadResult {
         setConfirmError(message);
       } finally {
         setConfirming(false);
+        closeStatusSocket();
       }
     },
-    [pendingFile],
+    [pendingFile, openStatusSocket, closeStatusSocket],
   );
 
   const reset = useCallback(() => {
+    closeStatusSocket();
     setStatus("idle");
     setError(null);
     setResult(null);
@@ -129,7 +200,8 @@ export function useUpload(): UseUploadResult {
     setPendingFile(null);
     setConfirming(false);
     setConfirmError(null);
-  }, []);
+    setStage(null);
+  }, [closeStatusSocket]);
 
   return {
     status,
@@ -138,6 +210,7 @@ export function useUpload(): UseUploadResult {
     pendingSheets,
     confirming,
     confirmError,
+    stage,
     upload,
     confirmMapping,
     reset,

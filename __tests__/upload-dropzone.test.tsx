@@ -60,6 +60,31 @@ describe("UploadDropzone (KAN-216)", () => {
     expect(init.method).toBe("POST");
   });
 
+  it("muestra el aviso de precios no reconocidos cuando priceParseErrors no está vacío (KAN-219, §8)", async () => {
+    global.fetch = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: {
+          success: true,
+          count: 10,
+          priceParseErrors: [{ address: "Calle Falsa 123", rawValue: "a convenir" }],
+        },
+      }),
+    );
+
+    render(<UploadDropzone />);
+    fireEvent.drop(screen.getByTestId("upload-dropzone"), {
+      dataTransfer: { files: [excelFile()] },
+    });
+
+    expect(
+      await screen.findByText(
+        "Se cargaron 10 propiedades. 1 con precio no reconocido (se cargaron sin precio).",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("elegir un archivo por el input sube el archivo (change event)", async () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({

@@ -1,11 +1,12 @@
 "use client";
 
 import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
+import { PropertyList } from "@/components/admin/PropertyList";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 
 /**
- * `/admin` (KAN-239) — solo login/sesión/logout. Las vistas reales (métricas, listado de
- * propiedades, corrección de coordenadas) son KAN-240/241/242, fuera de alcance de este ticket.
+ * `/admin` (KAN-239/240) — login/sesión/logout (KAN-239) + listado de propiedades (KAN-240).
+ * Métricas y corrección de coordenadas son KAN-241/242, fuera de alcance todavía.
  */
 export default function AdminPage() {
   const { status, admin, logout, loggingOut } = useAdminAuth();
@@ -42,6 +43,7 @@ export default function AdminPage() {
       >
         {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
       </button>
+      <PropertyList />
     </div>
   );
 }

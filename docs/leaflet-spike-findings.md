@@ -29,12 +29,12 @@ correcto — el mapa real se hidrata client-side) y sin errores de servidor.
 
 Primer intento: la página del spike importaba `TUCUMAN_DEFAULT` directo desde `LeafletMap.tsx`
 (un solo símbolo). Resultado: **500, `ReferenceError: window is not defined`**, a pesar de que el
-*componente* se cargaba con `dynamic(ssr:false)`.
+_componente_ se cargaba con `dynamic(ssr:false)`.
 
-Causa real: un `import` estático de *cualquier* símbolo de un módulo arrastra el módulo
-*completo* al bundle — incluido el código de nivel superior de `leaflet` (que toca `window` al
+Causa real: un `import` estático de _cualquier_ símbolo de un módulo arrastra el módulo
+_completo_ al bundle — incluido el código de nivel superior de `leaflet` (que toca `window` al
 evaluarse) y el fix de íconos default (`L.Icon.Default.mergeOptions(...)`, también a nivel de
-módulo). `dynamic(ssr:false)` protege la carga del *componente React*, no evita que otro import
+módulo). `dynamic(ssr:false)` protege la carga del _componente React_, no evita que otro import
 del mismo archivo cargue sus dependencias.
 
 **Decisión:** separar cualquier constante/util que no dependa de Leaflet a un módulo aparte sin
@@ -82,12 +82,12 @@ runtime).
 
 ## 3. Riesgos identificados
 
-| Riesgo | Severidad | Mitigación |
-|---|---|---|
-| Cualquier import directo de `LeafletMap.tsx` (no vía `LeafletMapDynamic`) rompe SSR | Alta si se olvida | Documentado en el comment del propio archivo; KAN-242 debe importar siempre `LeafletMapDynamic` |
-| Íconos apuntando a `unpkg.com` (CDN externo) en vez de vendorizados | Media (dependencia de red en runtime, el legacy la evitaba) | Decisión a tomar en KAN-242: vendorizar los 3 PNG en `public/` como hacía el legacy, o aceptar la dependencia de CDN |
-| Bundle size de `leaflet` (~150KB min+gz aprox.) | Baja | Ya mitigado por el propio `dynamic(ssr:false)` — no entra en el bundle inicial, solo se carga cuando `/admin` renderiza un mapa |
-| Licencia | Ninguna | `leaflet` y `react-leaflet` son BSD-2-Clause, sin restricciones para uso comercial |
+| Riesgo                                                                              | Severidad                                                   | Mitigación                                                                                                                      |
+| ----------------------------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Cualquier import directo de `LeafletMap.tsx` (no vía `LeafletMapDynamic`) rompe SSR | Alta si se olvida                                           | Documentado en el comment del propio archivo; KAN-242 debe importar siempre `LeafletMapDynamic`                                 |
+| Íconos apuntando a `unpkg.com` (CDN externo) en vez de vendorizados                 | Media (dependencia de red en runtime, el legacy la evitaba) | Decisión a tomar en KAN-242: vendorizar los 3 PNG en `public/` como hacía el legacy, o aceptar la dependencia de CDN            |
+| Bundle size de `leaflet` (~150KB min+gz aprox.)                                     | Baja                                                        | Ya mitigado por el propio `dynamic(ssr:false)` — no entra en el bundle inicial, solo se carga cuando `/admin` renderiza un mapa |
+| Licencia                                                                            | Ninguna                                                     | `leaflet` y `react-leaflet` son BSD-2-Clause, sin restricciones para uso comercial                                              |
 
 ## 4. Recomendación
 

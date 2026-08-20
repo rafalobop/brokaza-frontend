@@ -114,15 +114,13 @@ describe("UploadDropzone (KAN-216)", () => {
   });
 
   it("muestra el error del backend si la subida falla", async () => {
-    global.fetch = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({
-          ok: false,
-          status: 500,
-          body: { error: "Error interno al procesar el archivo." },
-        }),
-      );
+    global.fetch = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: false,
+        status: 500,
+        body: { error: "Error interno al procesar el archivo." },
+      }),
+    );
 
     render(<UploadDropzone />);
     const input = screen.getByTestId("upload-file-input") as HTMLInputElement;

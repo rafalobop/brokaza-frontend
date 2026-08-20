@@ -67,15 +67,13 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
   });
 
   it("abre un socket a /ws al empezar a subir y lo cierra al terminar", async () => {
-    global.fetch = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({
-          ok: true,
-          status: 200,
-          body: { success: true, count: 1, priceParseErrors: [] },
-        }),
-      );
+    global.fetch = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { success: true, count: 1, priceParseErrors: [] },
+      }),
+    );
 
     const { result } = renderHook(() => useUpload());
 
@@ -186,15 +184,13 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
   });
 
   it("ignora mensajes que no son upload_status", async () => {
-    global.fetch = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({
-          ok: true,
-          status: 200,
-          body: { success: true, count: 1, priceParseErrors: [] },
-        }),
-      );
+    global.fetch = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { success: true, count: 1, priceParseErrors: [] },
+      }),
+    );
 
     const { result } = renderHook(() => useUpload());
     act(() => {
@@ -211,15 +207,13 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
   });
 
   it("reset() vuelve stage a null", async () => {
-    global.fetch = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({
-          ok: true,
-          status: 200,
-          body: { success: true, count: 1, priceParseErrors: [] },
-        }),
-      );
+    global.fetch = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { success: true, count: 1, priceParseErrors: [] },
+      }),
+    );
 
     const { result } = renderHook(() => useUpload());
     act(() => {

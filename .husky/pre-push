@@ -1,15 +1,9 @@
-echo "pre-push: format"
-pnpm run format
-
-if ! git diff --quiet; then
-  echo ""
-  echo "prettier reformateo archivos. Revisa, agrega y commitea los cambios antes de pushear:"
-  git diff --name-only
-  exit 1
-fi
-
 echo "pre-push: format:check"
-pnpm run format:check || exit 1
+pnpm run format:check || {
+  echo ""
+  echo "Formato invalido. Corre 'pnpm run format', revisa y commitea los cambios, y volve a pushear."
+  exit 1
+}
 
 echo "pre-push: lint"
 pnpm run lint || exit 1

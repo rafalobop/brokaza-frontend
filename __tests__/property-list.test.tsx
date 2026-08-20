@@ -64,15 +64,13 @@ describe("PropertyList (KAN-240)", () => {
   });
 
   it("sin resultados muestra el mensaje vacío", async () => {
-    global.fetch = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({
-          ok: true,
-          status: 200,
-          body: { properties: [], page: 1, pageSize: 50, total: 0 },
-        }),
-      );
+    global.fetch = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { properties: [], page: 1, pageSize: 50, total: 0 },
+      }),
+    );
 
     render(<PropertyList />);
 
@@ -97,15 +95,13 @@ describe("PropertyList (KAN-240)", () => {
 
   it("escribir en el buscador termina pegando a /admin/api/properties con search", async () => {
     jest.useFakeTimers();
-    const fetchMock = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({
-          ok: true,
-          status: 200,
-          body: { properties: [], page: 1, pageSize: 50, total: 0 },
-        }),
-      );
+    const fetchMock = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { properties: [], page: 1, pageSize: 50, total: 0 },
+      }),
+    );
     global.fetch = fetchMock;
 
     render(<PropertyList />);

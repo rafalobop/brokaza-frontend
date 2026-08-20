@@ -63,15 +63,13 @@ describe("useProperties (KAN-240)", () => {
   });
 
   it("setSearch debounce (350ms), resetea a página 1 y espera antes de pegarle a la red", async () => {
-    const fetchMock = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({
-          ok: true,
-          status: 200,
-          body: { properties: [], page: 1, pageSize: 50, total: 0 },
-        }),
-      );
+    const fetchMock = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { properties: [], page: 1, pageSize: 50, total: 0 },
+      }),
+    );
     global.fetch = fetchMock;
 
     const { result } = renderHook(() => useProperties());
@@ -97,15 +95,13 @@ describe("useProperties (KAN-240)", () => {
   });
 
   it("teclas rápidas coalescen en una sola request con el último término", async () => {
-    const fetchMock = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({
-          ok: true,
-          status: 200,
-          body: { properties: [], page: 1, pageSize: 50, total: 0 },
-        }),
-      );
+    const fetchMock = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { properties: [], page: 1, pageSize: 50, total: 0 },
+      }),
+    );
     global.fetch = fetchMock;
 
     const { result } = renderHook(() => useProperties());
@@ -129,15 +125,13 @@ describe("useProperties (KAN-240)", () => {
   });
 
   it("nextPage/prevPage respetan los límites (no pega a la red fuera de rango)", async () => {
-    const fetchMock = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({
-          ok: true,
-          status: 200,
-          body: { properties: [], page: 1, pageSize: 50, total: 10 },
-        }),
-      );
+    const fetchMock = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { properties: [], page: 1, pageSize: 50, total: 10 },
+      }),
+    );
     global.fetch = fetchMock;
 
     const { result } = renderHook(() => useProperties());
@@ -156,15 +150,13 @@ describe("useProperties (KAN-240)", () => {
   });
 
   it("nextPage pide la página siguiente cuando hay más de una", async () => {
-    const fetchMock = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({
-          ok: true,
-          status: 200,
-          body: { properties: [], page: 1, pageSize: 50, total: 120 },
-        }),
-      );
+    const fetchMock = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { properties: [], page: 1, pageSize: 50, total: 120 },
+      }),
+    );
     global.fetch = fetchMock;
 
     const { result } = renderHook(() => useProperties());

@@ -16,15 +16,13 @@ describe("getProperties (KAN-240)", () => {
   });
 
   it("pega a /admin/api/properties?page=1 por default", async () => {
-    const fetchMock = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({
-          ok: true,
-          status: 200,
-          body: { properties: [], page: 1, pageSize: 50, total: 0 },
-        }),
-      );
+    const fetchMock = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { properties: [], page: 1, pageSize: 50, total: 0 },
+      }),
+    );
     global.fetch = fetchMock;
 
     await getProperties();
@@ -36,15 +34,13 @@ describe("getProperties (KAN-240)", () => {
   });
 
   it("incluye search en el query string cuando se pasa", async () => {
-    const fetchMock = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({
-          ok: true,
-          status: 200,
-          body: { properties: [], page: 2, pageSize: 50, total: 0 },
-        }),
-      );
+    const fetchMock = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { properties: [], page: 2, pageSize: 50, total: 0 },
+      }),
+    );
     global.fetch = fetchMock;
 
     await getProperties({ page: 2, search: "Falsa 123" });
@@ -56,15 +52,13 @@ describe("getProperties (KAN-240)", () => {
   });
 
   it("no agrega search al query string cuando está vacío", async () => {
-    const fetchMock = jest
-      .fn()
-      .mockResolvedValue(
-        mockResponse({
-          ok: true,
-          status: 200,
-          body: { properties: [], page: 1, pageSize: 50, total: 0 },
-        }),
-      );
+    const fetchMock = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { properties: [], page: 1, pageSize: 50, total: 0 },
+      }),
+    );
     global.fetch = fetchMock;
 
     await getProperties({ search: "" });

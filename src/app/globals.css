@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/*
+ * KAN-256: el toggle de tema controla `data-theme` en <html> (ver theme.ts), no la
+ * preferencia de SO — así que el variant `dark:` de Tailwind deja de mirar
+ * `prefers-color-scheme` (su default) y pasa a mirar este atributo.
+ */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -12,11 +19,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {

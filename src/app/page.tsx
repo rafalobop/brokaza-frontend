@@ -3,6 +3,7 @@
 import { LoginForm } from "@/components/auth/LoginForm";
 import { MatchesDashboard } from "@/components/matches/MatchesDashboard";
 import { ProfileGate } from "@/components/profile/ProfileGate";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { UploadDropzone } from "@/components/upload/UploadDropzone";
 import { useAuth } from "@/lib/auth-context";
 
@@ -29,6 +30,9 @@ export default function Home() {
     <ProfileGate>
       <div className="flex flex-1 flex-col items-center bg-zinc-50 dark:bg-black">
         <div className="flex w-full max-w-3xl flex-col items-center gap-1 px-4 pt-6 text-center">
+          <div className="flex w-full justify-end">
+            <ThemeToggle />
+          </div>
           <h1 className="text-2xl font-semibold tracking-tight text-black dark:text-zinc-50">
             Brokaza
           </h1>

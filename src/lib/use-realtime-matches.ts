@@ -44,6 +44,7 @@ import {
   recordSocketOpen,
   resetWindow,
 } from "./dashboard-metrics";
+import { createActivityTracker } from "./user-activity";
 
 const METRICS_REPORT_INTERVAL_MS = 60000;
 
@@ -70,6 +71,7 @@ export function useRealtimeMatches({ enabled, onRefetch }: UseRealtimeMatchesOpt
     if (!enabled || typeof window === "undefined") return;
 
     const metricsState = createState();
+    const activityTracker = createActivityTracker();
     let socket: WebSocket | null = null;
     let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
     let reconnectDelayMs = DEFAULT_INITIAL_DELAY_MS;
@@ -148,6 +150,11 @@ export function useRealtimeMatches({ enabled, onRefetch }: UseRealtimeMatchesOpt
     }
 
     async function reportMetrics(): Promise<void> {
+      // Pestaña inactiva (backgrounded o sin interacción reciente): no se envía nada este
+      // tick, pero tampoco se resetea la ventana — lo acumulado se manda en el próximo tick
+      // en que el usuario vuelva a estar activo, no se pierde.
+      if (!activityTracker.isActive()) return;
+
       const snapshot = buildSnapshot(metricsState);
       resetWindow(metricsState);
       try {
@@ -180,6 +187,7 @@ export function useRealtimeMatches({ enabled, onRefetch }: UseRealtimeMatchesOpt
     return () => {
       clearInterval(pollInterval);
       clearInterval(metricsInterval);
+      activityTracker.destroy();
       disconnect();
     };
   }, [enabled]);

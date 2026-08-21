@@ -139,4 +139,35 @@ describe("useRealtimeMatches (KAN-187)", () => {
       expect.objectContaining({ method: "POST" }),
     );
   });
+
+  it("no reporta métricas si el usuario está inactivo (KAN-256)", async () => {
+    const isActive = jest.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+
+    renderHook(() => useRealtimeMatches({ enabled: true, onRefetch: jest.fn() }));
+
+    await jest.advanceTimersByTimeAsync(60000);
+
+    expect(global.fetch).not.toHaveBeenCalledWith("/api/dashboard-metrics", expect.anything());
+
+    isActive.mockRestore();
+  });
+
+  it("vuelve a reportar métricas (acumuladas) cuando el usuario vuelve a estar activo", async () => {
+    const visibility = jest.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+
+    renderHook(() => useRealtimeMatches({ enabled: true, onRefetch: jest.fn() }));
+
+    await jest.advanceTimersByTimeAsync(60000);
+    expect(global.fetch).not.toHaveBeenCalledWith("/api/dashboard-metrics", expect.anything());
+
+    visibility.mockReturnValue("visible");
+    await jest.advanceTimersByTimeAsync(60000);
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      "/api/dashboard-metrics",
+      expect.objectContaining({ method: "POST" }),
+    );
+
+    visibility.mockRestore();
+  });
 });

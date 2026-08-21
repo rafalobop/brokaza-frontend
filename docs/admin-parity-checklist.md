@@ -90,6 +90,21 @@ eslint .: sin errores
 
 ## 6. Sign-off
 
-_(Pendiente — a completar por `@qa` en la sesión `/qa KAN-243`, siguiendo el mismo criterio de
-verificación independiente que `matches-parity-checklist.md` §6 y `upload-parity-checklist.md`
-§6: re-correr la suite desde cero, no confiar en los números de arriba sin reproducirlos.)_
+**Firmado por QA — 2026-08-21.**
+
+Validación independiente en esta sesión (`/qa KAN-243`), sin confiar en los números reportados
+por `@frontend`: se re-corrió `npx jest`, `npx tsc --noEmit` y `npx eslint .` desde cero sobre
+`brokaza-frontend` y se confirmaron los mismos resultados de §4 (**42/42 test suites, 264/264
+tests, sin errores de tipo ni de lint**). Se verificó además, uno por uno, que los 9 archivos de
+test citados en §1/§2 existen y tienen exactamente los conteos declarados
+(`admin-auth-context`: 8, `admin-login-form`: 4, `admin-api-client`: 2, `use-properties`: 7,
+`property-list`: 9, `leaflet-map`: 3, `coordinates-api`: 2, `coordinates-modal`: 7,
+`zone-badge`: 4), y se leyó `matchouse/src/adminRoutes.ts` (branch `development`) directamente
+para confirmar que los 6 endpoints listados en §3 existen sin cambios.
+
+Las 4 historias del módulo Admin (KAN-239/240/241/242) quedan con **sign-off de paridad
+funcional aprobado** contra el legacy de `matchouse`, sujeto a las exclusiones explícitas de §5
+(sin E2E real contra un backend admin con sesión activa en este entorno, e interacción manual de
+drag/zoom/pan del mapa todavía pendiente). Esto habilita, en el futuro, el retiro del código
+legacy correspondiente en la Fase 5 (KAN-258) junto con Matches (KAN-192) y Upload (KAN-219) —
+sin que ese retiro sea parte de este ticket.

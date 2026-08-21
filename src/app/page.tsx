@@ -1,8 +1,10 @@
 "use client";
 
 import { LoginForm } from "@/components/auth/LoginForm";
+import { IosInstallBanner } from "@/components/IosInstallBanner";
 import { MatchesDashboard } from "@/components/matches/MatchesDashboard";
 import { ProfileGate } from "@/components/profile/ProfileGate";
+import { PushNotificationButton } from "@/components/PushNotificationButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { UploadDropzone } from "@/components/upload/UploadDropzone";
 import { useAuth } from "@/lib/auth-context";
@@ -47,6 +49,12 @@ export default function Home() {
           >
             {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
           </button>
+          <div className="pt-2">
+            <PushNotificationButton enabled={status === "authenticated"} />
+          </div>
+        </div>
+        <div className="w-full max-w-3xl px-4 pt-4">
+          <IosInstallBanner />
         </div>
         <div className="w-full max-w-3xl px-4 pt-6">
           <UploadDropzone />

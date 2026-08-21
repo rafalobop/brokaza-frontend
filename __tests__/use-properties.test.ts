@@ -181,4 +181,36 @@ describe("useProperties (KAN-240)", () => {
       expect.objectContaining({}),
     );
   });
+
+  it("refresh() vuelve a pedir la página/búsqueda actual (KAN-242, tras corregir coordenadas)", async () => {
+    const fetchMock = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { properties: [], page: 1, pageSize: 50, total: 3 },
+      }),
+    );
+    global.fetch = fetchMock;
+
+    const { result } = renderHook(() => useProperties());
+    await waitFor(() => expect(result.current.status).toBe("loaded"));
+
+    act(() => {
+      result.current.setSearch("Falsa");
+    });
+    act(() => {
+      jest.advanceTimersByTime(350);
+    });
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+
+    act(() => {
+      result.current.refresh();
+    });
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3));
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      "/admin/api/properties?page=1&search=Falsa",
+      expect.objectContaining({}),
+    );
+  });
 });

@@ -31,6 +31,8 @@ export interface UsePropertiesResult {
   setSearch: (value: string) => void;
   nextPage: () => void;
   prevPage: () => void;
+  /** Vuelve a pedir la página/búsqueda actual (KAN-242, tras corregir coordenadas). */
+  refresh: () => void;
 }
 
 export function useProperties(): UsePropertiesResult {
@@ -109,6 +111,10 @@ export function useProperties(): UsePropertiesResult {
     void fetchProperties(page - 1, search);
   }, [page, search, fetchProperties]);
 
+  const refresh = useCallback(() => {
+    void fetchProperties(page, search);
+  }, [page, search, fetchProperties]);
+
   const totalPages = useMemo(() => Math.max(1, Math.ceil(total / pageSize)), [total, pageSize]);
 
   return {
@@ -123,5 +129,6 @@ export function useProperties(): UsePropertiesResult {
     setSearch,
     nextPage,
     prevPage,
+    refresh,
   };
 }

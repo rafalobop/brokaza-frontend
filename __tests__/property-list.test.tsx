@@ -135,4 +135,80 @@ describe("PropertyList (KAN-240)", () => {
 
     expect(await screen.findByText("Error interno.")).toBeInTheDocument();
   });
+
+  it("'Corregir' abre el modal de coordenadas para esa propiedad (KAN-242)", async () => {
+    global.fetch = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { properties: [SAMPLE_PROPERTY], page: 1, pageSize: 50, total: 1 },
+      }),
+    );
+
+    render(<PropertyList />);
+    await screen.findByText("Calle Falsa 123");
+
+    expect(screen.queryByText("Corregir coordenadas")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Corregir" }));
+
+    expect(await screen.findByText("Corregir coordenadas")).toBeInTheDocument();
+    expect(screen.getAllByText("Calle Falsa 123").length).toBeGreaterThan(0);
+  });
+
+  it("guardar coordenadas en el modal refresca el listado y lo cierra", async () => {
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+    fetchMock.mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { properties: [SAMPLE_PROPERTY], page: 1, pageSize: 50, total: 1 },
+      }),
+    );
+
+    render(<PropertyList />);
+    await screen.findByText("Calle Falsa 123");
+    const callsBeforeSave = fetchMock.mock.calls.length;
+
+    fireEvent.click(screen.getByRole("button", { name: "Corregir" }));
+    await screen.findByText("Corregir coordenadas");
+
+    fetchMock.mockResolvedValueOnce(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { success: true, latitude: -26.82, longitude: -65.2, zone: null, zoneSource: "none" },
+      }),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
+
+    await waitFor(() => expect(fetchMock.mock.calls.length).toBe(callsBeforeSave + 2)); // PATCH + refresh
+    const patchCall = fetchMock.mock.calls.find(([url]) => String(url).includes("/coordinates"));
+    expect(patchCall?.[0]).toBe("/admin/api/properties/p1/coordinates");
+  });
+
+  it("'Cancelar' en el modal lo cierra sin refrescar el listado", async () => {
+    const fetchMock = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { properties: [SAMPLE_PROPERTY], page: 1, pageSize: 50, total: 1 },
+      }),
+    );
+    global.fetch = fetchMock;
+
+    render(<PropertyList />);
+    await screen.findByText("Calle Falsa 123");
+    const callsBeforeCancel = fetchMock.mock.calls.length;
+
+    fireEvent.click(screen.getByRole("button", { name: "Corregir" }));
+    await screen.findByText("Corregir coordenadas");
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+
+    expect(screen.queryByText("Corregir coordenadas")).not.toBeInTheDocument();
+    expect(fetchMock.mock.calls.length).toBe(callsBeforeCancel);
+  });
 });

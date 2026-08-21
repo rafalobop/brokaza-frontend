@@ -1,16 +1,16 @@
 "use client";
 
 /**
- * `PropertyList` (KAN-240) — listado paginado + búsqueda de propiedades. Port de
+ * `PropertyList` (KAN-240/242) — listado paginado + búsqueda de propiedades, con acción
+ * "Corregir" que abre `CoordinatesModal` (KAN-242). Port de
  * `matchouse/src/admin-dashboard/app.js` (`loadProperties`/`renderProperties`/`renderPagination`,
  * líneas 148-224) e `index.html` (input de búsqueda + tabla + controles de paginación).
- *
- * El botón "Corregir" del legacy (columna de acciones) queda fuera de este ticket — el modal de
- * corrección de coordenadas es KAN-242. Se muestran las mismas 3 columnas de datos
- * (dirección/zona/coordenadas) sin la acción todavía.
  */
 
+import { useState } from "react";
 import { useProperties } from "@/lib/use-properties";
+import type { AdminProperty } from "@/lib/properties-api";
+import { CoordinatesModal } from "./CoordinatesModal";
 import { ZoneBadge } from "./ZoneBadge";
 
 function formatCoords(property: { latitude: number | null; longitude: number | null }): string {
@@ -19,8 +19,19 @@ function formatCoords(property: { latitude: number | null; longitude: number | n
 }
 
 export function PropertyList() {
-  const { status, properties, page, totalPages, search, error, setSearch, nextPage, prevPage } =
-    useProperties();
+  const {
+    status,
+    properties,
+    page,
+    totalPages,
+    search,
+    error,
+    setSearch,
+    nextPage,
+    prevPage,
+    refresh,
+  } = useProperties();
+  const [editingProperty, setEditingProperty] = useState<AdminProperty | null>(null);
 
   return (
     <section className="flex w-full max-w-3xl flex-col gap-3 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
@@ -51,19 +62,20 @@ export function PropertyList() {
               <th className="py-2 pr-2 font-medium">Dirección</th>
               <th className="py-2 pr-2 font-medium">Zona</th>
               <th className="py-2 pr-2 font-medium">Coordenadas</th>
+              <th className="py-2 pr-2 font-medium">Acción</th>
             </tr>
           </thead>
           <tbody>
             {status === "loading" && properties.length === 0 ? (
               <tr>
-                <td colSpan={3} className="py-4 text-center text-zinc-500 dark:text-zinc-400">
+                <td colSpan={4} className="py-4 text-center text-zinc-500 dark:text-zinc-400">
                   Cargando...
                 </td>
               </tr>
             ) : null}
             {status !== "loading" && properties.length === 0 ? (
               <tr>
-                <td colSpan={3} className="py-4 text-center text-zinc-500 dark:text-zinc-400">
+                <td colSpan={4} className="py-4 text-center text-zinc-500 dark:text-zinc-400">
                   No se encontraron propiedades.
                 </td>
               </tr>
@@ -79,6 +91,15 @@ export function PropertyList() {
                 </td>
                 <td className="py-2 pr-2 text-zinc-600 dark:text-zinc-400">
                   {formatCoords(property)}
+                </td>
+                <td className="py-2 pr-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingProperty(property)}
+                    className="text-xs font-medium text-zinc-600 underline underline-offset-4 dark:text-zinc-400"
+                  >
+                    Corregir
+                  </button>
                 </td>
               </tr>
             ))}
@@ -107,6 +128,14 @@ export function PropertyList() {
           Siguiente
         </button>
       </div>
+
+      {editingProperty ? (
+        <CoordinatesModal
+          property={editingProperty}
+          onClose={() => setEditingProperty(null)}
+          onSaved={refresh}
+        />
+      ) : null}
     </section>
   );
 }

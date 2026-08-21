@@ -1,0 +1,12 @@
+echo "pre-push: format:check"
+pnpm run format:check || {
+  echo ""
+  echo "Formato invalido. Corre 'pnpm run format', revisa y commitea los cambios, y volve a pushear."
+  exit 1
+}
+
+echo "pre-push: lint"
+pnpm run lint || exit 1
+
+echo "pre-push: build"
+pnpm run build || exit 1

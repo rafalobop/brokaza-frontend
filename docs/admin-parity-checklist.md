@@ -18,25 +18,25 @@ El bullet real de §8 dice: _"listado/búsqueda paginada, corrección de coorden
 Se agrega auth como prerequisito de acceso al resto del módulo, mismo criterio que el checklist
 de Matches trató WS/polling como infraestructura transversal.
 
-| Ítem                                    | Legacy                                                                     | Nueva implementación                                                     | Evidencia                                                                                            | Estado |
-| ---------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------ |
-| Auth (magic-link + allowlist)           | `admin-dashboard/app.js` (auth duplicada del tenant, líneas 32-109)         | `AdminAuthProvider`/`useAdminAuth` + `AdminLoginForm` (KAN-239)               | `admin-auth-context.test.tsx` (8), `admin-login-form.test.tsx` (4), `admin-api-client.test.ts` (2)      | ✅     |
-| Listado paginado                        | `loadProperties`/`renderPagination` (`app.js` L148-224, `PAGE_SIZE=50`)     | `useProperties`/`PropertyList` (KAN-240) — `pageSize` viene del backend, no hardcodeado | `use-properties.test.ts` (7), `property-list.test.tsx` (9)                                              | ✅     |
-| Búsqueda por dirección                  | Debounce 350ms (`app.js` L216-224)                                          | Mismo debounce (350ms, `setTimeout` manual) en `useProperties`               | `use-properties.test.ts` (coalesce de tecleo rápido, no pega a la red antes de los 350ms)                | ✅     |
-| Corrección de coordenadas con el mapa   | `openCoordModal` + Leaflet vendorizado (`app.js` L226-306)                  | `CoordinatesModal` + `LeafletMapDynamic` (KAN-241/242)                       | `leaflet-map.test.tsx` (3, incl. click real con `fireEvent`), `coordinates-api.test.ts` (2), `coordinates-modal.test.tsx` (7) | ✅     |
+| Ítem                                  | Legacy                                                                  | Nueva implementación                                                                    | Evidencia                                                                                                                     | Estado |
+| ------------------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Auth (magic-link + allowlist)         | `admin-dashboard/app.js` (auth duplicada del tenant, líneas 32-109)     | `AdminAuthProvider`/`useAdminAuth` + `AdminLoginForm` (KAN-239)                         | `admin-auth-context.test.tsx` (8), `admin-login-form.test.tsx` (4), `admin-api-client.test.ts` (2)                            | ✅     |
+| Listado paginado                      | `loadProperties`/`renderPagination` (`app.js` L148-224, `PAGE_SIZE=50`) | `useProperties`/`PropertyList` (KAN-240) — `pageSize` viene del backend, no hardcodeado | `use-properties.test.ts` (7), `property-list.test.tsx` (9)                                                                    | ✅     |
+| Búsqueda por dirección                | Debounce 350ms (`app.js` L216-224)                                      | Mismo debounce (350ms, `setTimeout` manual) en `useProperties`                          | `use-properties.test.ts` (coalesce de tecleo rápido, no pega a la red antes de los 350ms)                                     | ✅     |
+| Corrección de coordenadas con el mapa | `openCoordModal` + Leaflet vendorizado (`app.js` L226-306)              | `CoordinatesModal` + `LeafletMapDynamic` (KAN-241/242)                                  | `leaflet-map.test.tsx` (3, incl. click real con `fireEvent`), `coordinates-api.test.ts` (2), `coordinates-modal.test.tsx` (7) | ✅     |
 
 ## 2. Paridad por sub-feature (más allá del bullet mínimo de §8)
 
-| Comportamiento legacy                                                                 | Portado | Evidencia                                                     |
-| ---------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------- |
-| Badge de zona (`zoneBadge`, `point`/`text`/`none`/discrepancia con `title`)              | ✅      | `zone-badge.test.tsx` (4)                                      |
-| `TUCUMAN_DEFAULT` como fallback si la propiedad no tiene coordenadas                     | ✅      | `coordinates-modal.test.tsx` ("propiedad sin coordenadas...")  |
-| Marker arrastrable + click en el mapa reposiciona (`dragend`/`click` de Leaflet)         | ✅      | `leaflet-map.test.tsx` (click real via `fireEvent`, conversión de coordenadas real de Leaflet, no mockeada) |
-| Validación de rango lat/lng antes de guardar (`-90..90`/`-180..180`)                     | ✅      | `coordinates-modal.test.tsx`                                   |
-| Guardar → refetch del listado → cerrar el modal tras un instante mostrando "Guardado."   | ✅      | `coordinates-modal.test.tsx`, `property-list.test.tsx`         |
-| Botón "Corregir" por fila                                                                | ✅      | `property-list.test.tsx`                                       |
-| Auth con allowlist de emails (no self-signup, a diferencia del tenant)                   | ✅      | Verificado leyendo `matchouse/src/adminAuth.ts` — `isAllowedAdminEmail`/`isAllowedAdminUser` sin cambios |
-| Interceptor de 401 (mismo mecanismo que el tenant, `auth-events.ts` compartido)          | ✅      | `admin-auth-context.test.tsx` ("un 401 en medio de una sesión activa desloguea") |
+| Comportamiento legacy                                                                  | Portado | Evidencia                                                                                                   |
+| -------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------- |
+| Badge de zona (`zoneBadge`, `point`/`text`/`none`/discrepancia con `title`)            | ✅      | `zone-badge.test.tsx` (4)                                                                                   |
+| `TUCUMAN_DEFAULT` como fallback si la propiedad no tiene coordenadas                   | ✅      | `coordinates-modal.test.tsx` ("propiedad sin coordenadas...")                                               |
+| Marker arrastrable + click en el mapa reposiciona (`dragend`/`click` de Leaflet)       | ✅      | `leaflet-map.test.tsx` (click real via `fireEvent`, conversión de coordenadas real de Leaflet, no mockeada) |
+| Validación de rango lat/lng antes de guardar (`-90..90`/`-180..180`)                   | ✅      | `coordinates-modal.test.tsx`                                                                                |
+| Guardar → refetch del listado → cerrar el modal tras un instante mostrando "Guardado." | ✅      | `coordinates-modal.test.tsx`, `property-list.test.tsx`                                                      |
+| Botón "Corregir" por fila                                                              | ✅      | `property-list.test.tsx`                                                                                    |
+| Auth con allowlist de emails (no self-signup, a diferencia del tenant)                 | ✅      | Verificado leyendo `matchouse/src/adminAuth.ts` — `isAllowedAdminEmail`/`isAllowedAdminUser` sin cambios    |
+| Interceptor de 401 (mismo mecanismo que el tenant, `auth-events.ts` compartido)        | ✅      | `admin-auth-context.test.tsx` ("un 401 en medio de una sesión activa desloguea")                            |
 
 ## 3. Contrato de API — sin cambios
 

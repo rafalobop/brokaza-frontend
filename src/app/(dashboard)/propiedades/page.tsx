@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/shell/PageHeader";
 import { UploadDropzone } from "@/components/upload/UploadDropzone";
+import { PropertiesTable } from "@/components/properties/PropertiesTable";
 
 export default function PropiedadesPage() {
   return (
@@ -11,6 +12,7 @@ export default function PropiedadesPage() {
       <div className="max-w-2xl">
         <UploadDropzone />
       </div>
+      <PropertiesTable />
     </div>
   );
 }

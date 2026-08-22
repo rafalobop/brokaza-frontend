@@ -67,7 +67,9 @@ export function ActiveSearchItem({ search, onArchive, onReactivate }: ActiveSear
 
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant={STATUS_VARIANT[search.status]}>{SEARCH_STATUS_LABELS[search.status]}</Badge>
+          <Badge variant={STATUS_VARIANT[search.status]}>
+            {SEARCH_STATUS_LABELS[search.status]}
+          </Badge>
           <Badge variant="info">
             {search.matches_count} match{search.matches_count === 1 ? "" : "es"}
           </Badge>

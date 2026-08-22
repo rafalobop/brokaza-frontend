@@ -24,7 +24,14 @@ export interface SelectProps {
   className?: string;
 }
 
-export function Select({ value, onChange, options, disabled, ariaLabel, className = "" }: SelectProps) {
+export function Select({
+  value,
+  onChange,
+  options,
+  disabled,
+  ariaLabel,
+  className = "",
+}: SelectProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const listboxId = useId();
@@ -68,7 +75,7 @@ export function Select({ value, onChange, options, disabled, ariaLabel, classNam
           role="listbox"
           id={listboxId}
           aria-label={ariaLabel}
-          className="rounded-radius-sm border-card-border bg-paper text-forest dark:bg-[#1F292B] dark:text-foreground shadow-(--shadow) absolute top-full left-0 z-20 mt-1 max-h-64 min-w-full overflow-y-auto border py-1"
+          className="rounded-radius-sm border-card-border bg-paper text-forest dark:text-foreground absolute top-full left-0 z-20 mt-1 max-h-64 min-w-full overflow-y-auto border py-1 shadow-(--shadow) dark:bg-[#1F292B]"
         >
           {options.map((option) => (
             <li key={option.value} role="option" aria-selected={option.value === value}>

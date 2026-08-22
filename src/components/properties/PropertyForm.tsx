@@ -161,7 +161,10 @@ export function PropertyForm({
             onChange={(value) => update("property_type", value as PropertyType)}
             disabled={submitting}
             ariaLabel="Tipo"
-            options={PROPERTY_TYPES.map((type) => ({ value: type, label: PROPERTY_TYPE_LABELS[type] }))}
+            options={PROPERTY_TYPES.map((type) => ({
+              value: type,
+              label: PROPERTY_TYPE_LABELS[type],
+            }))}
           />
         </label>
 

@@ -18,10 +18,8 @@ export default function LeafletSpikePage() {
   return (
     <div className="flex w-full max-w-2xl flex-col gap-4 px-6 py-10">
       <div className="flex flex-col gap-1">
-        <h1 className="text-xl font-semibold text-black dark:text-zinc-50">
-          Spike de Leaflet (KAN-241)
-        </h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <h1 className="text-foreground text-xl font-semibold">Spike de Leaflet (KAN-241)</h1>
+        <p className="text-text-secondary text-sm">
           Arrastrá el marker o hacé click en el mapa — las coordenadas de abajo se actualizan en
           vivo.
         </p>
@@ -36,7 +34,7 @@ export default function LeafletSpikePage() {
         }}
       />
 
-      <p className="text-sm text-zinc-600 dark:text-zinc-400" data-testid="leaflet-spike-coords">
+      <p className="text-text-secondary text-sm" data-testid="leaflet-spike-coords">
         Lat: {latitude.toFixed(6)}, Lng: {longitude.toFixed(6)}
       </p>
     </div>

@@ -18,6 +18,8 @@ import { ApiError } from "@/lib/api-client";
 import { updatePropertyCoordinates } from "@/lib/coordinates-api";
 import { TUCUMAN_DEFAULT } from "@/lib/map-constants";
 import type { AdminProperty } from "@/lib/properties-api";
+import { Modal } from "@/components/ui/Modal";
+import { Button } from "@/components/ui/Button";
 import { LeafletMapDynamic } from "./LeafletMapDynamic";
 
 export interface CoordinatesModalProps {
@@ -90,73 +92,53 @@ export function CoordinatesModal({ property, onClose, onSaved }: CoordinatesModa
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="flex w-full max-w-lg flex-col gap-4 rounded-xl border border-zinc-200 bg-white p-6 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="flex flex-col gap-1">
-          <h3 className="text-lg font-semibold text-black dark:text-zinc-50">
-            Corregir coordenadas
-          </h3>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">{property.address}</p>
-        </div>
-
-        <LeafletMapDynamic latitude={latitude} longitude={longitude} onChange={handleMapChange} />
-
-        <div className="grid grid-cols-2 gap-3">
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-zinc-700 dark:text-zinc-300">Latitud</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              value={latInput}
-              onChange={(event) => handleLatInputChange(event.target.value)}
-              disabled={saving}
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-black outline-none focus:border-zinc-500 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-zinc-700 dark:text-zinc-300">Longitud</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              value={lngInput}
-              onChange={(event) => handleLngInputChange(event.target.value)}
-              disabled={saving}
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-black outline-none focus:border-zinc-500 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
-            />
-          </label>
-        </div>
-
-        {status ? (
-          <p
-            className={`text-sm ${
-              status.type === "error"
-                ? "text-red-600 dark:text-red-400"
-                : "text-emerald-600 dark:text-emerald-400"
-            }`}
-          >
-            {status.message}
-          </p>
-        ) : null}
-
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={() => void handleSave()}
-            disabled={saving}
-            className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-60 dark:bg-white dark:text-black"
-          >
-            {saving ? "Guardando..." : "Guardar"}
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={saving}
-            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 disabled:opacity-60 dark:border-zinc-700 dark:text-zinc-300"
-          >
-            Cancelar
-          </button>
-        </div>
+    <Modal>
+      <div className="flex flex-col gap-1">
+        <h3 className="text-lg font-semibold">Corregir coordenadas</h3>
+        <p className="text-sm opacity-80">{property.address}</p>
       </div>
-    </div>
+
+      <LeafletMapDynamic latitude={latitude} longitude={longitude} onChange={handleMapChange} />
+
+      <div className="grid grid-cols-2 gap-3">
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="opacity-80">Latitud</span>
+          <input
+            type="text"
+            inputMode="decimal"
+            value={latInput}
+            onChange={(event) => handleLatInputChange(event.target.value)}
+            disabled={saving}
+            className="rounded-radius-sm focus:border-accent border border-current/20 bg-black/5 px-3 py-2 outline-none disabled:opacity-60 dark:bg-white/5"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="opacity-80">Longitud</span>
+          <input
+            type="text"
+            inputMode="decimal"
+            value={lngInput}
+            onChange={(event) => handleLngInputChange(event.target.value)}
+            disabled={saving}
+            className="rounded-radius-sm focus:border-accent border border-current/20 bg-black/5 px-3 py-2 outline-none disabled:opacity-60 dark:bg-white/5"
+          />
+        </label>
+      </div>
+
+      {status ? (
+        <p className={`text-sm ${status.type === "error" ? "text-error" : "text-success"}`}>
+          {status.message}
+        </p>
+      ) : null}
+
+      <div className="flex justify-end gap-2">
+        <Button type="button" onClick={() => void handleSave()} disabled={saving}>
+          {saving ? "Guardando..." : "Guardar"}
+        </Button>
+        <Button type="button" variant="secondary" onClick={onClose} disabled={saving}>
+          Cancelar
+        </Button>
+      </div>
+    </Modal>
   );
 }

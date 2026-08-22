@@ -8,6 +8,7 @@
 
 import type { ActiveSearchesStatus } from "@/lib/use-active-searches";
 import type { ActiveSearch } from "@/lib/matches-api";
+import { Card } from "@/components/ui/Card";
 import { ActiveSearchItem } from "./ActiveSearchItem";
 
 export interface ActiveSearchesSectionProps {
@@ -26,19 +27,15 @@ export function ActiveSearchesSection({
   onReactivate,
 }: ActiveSearchesSectionProps) {
   return (
-    <section className="flex flex-col gap-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
-      <h2 className="text-lg font-semibold text-black dark:text-zinc-50">Mis Búsquedas en Curso</h2>
+    <Card>
+      <h2 className="text-foreground text-lg font-semibold">Mis Búsquedas en Curso</h2>
 
       {status === "loading" ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">Cargando búsquedas activas...</p>
+        <p className="text-text-secondary text-sm">Cargando búsquedas activas...</p>
       ) : status === "error" ? (
-        <p className="text-sm text-red-600 dark:text-red-400">
-          {error ?? "Error al obtener tus búsquedas activas."}
-        </p>
+        <p className="text-error text-sm">{error ?? "Error al obtener tus búsquedas activas."}</p>
       ) : searches.length === 0 ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          No tenés búsquedas activas en este momento.
-        </p>
+        <p className="text-text-secondary text-sm">No tenés búsquedas activas en este momento.</p>
       ) : (
         <div className="flex flex-col gap-2">
           {searches.map((search) => (
@@ -51,6 +48,6 @@ export function ActiveSearchesSection({
           ))}
         </div>
       )}
-    </section>
+    </Card>
   );
 }

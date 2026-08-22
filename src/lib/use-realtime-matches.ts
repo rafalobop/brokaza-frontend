@@ -115,6 +115,12 @@ export function useRealtimeMatches({ enabled, onRefetch }: UseRealtimeMatchesOpt
       });
 
       ws.addEventListener("error", (error) => {
+        // `disconnect()` pone `shouldReconnect = false` *antes* de cerrar el socket — si ya
+        // estamos en medio de un cierre intencional (cleanup del efecto, ej. el doble
+        // mount/unmount de React Strict Mode en dev, o `enabled` pasando a `false`), cerrar un
+        // socket todavía en CONNECTING dispara un `error` del navegador por spec aunque no haya
+        // ningún problema real de conectividad — no vale la pena loguearlo como si lo fuera.
+        if (!shouldReconnect) return;
         console.error("[REALTIME] Error en el socket del contador de matches:", error);
       });
     }

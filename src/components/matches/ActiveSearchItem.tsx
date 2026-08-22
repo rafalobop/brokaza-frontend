@@ -11,12 +11,19 @@
 import { useState } from "react";
 import { buildSearchSummary, SEARCH_STATUS_LABELS } from "@/lib/active-search-summary";
 import type { ActiveSearch } from "@/lib/matches-api";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 
 export interface ActiveSearchItemProps {
   search: ActiveSearch;
   onArchive: (searchId: string) => Promise<void>;
   onReactivate: (searchId: string) => Promise<void>;
 }
+
+const STATUS_VARIANT: Record<ActiveSearch["status"], BadgeVariant> = {
+  active: "success",
+  expired: "error",
+};
 
 export function ActiveSearchItem({ search, onArchive, onReactivate }: ActiveSearchItemProps) {
   const [busy, setBusy] = useState(false);
@@ -51,56 +58,46 @@ export function ActiveSearchItem({ search, onArchive, onReactivate }: ActiveSear
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800">
-      <p className="text-sm font-medium text-black dark:text-zinc-50">
-        {buildSearchSummary(search.criteria)}
-      </p>
-      <p className="text-sm text-zinc-600 italic dark:text-zinc-400">
-        &quot;{search.raw_text}&quot;
-      </p>
+    <div className="rounded-radius-md border-card-border bg-card flex flex-col gap-2 border p-3">
+      <p className="text-foreground text-sm font-medium">{buildSearchSummary(search.criteria)}</p>
+      <p className="text-text-secondary text-sm italic">&quot;{search.raw_text}&quot;</p>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-zinc-200 px-2 py-0.5 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-          {SEARCH_STATUS_LABELS[search.status]}
-        </span>
-        <span className="rounded-full bg-zinc-200 px-2 py-0.5 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+        <Badge variant={STATUS_VARIANT[search.status]}>{SEARCH_STATUS_LABELS[search.status]}</Badge>
+        <Badge variant="info">
           {search.matches_count} match{search.matches_count === 1 ? "" : "es"}
-        </span>
+        </Badge>
         {!isExpired ? (
-          <span
-            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-              isUrgent
-                ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
-                : "bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-            }`}
-          >
+          <Badge variant={isUrgent ? "warning" : "info"}>
             {search.days_remaining} día{search.days_remaining === 1 ? "" : "s"} restante
             {search.days_remaining === 1 ? "" : "s"}
-          </span>
+          </Badge>
         ) : null}
       </div>
 
-      {actionError ? <p className="text-sm text-red-600 dark:text-red-400">{actionError}</p> : null}
+      {actionError ? <p className="text-error text-sm">{actionError}</p> : null}
 
       <div className="flex gap-2">
         {isExpired ? (
-          <button
+          <Button
             type="button"
+            variant="success"
+            size="sm"
             onClick={() => void handleReactivate()}
             disabled={busy}
-            className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
           >
             Reactivar
-          </button>
+          </Button>
         ) : null}
-        <button
+        <Button
           type="button"
+          variant="danger"
+          size="sm"
           onClick={() => void handleArchive()}
           disabled={busy}
-          className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
         >
           Archivar
-        </button>
+        </Button>
       </div>
     </div>
   );

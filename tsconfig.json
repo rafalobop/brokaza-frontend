@@ -30,5 +30,15 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  // `server.ts` (custom server, proxy de WS a Express) corre con `ts-node`, que ejecuta bajo
+  // Node en CommonJS (no hay "type": "module" en package.json) — necesita su propio `module`
+  // sin importar el `esnext`/`bundler` de arriba, que es el que usa el compilador de Next.js.
+  "ts-node": {
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "commonjs",
+      "moduleResolution": "node"
+    }
+  }
 }

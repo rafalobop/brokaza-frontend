@@ -16,6 +16,8 @@ import { useState } from "react";
 import { ApiError } from "@/lib/api-client";
 import { submitSearch } from "@/lib/matches-api";
 import { MAX_SEARCH_TEXT_LENGTH, stripSearchControlChars } from "@/lib/search-text-validation";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 
 export interface NewSearchFormProps {
   onSubmitted: () => void;
@@ -56,12 +58,10 @@ export function NewSearchForm({ onSubmitted }: NewSearchFormProps) {
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+    <Card className="gap-3">
       <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-black dark:text-zinc-50">
-          Iniciar una Nueva Búsqueda
-        </h2>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <h2 className="text-foreground text-lg font-semibold">Iniciar una Nueva Búsqueda</h2>
+        <p className="text-text-secondary text-sm">
           Describí en texto libre qué propiedad buscás para tus clientes y la cruzamos
           automáticamente contra la cartera de otros agentes.
         </p>
@@ -74,40 +74,27 @@ export function NewSearchForm({ onSubmitted }: NewSearchFormProps) {
         rows={3}
         disabled={submitting}
         placeholder="Ej: Busco depto de 2 dormitorios en alquiler en Barrio Sur, hasta 300 USD..."
-        className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-black outline-none focus:border-zinc-500 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+        className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 text-sm outline-none disabled:opacity-60"
       />
 
       <div className="flex items-center justify-between">
         <span
           className={`text-xs ${
-            text.length >= MAX_SEARCH_TEXT_LENGTH
-              ? "text-red-600 dark:text-red-400"
-              : "text-zinc-500 dark:text-zinc-400"
+            text.length >= MAX_SEARCH_TEXT_LENGTH ? "text-error" : "text-text-secondary"
           }`}
         >
           {text.length}/{MAX_SEARCH_TEXT_LENGTH}
         </span>
-        <button
-          type="button"
-          onClick={() => void handleSubmit()}
-          disabled={submitting}
-          className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-60 dark:bg-white dark:text-black"
-        >
+        <Button type="button" onClick={() => void handleSubmit()} disabled={submitting}>
           {submitting ? "Buscando..." : "Buscar"}
-        </button>
+        </Button>
       </div>
 
       {status ? (
-        <p
-          className={`text-sm ${
-            status.type === "error"
-              ? "text-red-600 dark:text-red-400"
-              : "text-emerald-600 dark:text-emerald-400"
-          }`}
-        >
+        <p className={`text-sm ${status.type === "error" ? "text-error" : "text-success"}`}>
           {status.message}
         </p>
       ) : null}
-    </section>
+    </Card>
   );
 }

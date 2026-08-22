@@ -30,20 +30,16 @@ export function UploadProgressBar({ stage }: UploadProgressBarProps) {
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label="Progreso de la subida del archivo"
-        className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800"
+        className="bg-card h-1.5 w-full overflow-hidden rounded-full"
       >
         <div
           className={`h-full rounded-full transition-all duration-300 ${
-            isError ? "bg-red-600 dark:bg-red-500" : "bg-black dark:bg-white"
+            isError ? "bg-error" : "bg-accent"
           }`}
           style={{ width: `${percent}%` }}
         />
       </div>
-      <span
-        className={`text-xs ${
-          isError ? "text-red-600 dark:text-red-400" : "text-zinc-500 dark:text-zinc-400"
-        }`}
-      >
+      <span className={`text-xs ${isError ? "text-error" : "text-text-secondary"}`}>
         {UPLOAD_STAGE_LABELS[stage]}
       </span>
     </div>

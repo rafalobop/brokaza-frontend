@@ -18,7 +18,7 @@ export const LeafletMapDynamic = dynamic(
     loading: () => (
       <div
         style={{ height: "300px" }}
-        className="flex w-full items-center justify-center rounded-md border border-zinc-200 text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400"
+        className="rounded-radius-md border-card-border text-text-secondary flex w-full items-center justify-center border text-sm"
       >
         Cargando mapa...
       </div>

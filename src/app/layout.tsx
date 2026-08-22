@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Noto_Sans_Lao_Looped, Nunito_Sans } from "next/font/google";
 import { AuthProvider } from "@/lib/auth-context";
 import { ProfileProvider } from "@/lib/profile-context";
 import { ThemeProvider } from "@/lib/theme-context";
 import { buildThemeInitScript } from "@/lib/theme";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Brokaza Visual Brain v1.0 — mismo par tipográfico que el dashboard legacy
+// (matchouse/src/dashboard/index.html): Nunito Sans para texto de cuerpo,
+// Noto Sans Lao Looped para headings.
+const nunitoSans = Nunito_Sans({
+  variable: "--font-nunito-sans",
   subsets: ["latin"],
+  weight: "variable",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const notoSansLaoLooped = Noto_Sans_Lao_Looped({
+  variable: "--font-noto-sans-lao-looped",
   subsets: ["latin"],
+  weight: "variable",
 });
 
 export const metadata: Metadata = {
@@ -29,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       // vio ese valor en su árbol renderizado, así que sin esto tira warning de hidratación
       // por un mismatch que en realidad es intencional (KAN-256).
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${nunitoSans.variable} ${notoSansLaoLooped.variable} h-full antialiased`}
     >
       <head>
         {/* Corre antes de que el navegador pinte el <body> — evita el flash del tema

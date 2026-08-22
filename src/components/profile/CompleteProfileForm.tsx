@@ -12,6 +12,8 @@
 import { useEffect, useState } from "react";
 import { apiClient, ApiError } from "@/lib/api-client";
 import { useProfile } from "@/lib/profile-context";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 
 interface LocalitiesResponse {
   localities: string[];
@@ -77,62 +79,62 @@ export function CompleteProfileForm() {
   }
 
   return (
-    <div className="flex w-full max-w-sm flex-col gap-4 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+    <Card className="w-full max-w-sm shadow-(--shadow)">
       <div className="flex flex-col gap-1">
-        <h1 className="text-lg font-semibold text-black dark:text-zinc-50">Completá tu perfil</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <h1 className="text-foreground text-lg font-semibold">Completá tu perfil</h1>
+        <p className="text-text-secondary text-sm">
           Necesitamos estos datos antes de mostrarte el dashboard.
         </p>
       </div>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
         <label className="flex flex-col gap-1 text-sm">
-          <span className="text-zinc-700 dark:text-zinc-300">Nombre</span>
+          <span className="text-text-secondary">Nombre</span>
           <input
             value={firstName}
             onChange={(event) => setFirstName(event.target.value)}
             autoComplete="given-name"
             disabled={submitting}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-black outline-none focus:border-zinc-500 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 outline-none disabled:opacity-60"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
-          <span className="text-zinc-700 dark:text-zinc-300">Apellido</span>
+          <span className="text-text-secondary">Apellido</span>
           <input
             value={lastName}
             onChange={(event) => setLastName(event.target.value)}
             autoComplete="family-name"
             disabled={submitting}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-black outline-none focus:border-zinc-500 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 outline-none disabled:opacity-60"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
-          <span className="text-zinc-700 dark:text-zinc-300">Teléfono</span>
+          <span className="text-text-secondary">Teléfono</span>
           <input
             value={phoneNumber}
             onChange={(event) => setPhoneNumber(event.target.value)}
             placeholder="+54 381 555-5555"
             autoComplete="tel"
             disabled={submitting}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-black outline-none focus:border-zinc-500 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 outline-none disabled:opacity-60"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
-          <span className="text-zinc-700 dark:text-zinc-300">Inmobiliaria</span>
+          <span className="text-text-secondary">Inmobiliaria</span>
           <input
             value={agencyName}
             onChange={(event) => setAgencyName(event.target.value)}
             autoComplete="organization"
             disabled={submitting}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-black outline-none focus:border-zinc-500 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 outline-none disabled:opacity-60"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
-          <span className="text-zinc-700 dark:text-zinc-300">Ciudad</span>
+          <span className="text-text-secondary">Ciudad</span>
           <select
             value={city}
             onChange={(event) => setCity(event.target.value)}
             disabled={submitting || localities.length === 0}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-black outline-none focus:border-zinc-500 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 outline-none disabled:opacity-60"
           >
             <option value="">Seleccioná una ciudad</option>
             {localities.map((locality) => (
@@ -141,19 +143,13 @@ export function CompleteProfileForm() {
               </option>
             ))}
           </select>
-          {localitiesError ? (
-            <span className="text-xs text-red-600 dark:text-red-400">{localitiesError}</span>
-          ) : null}
+          {localitiesError ? <span className="text-error text-xs">{localitiesError}</span> : null}
         </label>
-        {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-60 dark:bg-white dark:text-black"
-        >
+        {error ? <p className="text-error text-sm">{error}</p> : null}
+        <Button type="submit" disabled={submitting}>
           {submitting ? "Guardando..." : "Guardar y continuar"}
-        </button>
+        </Button>
       </form>
-    </div>
+    </Card>
   );
 }

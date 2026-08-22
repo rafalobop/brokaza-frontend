@@ -10,6 +10,8 @@
 import { useState } from "react";
 import { useProperties } from "@/lib/use-properties";
 import type { AdminProperty } from "@/lib/properties-api";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { CoordinatesModal } from "./CoordinatesModal";
 import { ZoneBadge } from "./ZoneBadge";
 
@@ -34,10 +36,10 @@ export function PropertyList() {
   const [editingProperty, setEditingProperty] = useState<AdminProperty | null>(null);
 
   return (
-    <section className="flex w-full max-w-3xl flex-col gap-3 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+    <Card className="w-full max-w-3xl gap-3">
       <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-black dark:text-zinc-50">Propiedades</h2>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <h2 className="text-foreground text-lg font-semibold">Propiedades</h2>
+        <p className="text-text-secondary text-sm">
           Listado de toda la cartera cargada por los tenants.
         </p>
       </div>
@@ -48,17 +50,15 @@ export function PropertyList() {
         onChange={(event) => setSearch(event.target.value)}
         placeholder="Buscar por dirección..."
         aria-label="Buscar propiedades por dirección"
-        className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-black outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+        className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 text-sm outline-none"
       />
 
-      {status === "error" && error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-      ) : null}
+      {status === "error" && error ? <p className="text-error text-sm">{error}</p> : null}
 
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-zinc-200 text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+            <tr className="border-card-border text-text-secondary border-b text-xs">
               <th className="py-2 pr-2 font-medium">Dirección</th>
               <th className="py-2 pr-2 font-medium">Zona</th>
               <th className="py-2 pr-2 font-medium">Coordenadas</th>
@@ -68,35 +68,30 @@ export function PropertyList() {
           <tbody>
             {status === "loading" && properties.length === 0 ? (
               <tr>
-                <td colSpan={4} className="py-4 text-center text-zinc-500 dark:text-zinc-400">
+                <td colSpan={4} className="text-text-secondary py-4 text-center">
                   Cargando...
                 </td>
               </tr>
             ) : null}
             {status !== "loading" && properties.length === 0 ? (
               <tr>
-                <td colSpan={4} className="py-4 text-center text-zinc-500 dark:text-zinc-400">
+                <td colSpan={4} className="text-text-secondary py-4 text-center">
                   No se encontraron propiedades.
                 </td>
               </tr>
             ) : null}
             {properties.map((property) => (
-              <tr
-                key={property.id}
-                className="border-b border-zinc-100 last:border-0 dark:border-zinc-900"
-              >
-                <td className="py-2 pr-2 text-black dark:text-zinc-50">{property.address}</td>
+              <tr key={property.id} className="border-card-border border-b last:border-0">
+                <td className="text-foreground py-2 pr-2">{property.address}</td>
                 <td className="py-2 pr-2">
                   <ZoneBadge property={property} />
                 </td>
-                <td className="py-2 pr-2 text-zinc-600 dark:text-zinc-400">
-                  {formatCoords(property)}
-                </td>
+                <td className="text-text-secondary py-2 pr-2">{formatCoords(property)}</td>
                 <td className="py-2 pr-2">
                   <button
                     type="button"
                     onClick={() => setEditingProperty(property)}
-                    className="text-xs font-medium text-zinc-600 underline underline-offset-4 dark:text-zinc-400"
+                    className="text-accent text-xs font-medium underline underline-offset-4"
                   >
                     Corregir
                   </button>
@@ -108,25 +103,21 @@ export function PropertyList() {
       </div>
 
       <div className="flex items-center justify-between text-sm">
-        <button
-          type="button"
-          onClick={prevPage}
-          disabled={page <= 1}
-          className="rounded-md border border-zinc-300 px-3 py-1.5 text-zinc-700 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-300"
-        >
+        <Button type="button" variant="secondary" size="sm" onClick={prevPage} disabled={page <= 1}>
           Anterior
-        </button>
-        <span className="text-zinc-500 dark:text-zinc-400">
+        </Button>
+        <span className="text-text-secondary">
           Página {page} de {totalPages}
         </span>
-        <button
+        <Button
           type="button"
+          variant="secondary"
+          size="sm"
           onClick={nextPage}
           disabled={page >= totalPages}
-          className="rounded-md border border-zinc-300 px-3 py-1.5 text-zinc-700 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-300"
         >
           Siguiente
-        </button>
+        </Button>
       </div>
 
       {editingProperty ? (
@@ -136,6 +127,6 @@ export function PropertyList() {
           onSaved={refresh}
         />
       ) : null}
-    </section>
+    </Card>
   );
 }

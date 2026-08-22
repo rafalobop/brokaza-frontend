@@ -26,7 +26,7 @@ describe("UploadProgressBar (KAN-218)", () => {
 
     expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100");
     expect(screen.getByText("Ocurrió un error durante el procesamiento.")).toHaveClass(
-      "text-red-600",
+      "text-error",
     );
   });
 });

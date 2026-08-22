@@ -1,49 +1,42 @@
 "use client";
 
-import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
-import { PropertyList } from "@/components/admin/PropertyList";
-import { useAdminAuth } from "@/lib/admin-auth-context";
+import { Building2, Search, TrendingUp, Users } from "lucide-react";
+import { PageHeader } from "@/components/shell/PageHeader";
+import { MetricCard } from "@/components/ui/MetricCard";
+import { useAdminMetrics } from "@/lib/use-admin-metrics";
 
-/**
- * `/admin` (KAN-239/240) — login/sesión/logout (KAN-239) + listado de propiedades (KAN-240).
- * Métricas y corrección de coordenadas son KAN-241/242, fuera de alcance todavía.
- */
+/** `/admin` (KAN-239/240) — Resumen: 4 cards de métrica reales desde `GET /admin/api/metrics`. */
 export default function AdminPage() {
-  const { status, admin, logout, loggingOut } = useAdminAuth();
-
-  if (status === "loading") {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 dark:bg-black">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">Cargando...</p>
-      </div>
-    );
-  }
-
-  if (status === "unauthenticated") {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-6 bg-zinc-50 px-6 dark:bg-black">
-        <AdminLoginForm />
-      </div>
-    );
-  }
+  const { status, metrics } = useAdminMetrics();
+  const loading = status === "loading";
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-4 bg-zinc-50 px-6 pt-10 dark:bg-black">
-      <h1 className="text-2xl font-semibold tracking-tight text-black dark:text-zinc-50">
-        Panel admin
-      </h1>
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
-        Sesión iniciada como {admin?.email}.
-      </p>
-      <button
-        type="button"
-        onClick={() => void logout()}
-        disabled={loggingOut}
-        className="text-sm font-medium underline underline-offset-4 disabled:opacity-60"
-      >
-        {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
-      </button>
-      <PropertyList />
+    <div className="flex flex-col gap-6">
+      <PageHeader title="Resumen" description="Estado general de la plataforma Brokaza." />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <MetricCard
+          label="Propiedades"
+          value={loading ? "…" : (metrics?.totalProperties ?? 0)}
+          icon={Building2}
+          href="/admin/propiedades"
+        />
+        <MetricCard
+          label="Usuarios registrados"
+          value={loading ? "…" : (metrics?.registeredUsers ?? 0)}
+          icon={Users}
+        />
+        <MetricCard
+          label="Usuarios activos"
+          value={loading ? "…" : (metrics?.activeUsers ?? 0)}
+          icon={TrendingUp}
+          status={metrics?.activeUsersDefinition}
+        />
+        <MetricCard
+          label="Matches totales"
+          value={loading ? "…" : (metrics?.totalMatches ?? 0)}
+          icon={Search}
+        />
+      </div>
     </div>
   );
 }

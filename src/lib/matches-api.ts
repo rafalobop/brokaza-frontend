@@ -1,11 +1,16 @@
 /**
- * Tipos + wrappers de `apiClient` para el módulo de Matches (KAN-189/190/191).
+ * Tipos + wrappers de `apiClient` para el módulo de Matches (KAN-190/191).
  *
- * Shapes de matches tomados de `mapBlindMatchRowToDashboardShape` /
- * `mapIncomingMatchRowToDashboardShape`; shape de `ActiveSearch` tomado
- * directamente de `matchouse/src/routes/search.ts` (`GET /api/searches`,
- * líneas 291-302). El backend no cambia (§8 de `MIGRATION_PLAN.md`), solo se
- * tipa acá lo que ya devuelve.
+ * Shape de `IncomingMatch` tomado de `mapIncomingMatchRowToDashboardShape`; shape de
+ * `ActiveSearch` tomado directamente de `matchouse/src/routes/search.ts` (`GET /api/searches`,
+ * líneas 291-302). El backend no cambia (§8 de `MIGRATION_PLAN.md`), solo se tipa acá lo que ya
+ * devuelve.
+ *
+ * No hay tipos/wrappers para `GET /api/matches` ni `POST /api/matches/:id/feedback` (los
+ * resultados de las propias búsquedas de un tenant contra la cartera de otros) — decisión de
+ * producto: quien debe enterarse de un match y contactar es el dueño de la propiedad (el que ve
+ * `IncomingMatch`/"Interesados en tus Propiedades"), no el que buscó. El endpoint del backend
+ * sigue existiendo, simplemente no se consume desde acá.
  */
 
 import { apiClient } from "./api-client";
@@ -15,38 +20,6 @@ export interface MatchProperty {
   precio: number;
   moneda: string;
   operacion: string;
-}
-
-export type MatchReviewStatus = "PENDING" | "ACCEPTED" | "REJECTED";
-
-export interface Match {
-  id: string;
-  fecha: string;
-  searchText: string;
-  property: MatchProperty;
-  reasons: string[];
-  score: number;
-  userReviewStatus: MatchReviewStatus;
-  feedbackReason: string | null;
-}
-
-interface MatchesResponse {
-  matches: Match[];
-}
-
-export function getMatches(): Promise<MatchesResponse> {
-  return apiClient<MatchesResponse>("/api/matches");
-}
-
-export function sendMatchFeedback(
-  matchId: string,
-  status: Extract<MatchReviewStatus, "ACCEPTED" | "REJECTED">,
-  reason: string | null = null,
-): Promise<{ success: true }> {
-  return apiClient<{ success: true }>(`/api/matches/${matchId}/feedback`, {
-    method: "POST",
-    body: JSON.stringify({ status, reason }),
-  });
 }
 
 /**

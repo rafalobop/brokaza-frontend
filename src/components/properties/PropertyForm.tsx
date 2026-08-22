@@ -19,7 +19,10 @@ import {
   type PropertyOperation,
   type PropertyType,
 } from "@/lib/tenant-properties-api";
+import { TUCUMAN_DEFAULT } from "@/lib/map-constants";
 import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
+import { LeafletMapDynamic } from "@/components/map/LeafletMapDynamic";
 
 const INPUT_CLASS =
   "rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 text-sm outline-none disabled:opacity-60";
@@ -39,6 +42,8 @@ export interface PropertyFormValues {
   contact_info: string;
   operation: PropertyOperation;
   property_type: PropertyType;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 export const EMPTY_PROPERTY_FORM_VALUES: PropertyFormValues = {
@@ -55,6 +60,8 @@ export const EMPTY_PROPERTY_FORM_VALUES: PropertyFormValues = {
   contact_info: "",
   operation: "venta",
   property_type: "departamento",
+  latitude: null,
+  longitude: null,
 };
 
 export interface PropertyFormProps {
@@ -89,6 +96,8 @@ function toCreateInput(values: PropertyFormValues): CreatePropertyInput | null {
     contact_info: values.contact_info.trim() || null,
     operation: values.operation,
     property_type: values.property_type,
+    latitude: values.latitude,
+    longitude: values.longitude,
   };
 }
 
@@ -136,34 +145,24 @@ export function PropertyForm({
 
         <label className="flex flex-col gap-1">
           <span className={LABEL_CLASS}>Operación *</span>
-          <select
+          <Select
             value={values.operation}
-            onChange={(e) => update("operation", e.target.value as PropertyOperation)}
+            onChange={(value) => update("operation", value as PropertyOperation)}
             disabled={submitting}
-            className={INPUT_CLASS}
-          >
-            {OPERATIONS.map((op) => (
-              <option key={op} value={op}>
-                {OPERATION_LABELS[op]}
-              </option>
-            ))}
-          </select>
+            ariaLabel="Operación"
+            options={OPERATIONS.map((op) => ({ value: op, label: OPERATION_LABELS[op] }))}
+          />
         </label>
 
         <label className="flex flex-col gap-1">
           <span className={LABEL_CLASS}>Tipo *</span>
-          <select
+          <Select
             value={values.property_type}
-            onChange={(e) => update("property_type", e.target.value as PropertyType)}
+            onChange={(value) => update("property_type", value as PropertyType)}
             disabled={submitting}
-            className={INPUT_CLASS}
-          >
-            {PROPERTY_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {PROPERTY_TYPE_LABELS[type]}
-              </option>
-            ))}
-          </select>
+            ariaLabel="Tipo"
+            options={PROPERTY_TYPES.map((type) => ({ value: type, label: PROPERTY_TYPE_LABELS[type] }))}
+          />
         </label>
 
         <label className="flex flex-col gap-1">
@@ -182,18 +181,13 @@ export function PropertyForm({
 
         <label className="flex flex-col gap-1">
           <span className={LABEL_CLASS}>Moneda *</span>
-          <select
+          <Select
             value={values.currency}
-            onChange={(e) => update("currency", e.target.value as PropertyCurrency)}
+            onChange={(value) => update("currency", value as PropertyCurrency)}
             disabled={submitting}
-            className={INPUT_CLASS}
-          >
-            {CURRENCIES.map((currency) => (
-              <option key={currency} value={currency}>
-                {currency}
-              </option>
-            ))}
-          </select>
+            ariaLabel="Moneda"
+            options={CURRENCIES.map((currency) => ({ value: currency, label: currency }))}
+          />
         </label>
 
         <label className="flex flex-col gap-1">
@@ -289,6 +283,21 @@ export function PropertyForm({
         </label>
       </div>
 
+      <div className="flex flex-col gap-2">
+        <span className={LABEL_CLASS}>Ubicación en el mapa</span>
+        <LeafletMapDynamic
+          latitude={values.latitude ?? TUCUMAN_DEFAULT[0]}
+          longitude={values.longitude ?? TUCUMAN_DEFAULT[1]}
+          onChange={(lat, lng) => {
+            update("latitude", lat);
+            update("longitude", lng);
+          }}
+        />
+        <p className="text-text-secondary text-xs">
+          Arrastrá el marcador o hacé click en el mapa para ajustar la ubicación exacta.
+        </p>
+      </div>
+
       {validationError ? <p className="text-error text-sm">{validationError}</p> : null}
 
       <div className="flex justify-end gap-2">
@@ -323,6 +332,8 @@ export function propertyToFormValues(property: {
   contact_info: string | null;
   operation: PropertyOperation;
   property_type: PropertyType;
+  latitude: number | null;
+  longitude: number | null;
 }): PropertyFormValues {
   return {
     address: property.address,
@@ -338,5 +349,7 @@ export function propertyToFormValues(property: {
     contact_info: property.contact_info ?? "",
     operation: property.operation,
     property_type: property.property_type,
+    latitude: property.latitude,
+    longitude: property.longitude,
   };
 }

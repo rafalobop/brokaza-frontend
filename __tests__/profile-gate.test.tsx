@@ -62,7 +62,8 @@ function fillForm() {
   fireEvent.change(screen.getByLabelText("Inmobiliaria"), {
     target: { value: "Inmobiliaria Sur" },
   });
-  fireEvent.change(screen.getByLabelText("Ciudad"), { target: { value: "Yerba Buena" } });
+  fireEvent.click(screen.getByRole("button", { name: "Ciudad" }));
+  fireEvent.click(screen.getByRole("button", { name: "Yerba Buena" }));
 }
 
 describe("ProfileGate (KAN-167)", () => {
@@ -105,9 +106,7 @@ describe("ProfileGate (KAN-167)", () => {
     fetchMock.mockResolvedValueOnce(localitiesResponse(["Yerba Buena"]));
 
     renderGate();
-    await waitFor(() =>
-      expect(screen.getByRole("option", { name: "Yerba Buena" })).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByRole("button", { name: "Ciudad" })).toBeEnabled());
 
     fillForm();
 
@@ -133,9 +132,7 @@ describe("ProfileGate (KAN-167)", () => {
     fetchMock.mockResolvedValueOnce(localitiesResponse(["Yerba Buena"]));
 
     renderGate();
-    await waitFor(() =>
-      expect(screen.getByRole("option", { name: "Yerba Buena" })).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByRole("button", { name: "Ciudad" })).toBeEnabled());
 
     fillForm();
 

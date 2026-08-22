@@ -31,7 +31,7 @@ export function AddPropertyModal({ onCreate, onClose }: AddPropertyModalProps) {
   }
 
   return (
-    <Modal wide>
+    <Modal wide onClose={onClose}>
       <h2 className="text-foreground text-lg font-semibold">Agregar propiedad</h2>
       {error ? <p className="text-error text-sm">{error}</p> : null}
       <PropertyForm

@@ -23,6 +23,8 @@ export interface ActiveSearchItemProps {
 const STATUS_VARIANT: Record<ActiveSearch["status"], BadgeVariant> = {
   active: "success",
   expired: "error",
+  matched: "info",
+  cancelled: "info",
 };
 
 export function ActiveSearchItem({ search, onArchive, onReactivate }: ActiveSearchItemProps) {
@@ -30,6 +32,7 @@ export function ActiveSearchItem({ search, onArchive, onReactivate }: ActiveSear
   const [actionError, setActionError] = useState<string | null>(null);
 
   const isExpired = search.status === "expired";
+  const isArchived = search.status === "matched" || search.status === "cancelled";
   const isUrgent = search.status === "active" && search.days_remaining <= 2;
 
   async function handleArchive() {
@@ -62,43 +65,47 @@ export function ActiveSearchItem({ search, onArchive, onReactivate }: ActiveSear
       <p className="text-foreground text-sm font-medium">{buildSearchSummary(search.criteria)}</p>
       <p className="text-text-secondary text-sm italic">&quot;{search.raw_text}&quot;</p>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge variant={STATUS_VARIANT[search.status]}>{SEARCH_STATUS_LABELS[search.status]}</Badge>
-        <Badge variant="info">
-          {search.matches_count} match{search.matches_count === 1 ? "" : "es"}
-        </Badge>
-        {!isExpired ? (
-          <Badge variant={isUrgent ? "warning" : "info"}>
-            {search.days_remaining} día{search.days_remaining === 1 ? "" : "s"} restante
-            {search.days_remaining === 1 ? "" : "s"}
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant={STATUS_VARIANT[search.status]}>{SEARCH_STATUS_LABELS[search.status]}</Badge>
+          <Badge variant="info">
+            {search.matches_count} match{search.matches_count === 1 ? "" : "es"}
           </Badge>
+          {search.status === "active" ? (
+            <Badge variant={isUrgent ? "warning" : "info"}>
+              {search.days_remaining} día{search.days_remaining === 1 ? "" : "s"} restante
+              {search.days_remaining === 1 ? "" : "s"}
+            </Badge>
+          ) : null}
+        </div>
+
+        {!isArchived ? (
+          <div className="flex shrink-0 gap-2">
+            {isExpired ? (
+              <Button
+                type="button"
+                variant="success"
+                size="sm"
+                onClick={() => void handleReactivate()}
+                disabled={busy}
+              >
+                Reactivar
+              </Button>
+            ) : null}
+            <Button
+              type="button"
+              variant="danger"
+              size="sm"
+              onClick={() => void handleArchive()}
+              disabled={busy}
+            >
+              Archivar
+            </Button>
+          </div>
         ) : null}
       </div>
 
       {actionError ? <p className="text-error text-sm">{actionError}</p> : null}
-
-      <div className="flex gap-2">
-        {isExpired ? (
-          <Button
-            type="button"
-            variant="success"
-            size="sm"
-            onClick={() => void handleReactivate()}
-            disabled={busy}
-          >
-            Reactivar
-          </Button>
-        ) : null}
-        <Button
-          type="button"
-          variant="danger"
-          size="sm"
-          onClick={() => void handleArchive()}
-          disabled={busy}
-        >
-          Archivar
-        </Button>
-      </div>
     </div>
   );
 }

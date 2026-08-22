@@ -59,6 +59,9 @@ export interface TenantProperty {
   sheet_name: string;
   latitude: number | null;
   longitude: number | null;
+  /** Zona resuelta server-side (KAN-85, `neighborhoods`) a partir de lat/lng — `null` si la
+   * propiedad no tiene coordenadas o no cae dentro/cerca de ninguna zona conocida. */
+  zone: { id: string; name: string } | null;
   created_at: string;
   updated_at: string;
 }
@@ -120,6 +123,8 @@ export interface CreatePropertyInput {
   contact_info?: string | null;
   operation: PropertyOperation;
   property_type: PropertyType;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export function createTenantProperty(

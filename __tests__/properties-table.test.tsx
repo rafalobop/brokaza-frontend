@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { PropertiesTable } from "@/components/properties/PropertiesTable";
 import type { TenantProperty } from "@/lib/tenant-properties-api";
 
@@ -28,6 +28,7 @@ const SAMPLE_PROPERTY: TenantProperty = {
   sheet_name: "Alta manual",
   latitude: null,
   longitude: null,
+  zone: null,
   created_at: "2026-08-01T00:00:00.000Z",
   updated_at: "2026-08-01T00:00:00.000Z",
 };
@@ -85,8 +86,7 @@ describe("PropertiesTable (KAN-273)", () => {
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeInTheDocument();
   });
 
-  it("eliminar pide confirmación y hace DELETE", async () => {
-    window.confirm = jest.fn(() => true);
+  it("eliminar pide confirmación (modal propio) y hace DELETE", async () => {
     const fetchMock = jest
       .fn()
       .mockResolvedValueOnce(
@@ -100,8 +100,11 @@ describe("PropertiesTable (KAN-273)", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Eliminar" }));
 
+    const confirmHeading = await screen.findByRole("heading", { name: "Eliminar propiedad" });
+    const modal = confirmHeading.closest("div")!.parentElement as HTMLElement;
+    fireEvent.click(within(modal).getByRole("button", { name: "Eliminar" }));
+
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
-    expect(window.confirm).toHaveBeenCalled();
     await waitFor(() => expect(screen.queryByText("Calle Falsa 123")).not.toBeInTheDocument());
   });
 

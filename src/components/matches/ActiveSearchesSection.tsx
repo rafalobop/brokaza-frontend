@@ -6,6 +6,7 @@
  * líneas 113-124.
  */
 
+import { useMemo, useState } from "react";
 import type { ActiveSearchesStatus } from "@/lib/use-active-searches";
 import type { ActiveSearch } from "@/lib/matches-api";
 import { Card } from "@/components/ui/Card";
@@ -19,6 +20,19 @@ export interface ActiveSearchesSectionProps {
   onReactivate: (searchId: string) => Promise<void>;
 }
 
+type FilterTab = "active" | "expired" | "archived";
+
+const TABS: { key: FilterTab; label: string }[] = [
+  { key: "active", label: "Activas" },
+  { key: "expired", label: "Vencidas" },
+  { key: "archived", label: "Archivadas" },
+];
+
+function matchesTab(search: ActiveSearch, tab: FilterTab): boolean {
+  if (tab === "archived") return search.status === "matched" || search.status === "cancelled";
+  return search.status === tab;
+}
+
 export function ActiveSearchesSection({
   status,
   searches,
@@ -26,19 +40,42 @@ export function ActiveSearchesSection({
   onArchive,
   onReactivate,
 }: ActiveSearchesSectionProps) {
+  const [tab, setTab] = useState<FilterTab>("active");
+
+  const filteredSearches = useMemo(
+    () => searches.filter((search) => matchesTab(search, tab)),
+    [searches, tab],
+  );
+
   return (
     <Card>
-      <h2 className="text-foreground text-lg font-semibold">Mis Búsquedas en Curso</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-foreground text-lg font-semibold">Mis Búsquedas en Curso</h2>
+        <div className="flex flex-wrap gap-1">
+          {TABS.map(({ key, label }) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setTab(key)}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                tab === key ? "bg-accent text-white" : "text-text-secondary hover:bg-white/8"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {status === "loading" ? (
         <p className="text-text-secondary text-sm">Cargando búsquedas activas...</p>
       ) : status === "error" ? (
         <p className="text-error text-sm">{error ?? "Error al obtener tus búsquedas activas."}</p>
-      ) : searches.length === 0 ? (
-        <p className="text-text-secondary text-sm">No tenés búsquedas activas en este momento.</p>
+      ) : filteredSearches.length === 0 ? (
+        <p className="text-text-secondary text-sm">No hay búsquedas en esta categoría.</p>
       ) : (
         <div className="flex flex-col gap-2">
-          {searches.map((search) => (
+          {filteredSearches.map((search) => (
             <ActiveSearchItem
               key={search.id}
               search={search}

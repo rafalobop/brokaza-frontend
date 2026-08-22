@@ -9,9 +9,7 @@ export default function PropiedadesPage() {
         title="Propiedades"
         description="Cargá tu cartera en Excel — se cruza automáticamente contra las búsquedas de otros agentes."
       />
-      <div className="max-w-2xl">
-        <UploadDropzone />
-      </div>
+      <UploadDropzone />
       <PropertiesTable />
     </div>
   );

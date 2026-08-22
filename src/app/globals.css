@@ -15,6 +15,10 @@
  * improvisaba con la misma paleta genérica en vez de compartir esta.
  */
 :root {
+  /* Sin esto, los controles nativos (el popup de <select>, scrollbars) siempre se pintan con
+     paleta clara del SO — en tema oscuro terminan blancos con texto claro encima, ilegibles. */
+  color-scheme: light;
+
   /* Paleta de marca — fija, no cambia con el tema */
   --forest: #36461e;
   --olive: #6c863a;
@@ -27,9 +31,9 @@
   --terracotta: #9c5c54;
   --amber: #b9862e;
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
 
   /* Tema claro (Paper) — default */
   --bg-color: var(--sage);
@@ -60,6 +64,8 @@
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
+
   /* Tema oscuro (Teal Profundo) */
   --bg-color: var(--teal);
   --panel-bg: rgba(255, 255, 255, 0.04);

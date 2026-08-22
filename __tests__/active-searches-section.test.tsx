@@ -50,7 +50,7 @@ describe("ActiveSearchesSection (KAN-191)", () => {
         onReactivate={jest.fn()}
       />,
     );
-    expect(screen.getByText(/No tenés búsquedas activas/)).toBeInTheDocument();
+    expect(screen.getByText(/No hay búsquedas en esta categoría/)).toBeInTheDocument();
   });
 
   it("renderiza el resumen y el texto original de la búsqueda", () => {
@@ -94,6 +94,7 @@ describe("ActiveSearchesSection (KAN-191)", () => {
         onReactivate={jest.fn()}
       />,
     );
+    fireEvent.click(screen.getByRole("button", { name: "Vencidas" }));
     expect(screen.getByRole("button", { name: "Reactivar" })).toBeInTheDocument();
     expect(screen.queryByText(/restante/)).not.toBeInTheDocument();
   });
@@ -149,9 +150,33 @@ describe("ActiveSearchesSection (KAN-191)", () => {
       />,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "Vencidas" }));
     fireEvent.click(screen.getByRole("button", { name: "Reactivar" }));
 
     expect(onReactivate).toHaveBeenCalledWith("s1");
     expect(confirmSpy).not.toHaveBeenCalled();
+  });
+
+  it("el tab Archivadas agrupa 'cancelled'/'matched' y no muestra acciones", () => {
+    const cancelled = buildSearch({ id: "s1", status: "cancelled" });
+    const matched = buildSearch({ id: "s2", status: "matched" });
+    const active = buildSearch({ id: "s3", status: "active" });
+    render(
+      <ActiveSearchesSection
+        status="loaded"
+        searches={[cancelled, matched, active]}
+        error={null}
+        onArchive={jest.fn()}
+        onReactivate={jest.fn()}
+      />,
+    );
+
+    // Por default, tab "Activas": solo la búsqueda activa.
+    expect(screen.getAllByRole("button", { name: "Archivar" })).toHaveLength(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "Archivadas" }));
+    expect(screen.getAllByText("Archivada")).toHaveLength(2);
+    expect(screen.queryByRole("button", { name: "Archivar" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reactivar" })).not.toBeInTheDocument();
   });
 });

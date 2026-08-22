@@ -14,9 +14,7 @@ export default function BusquedasPage() {
         title="Búsquedas activas"
         description="Pedidos de tus clientes cruzados automáticamente contra la cartera de otros agentes."
       />
-      <div className="max-w-2xl">
-        <NewSearchForm onSubmitted={() => void activeSearches.refetch()} />
-      </div>
+      <NewSearchForm onSubmitted={() => void activeSearches.refetch()} />
       <ActiveSearchesSection
         status={activeSearches.status}
         searches={activeSearches.searches}

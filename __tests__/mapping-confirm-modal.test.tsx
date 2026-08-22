@@ -59,8 +59,8 @@ describe("MappingConfirmModal (KAN-217)", () => {
     ).toBeInTheDocument();
 
     await waitFor(() => expect(screen.getByText("Domicilio")).toBeInTheDocument());
-    const domicilioSelect = screen.getAllByRole("combobox")[0] as HTMLSelectElement;
-    expect(domicilioSelect.value).toBe("Dirección");
+    const domicilioSelect = screen.getByRole("button", { name: "Domicilio — Hoja1" });
+    expect(domicilioSelect).toHaveTextContent("Dirección");
   });
 
   it("bloquea la confirmación si falta un campo requerido y muestra un error estandarizado", async () => {
@@ -99,9 +99,8 @@ describe("MappingConfirmModal (KAN-217)", () => {
     );
 
     await waitFor(() => expect(screen.getByText("Precio")).toBeInTheDocument());
-    const selects = screen.getAllByRole("combobox");
-    const precioSelect = selects[1];
-    fireEvent.change(precioSelect, { target: { value: "Costo" } });
+    fireEvent.click(screen.getByRole("button", { name: "Precio — Hoja1" }));
+    fireEvent.click(screen.getByRole("button", { name: "Costo" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Confirmar y cargar" }));
 

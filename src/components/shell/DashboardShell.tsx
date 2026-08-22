@@ -36,7 +36,10 @@ export function DashboardShell({
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    <div className="bg-background flex min-h-screen justify-center p-0 md:p-6">
+    // `h-screen` (no `min-h-screen`): sin una altura definida acá, `main` (`overflow-y-auto`
+    // más abajo) no tiene contra qué recortar y termina creciendo con el contenido — arrastra
+    // al sidebar con él en vez de quedar fijo al alto de la ventana, con scroll solo en `main`.
+    <div className="bg-background flex h-screen justify-center overflow-hidden p-0 md:p-6">
       <div className="border-card-border bg-panel md:rounded-radius-lg flex w-full max-w-7xl flex-col overflow-hidden shadow-(--shadow) backdrop-blur-xl md:flex-row md:border">
         <Sidebar
           brand={brand}

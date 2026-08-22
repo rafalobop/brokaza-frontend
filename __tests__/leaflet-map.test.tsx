@@ -1,5 +1,5 @@
 import { fireEvent, render } from "@testing-library/react";
-import { LeafletMap } from "@/components/admin/LeafletMap";
+import { LeafletMap } from "@/components/map/LeafletMap";
 
 describe("LeafletMap (KAN-241, spike)", () => {
   it("renderiza el contenedor del mapa sin tirar (jsdom, sin layout real)", () => {

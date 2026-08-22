@@ -25,7 +25,7 @@ import {
 } from "./tenant-properties-api";
 
 const SEARCH_DEBOUNCE_MS = 350;
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 15;
 
 export type TenantPropertiesStatus = "loading" | "loaded" | "error";
 

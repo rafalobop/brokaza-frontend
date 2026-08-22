@@ -24,6 +24,7 @@ import type { PendingMappingSheet, SheetMappingSelections } from "@/lib/upload-a
 import type { UploadStage } from "@/lib/upload-progress";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
 import { UploadProgressBar } from "./UploadProgressBar";
 
 // Etiquetas de presentación — a diferencia de la lista de campos en sí (KAN-215), esto es texto
@@ -121,7 +122,7 @@ export function MappingConfirmModal({
   }
 
   return (
-    <Modal wide>
+    <Modal wide onClose={confirming ? undefined : onCancel}>
       <div className="flex flex-col gap-1">
         <h3 className="text-lg font-semibold">Confirmar mapeo de columnas</h3>
         <p className="text-sm opacity-80">
@@ -154,21 +155,17 @@ export function MappingConfirmModal({
                       {FIELD_LABELS[field]}
                       {isRequired ? <span className="text-error"> *</span> : null}
                     </span>
-                    <select
+                    <Select
                       value={value ?? ""}
                       disabled={!fieldsLoaded || confirming}
-                      onChange={(event) => handleSelect(sheet.sheetName, field, event.target.value)}
-                      className={`rounded-radius-sm border bg-black/5 px-2 py-1 text-sm outline-none disabled:opacity-60 dark:bg-white/5 ${
-                        isUnresolvedRequired ? "border-error" : "border-current/20"
-                      }`}
-                    >
-                      <option value="">-- Ninguna columna --</option>
-                      {sheet.headers.map((header) => (
-                        <option key={header} value={header}>
-                          {header}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(newValue) => handleSelect(sheet.sheetName, field, newValue)}
+                      className={isUnresolvedRequired ? "border-error" : ""}
+                      ariaLabel={`${FIELD_LABELS[field]} — ${sheet.sheetName}`}
+                      options={[
+                        { value: "", label: "-- Ninguna columna --" },
+                        ...sheet.headers.map((header) => ({ value: header, label: header })),
+                      ]}
+                    />
                     {isAmbiguous ? (
                       <span className="text-warning">
                         Varias columnas parecían coincidir con este campo.

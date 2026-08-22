@@ -6,7 +6,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 import { X } from "lucide-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 export interface SidebarNavItem {
   label: string;
@@ -65,11 +64,6 @@ function SidebarContent({
       </nav>
 
       <div className="flex-1" />
-
-      <div className="rounded-radius-md bg-card flex items-center justify-between px-3 py-2.5">
-        <span className="text-text-secondary text-xs">Tema</span>
-        <ThemeToggle />
-      </div>
     </div>
   );
 }

@@ -22,7 +22,7 @@ export function Badge({ variant = "info", className = "", ...props }: BadgeProps
   return (
     <span
       {...props}
-      className={`rounded-radius-sm inline-flex items-center gap-1 border px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${VARIANT_CLASSES[variant]} ${className}`}
+      className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${VARIANT_CLASSES[variant]} ${className}`}
     />
   );
 }

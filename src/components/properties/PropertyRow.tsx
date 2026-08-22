@@ -18,6 +18,7 @@ import {
 } from "@/lib/tenant-properties-api";
 import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { PropertyForm, propertyToFormValues } from "./PropertyForm";
 
 const OPERATION_BADGE_VARIANT: Record<TenantProperty["operation"], BadgeVariant> = {
@@ -43,6 +44,7 @@ export function PropertyRow({ property, onUpdate, onDelete }: PropertyRowProps) 
   const [expanded, setExpanded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [rowError, setRowError] = useState<string | null>(null);
   const [conflictNotice, setConflictNotice] = useState<string | null>(null);
 
@@ -70,13 +72,6 @@ export function PropertyRow({ property, onUpdate, onDelete }: PropertyRowProps) 
   }
 
   async function handleDelete() {
-    if (
-      !window.confirm(
-        `¿Eliminar la propiedad "${property.address}"? Esta acción no se puede deshacer.`,
-      )
-    ) {
-      return;
-    }
     setDeleting(true);
     setRowError(null);
     try {
@@ -84,6 +79,8 @@ export function PropertyRow({ property, onUpdate, onDelete }: PropertyRowProps) 
     } catch (err) {
       setRowError(err instanceof ApiError ? err.message : "No se pudo eliminar la propiedad.");
       setDeleting(false);
+    } finally {
+      setConfirmingDelete(false);
     }
   }
 
@@ -122,13 +119,24 @@ export function PropertyRow({ property, onUpdate, onDelete }: PropertyRowProps) 
             type="button"
             variant="danger"
             size="sm"
-            onClick={() => void handleDelete()}
+            onClick={() => setConfirmingDelete(true)}
             disabled={deleting}
           >
             {deleting ? "Eliminando..." : "Eliminar"}
           </Button>
         </div>
       </div>
+
+      {confirmingDelete ? (
+        <ConfirmModal
+          title="Eliminar propiedad"
+          message={`¿Eliminar la propiedad "${property.address}"? Esta acción no se puede deshacer.`}
+          confirmLabel="Eliminar"
+          confirming={deleting}
+          onConfirm={() => void handleDelete()}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      ) : null}
 
       {rowError ? <p className="text-error text-sm">{rowError}</p> : null}
       {conflictNotice ? <p className="text-warning text-sm">{conflictNotice}</p> : null}

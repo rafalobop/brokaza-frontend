@@ -9,6 +9,8 @@ import type { ActiveSearchCriteria, ActiveSearchStatus } from "./matches-api";
 export const SEARCH_STATUS_LABELS: Record<ActiveSearchStatus, string> = {
   active: "Activa",
   expired: "Vencida",
+  matched: "Archivada",
+  cancelled: "Archivada",
 };
 
 const OPERATION_LABELS: Record<string, string> = {

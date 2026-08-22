@@ -4,6 +4,7 @@ import { Building2, ChevronRight, Heart, Search } from "lucide-react";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { LinkCard } from "@/components/ui/LinkCard";
 import { MetricCard } from "@/components/ui/MetricCard";
+import { NewSearchForm } from "@/components/matches/NewSearchForm";
 import { useCatalogCount } from "@/lib/use-catalog-count";
 import { useMatchesContext } from "@/lib/matches-context";
 
@@ -21,6 +22,11 @@ export default function ResumenPage() {
   const { incomingMatches, activeSearches } = useMatchesContext();
 
   const activeCount = activeSearches.searches.filter((s) => s.status === "active").length;
+  // Excluye archivadas ('matched'/'cancelled') del preview — son historial, no "en curso" (GET
+  // /api/searches ahora las trae para que /busquedas pueda filtrarlas, ver ActiveSearchesSection).
+  const ongoingSearches = activeSearches.searches.filter(
+    (s) => s.status === "active" || s.status === "expired",
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -28,6 +34,8 @@ export default function ResumenPage() {
         title="Resumen"
         description="Estado general de tu cartera, búsquedas activas e interesados."
       />
+
+      <NewSearchForm onSubmitted={() => void activeSearches.refetch()} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <MetricCard
@@ -56,11 +64,11 @@ export default function ResumenPage() {
             <h2 className="text-foreground text-base font-semibold">Búsquedas en curso</h2>
             <ChevronRight className="text-text-secondary h-4 w-4" aria-hidden="true" />
           </div>
-          {activeSearches.searches.length === 0 ? (
+          {ongoingSearches.length === 0 ? (
             <p className="text-text-secondary text-sm">Todavía no cargaste ninguna búsqueda.</p>
           ) : (
             <ul className="flex flex-col gap-2">
-              {activeSearches.searches.slice(0, 4).map((search) => (
+              {ongoingSearches.slice(0, 4).map((search) => (
                 <li
                   key={search.id}
                   className="rounded-radius-sm bg-card flex items-center justify-between gap-3 px-3 py-2 text-sm"

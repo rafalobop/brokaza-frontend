@@ -53,7 +53,7 @@ export function getIncomingMatches(): Promise<IncomingMatchesResponse> {
   return apiClient<IncomingMatchesResponse>("/api/matches/incoming");
 }
 
-export type ActiveSearchStatus = "active" | "expired";
+export type ActiveSearchStatus = "active" | "expired" | "matched" | "cancelled";
 
 /**
  * Subset de `ExtractedRealEstateRequest` (backend, `services/ai.ts`) que

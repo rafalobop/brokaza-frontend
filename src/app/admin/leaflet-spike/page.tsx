@@ -8,7 +8,7 @@
  */
 
 import { useState } from "react";
-import { LeafletMapDynamic } from "@/components/admin/LeafletMapDynamic";
+import { LeafletMapDynamic } from "@/components/map/LeafletMapDynamic";
 import { TUCUMAN_DEFAULT } from "@/lib/map-constants";
 
 export default function LeafletSpikePage() {

@@ -22,6 +22,7 @@ import {
 } from "@/lib/tenant-properties-api";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
 import { PropertyRow } from "./PropertyRow";
 import { AddPropertyModal } from "./AddPropertyModal";
 
@@ -86,43 +87,37 @@ export function PropertiesTable() {
         </Button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <select
-          aria-label="Filtrar por operación"
-          value={filters.operation}
-          onChange={(e) => setOperationFilter(e.target.value as PropertyOperation | "")}
-          className={SELECT_CLASS}
-        >
-          <option value="">Todas las operaciones</option>
-          {OPERATIONS.map((op) => (
-            <option key={op} value={op}>
-              {OPERATION_LABELS[op]}
-            </option>
-          ))}
-        </select>
-
-        <select
-          aria-label="Filtrar por tipo de propiedad"
-          value={filters.property_type}
-          onChange={(e) => setPropertyTypeFilter(e.target.value as PropertyType | "")}
-          className={SELECT_CLASS}
-        >
-          <option value="">Todos los tipos</option>
-          {PROPERTY_TYPES.map((type) => (
-            <option key={type} value={type}>
-              {PROPERTY_TYPE_LABELS[type]}
-            </option>
-          ))}
-        </select>
-
+      <div className="flex flex-col gap-2">
         <input
           type="search"
           aria-label="Buscar por dirección"
           placeholder="Buscar por dirección..."
           value={filters.search}
           onChange={(e) => setSearch(e.target.value)}
-          className={`${SELECT_CLASS} min-w-[200px] flex-1`}
+          className={`${SELECT_CLASS} w-full`}
         />
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Select
+            ariaLabel="Filtrar por operación"
+            value={filters.operation}
+            onChange={(value) => setOperationFilter(value as PropertyOperation | "")}
+            options={[
+              { value: "", label: "Todas las operaciones" },
+              ...OPERATIONS.map((op) => ({ value: op, label: OPERATION_LABELS[op] })),
+            ]}
+          />
+
+          <Select
+            ariaLabel="Filtrar por tipo de propiedad"
+            value={filters.property_type}
+            onChange={(value) => setPropertyTypeFilter(value as PropertyType | "")}
+            options={[
+              { value: "", label: "Todos los tipos" },
+              ...PROPERTY_TYPES.map((type) => ({ value: type, label: PROPERTY_TYPE_LABELS[type] })),
+            ]}
+          />
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-1">

@@ -74,7 +74,7 @@ export function NewSearchForm({ onSubmitted }: NewSearchFormProps) {
         rows={3}
         disabled={submitting}
         placeholder="Ej: Busco depto de 2 dormitorios en alquiler en Barrio Sur, hasta 300 USD..."
-        className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 text-sm outline-none disabled:opacity-60"
+        className="rounded-radius-sm border-card-border text-foreground focus:border-accent w-full border bg-white/8 px-3 py-2 text-sm outline-none disabled:opacity-60"
       />
 
       <div className="flex items-center justify-between">

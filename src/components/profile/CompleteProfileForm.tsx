@@ -14,6 +14,7 @@ import { apiClient, ApiError } from "@/lib/api-client";
 import { useProfile } from "@/lib/profile-context";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
 
 interface LocalitiesResponse {
   localities: string[];
@@ -130,19 +131,16 @@ export function CompleteProfileForm() {
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span className="text-text-secondary">Ciudad</span>
-          <select
+          <Select
             value={city}
-            onChange={(event) => setCity(event.target.value)}
+            onChange={setCity}
             disabled={submitting || localities.length === 0}
-            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 outline-none disabled:opacity-60"
-          >
-            <option value="">Seleccioná una ciudad</option>
-            {localities.map((locality) => (
-              <option key={locality} value={locality}>
-                {locality}
-              </option>
-            ))}
-          </select>
+            ariaLabel="Ciudad"
+            options={[
+              { value: "", label: "Seleccioná una ciudad" },
+              ...localities.map((locality) => ({ value: locality, label: locality })),
+            ]}
+          />
           {localitiesError ? <span className="text-error text-xs">{localitiesError}</span> : null}
         </label>
         {error ? <p className="text-error text-sm">{error}</p> : null}

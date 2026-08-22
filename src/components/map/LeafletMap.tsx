@@ -19,17 +19,12 @@
  */
 
 import { useEffect } from "react";
-import L from "leaflet";
+import type L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
-
-// Fix de íconos default (ver comentario de arriba) — se aplica una sola vez a nivel de módulo.
-delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
+// Fix de íconos default de Leaflet (ver comentario de arriba) — se aplica una sola vez al
+// importarse.
+import "./leaflet-icon-fix";
 
 export interface LeafletMapProps {
   latitude: number;

@@ -20,7 +20,7 @@ import { TUCUMAN_DEFAULT } from "@/lib/map-constants";
 import type { AdminProperty } from "@/lib/properties-api";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
-import { LeafletMapDynamic } from "./LeafletMapDynamic";
+import { LeafletMapDynamic } from "@/components/map/LeafletMapDynamic";
 
 export interface CoordinatesModalProps {
   property: AdminProperty;
@@ -92,7 +92,7 @@ export function CoordinatesModal({ property, onClose, onSaved }: CoordinatesModa
   }
 
   return (
-    <Modal>
+    <Modal onClose={saving ? undefined : onClose}>
       <div className="flex flex-col gap-1">
         <h3 className="text-lg font-semibold">Corregir coordenadas</h3>
         <p className="text-sm opacity-80">{property.address}</p>

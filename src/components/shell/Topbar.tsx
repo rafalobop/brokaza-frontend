@@ -1,5 +1,7 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Menu } from "lucide-react";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface TopbarProps {
   email: string | undefined;
@@ -19,6 +21,7 @@ interface TopbarProps {
  */
 export function Topbar({ email, onLogout, loggingOut, extraActions, onMenuClick }: TopbarProps) {
   const initial = email?.trim().charAt(0).toUpperCase() || "?";
+  const [confirmingLogout, setConfirmingLogout] = useState(false);
 
   return (
     <header className="border-card-border flex items-center justify-between gap-4 border-b px-4 py-4 sm:px-6 md:justify-end">
@@ -33,6 +36,7 @@ export function Topbar({ email, onLogout, loggingOut, extraActions, onMenuClick 
 
       <div className="flex items-center gap-4">
         {extraActions}
+        <ThemeToggle />
         <div className="flex items-center gap-3">
           <span className="bg-accent flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold text-white">
             {initial}
@@ -41,7 +45,7 @@ export function Topbar({ email, onLogout, loggingOut, extraActions, onMenuClick 
             <span className="text-foreground max-w-40 truncate text-sm font-medium">{email}</span>
             <button
               type="button"
-              onClick={onLogout}
+              onClick={() => setConfirmingLogout(true)}
               disabled={loggingOut}
               className="text-text-secondary text-left text-xs underline underline-offset-2 disabled:opacity-60"
             >
@@ -50,6 +54,20 @@ export function Topbar({ email, onLogout, loggingOut, extraActions, onMenuClick 
           </div>
         </div>
       </div>
+
+      {confirmingLogout ? (
+        <ConfirmModal
+          title="Cerrar sesión"
+          message="¿Seguro que querés cerrar sesión?"
+          confirmLabel="Cerrar sesión"
+          confirming={loggingOut}
+          onConfirm={() => {
+            setConfirmingLogout(false);
+            onLogout();
+          }}
+          onCancel={() => setConfirmingLogout(false)}
+        />
+      ) : null}
     </header>
   );
 }

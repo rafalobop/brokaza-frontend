@@ -110,7 +110,9 @@ export function PropertyForm({
     event.preventDefault();
     const input = toCreateInput(values);
     if (!input) {
-      setValidationError("Revisá los campos: dirección requerida, precio/expensas/dormitorios numéricos ≥ 0.");
+      setValidationError(
+        "Revisá los campos: dirección requerida, precio/expensas/dormitorios numéricos ≥ 0.",
+      );
       return;
     }
     setValidationError(null);
@@ -290,7 +292,13 @@ export function PropertyForm({
       {validationError ? <p className="text-error text-sm">{validationError}</p> : null}
 
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="secondary" size="sm" onClick={onCancel} disabled={submitting}>
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          onClick={onCancel}
+          disabled={submitting}
+        >
           Cancelar
         </Button>
         <Button type="submit" size="sm" disabled={submitting}>

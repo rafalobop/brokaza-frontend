@@ -133,9 +133,7 @@ export function PropertiesTable() {
             type="button"
             onClick={() => setSort(field)}
             className={`rounded-radius-sm px-2 py-1 text-xs font-medium transition-colors ${
-              sort === field
-                ? "bg-accent text-white"
-                : "text-text-secondary hover:bg-white/8"
+              sort === field ? "bg-accent text-white" : "text-text-secondary hover:bg-white/8"
             }`}
           >
             {label}
@@ -169,7 +167,13 @@ export function PropertiesTable() {
 
       {totalPages > 1 ? (
         <div className="flex items-center justify-between gap-2">
-          <Button type="button" variant="secondary" size="sm" onClick={prevPage} disabled={page <= 1}>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={prevPage}
+            disabled={page <= 1}
+          >
             Anterior
           </Button>
           <span className="text-text-secondary text-xs">

@@ -57,7 +57,9 @@ describe("PropertiesTable (KAN-273)", () => {
   it("muestra el estado vacío cuando no hay propiedades", async () => {
     global.fetch = jest
       .fn()
-      .mockResolvedValue(mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }));
+      .mockResolvedValue(
+        mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }),
+      );
 
     render(<PropertiesTable />);
 
@@ -106,7 +108,9 @@ describe("PropertiesTable (KAN-273)", () => {
   it("agregar propiedad abre el modal y hace POST al confirmar", async () => {
     const fetchMock = jest
       .fn()
-      .mockResolvedValueOnce(mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }))
+      .mockResolvedValueOnce(
+        mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }),
+      )
       .mockResolvedValueOnce(
         mockResponse({ ok: true, status: 201, body: { property: SAMPLE_PROPERTY } }),
       )

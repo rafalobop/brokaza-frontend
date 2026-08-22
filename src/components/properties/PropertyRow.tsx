@@ -70,7 +70,11 @@ export function PropertyRow({ property, onUpdate, onDelete }: PropertyRowProps) 
   }
 
   async function handleDelete() {
-    if (!window.confirm(`¿Eliminar la propiedad "${property.address}"? Esta acción no se puede deshacer.`)) {
+    if (
+      !window.confirm(
+        `¿Eliminar la propiedad "${property.address}"? Esta acción no se puede deshacer.`,
+      )
+    ) {
       return;
     }
     setDeleting(true);
@@ -114,7 +118,13 @@ export function PropertyRow({ property, onUpdate, onDelete }: PropertyRowProps) 
           >
             {expanded ? "Cerrar" : "Editar"}
           </Button>
-          <Button type="button" variant="danger" size="sm" onClick={() => void handleDelete()} disabled={deleting}>
+          <Button
+            type="button"
+            variant="danger"
+            size="sm"
+            onClick={() => void handleDelete()}
+            disabled={deleting}
+          >
             {deleting ? "Eliminando..." : "Eliminar"}
           </Button>
         </div>

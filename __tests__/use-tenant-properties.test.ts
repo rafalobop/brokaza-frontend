@@ -67,7 +67,9 @@ describe("useTenantProperties (KAN-273)", () => {
   it("setOperationFilter refetchea con el filtro y resetea a página 1", async () => {
     const fetchMock = jest
       .fn()
-      .mockResolvedValue(mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }));
+      .mockResolvedValue(
+        mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }),
+      );
     global.fetch = fetchMock;
 
     const { result } = renderHook(() => useTenantProperties());
@@ -85,7 +87,9 @@ describe("useTenantProperties (KAN-273)", () => {
   it("setPropertyTypeFilter refetchea con el filtro y resetea a página 1", async () => {
     const fetchMock = jest
       .fn()
-      .mockResolvedValue(mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }));
+      .mockResolvedValue(
+        mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }),
+      );
     global.fetch = fetchMock;
 
     const { result } = renderHook(() => useTenantProperties());
@@ -104,7 +108,9 @@ describe("useTenantProperties (KAN-273)", () => {
     jest.useFakeTimers();
     const fetchMock = jest
       .fn()
-      .mockResolvedValue(mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }));
+      .mockResolvedValue(
+        mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }),
+      );
     global.fetch = fetchMock;
 
     const { result } = renderHook(() => useTenantProperties());
@@ -129,7 +135,9 @@ describe("useTenantProperties (KAN-273)", () => {
   it("setSort ordena asc en la primera llamada y desc si se clickea la misma columna de nuevo", async () => {
     const fetchMock = jest
       .fn()
-      .mockResolvedValue(mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }));
+      .mockResolvedValue(
+        mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }),
+      );
     global.fetch = fetchMock;
 
     const { result } = renderHook(() => useTenantProperties());
@@ -155,7 +163,9 @@ describe("useTenantProperties (KAN-273)", () => {
   it("setOperationFilter con 'alquiler' manda el filtro correcto (discriminar venta/alquiler, AC7)", async () => {
     const fetchMock = jest
       .fn()
-      .mockResolvedValue(mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }));
+      .mockResolvedValue(
+        mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }),
+      );
     global.fetch = fetchMock;
 
     const { result } = renderHook(() => useTenantProperties());
@@ -172,7 +182,9 @@ describe("useTenantProperties (KAN-273)", () => {
   it("createProperty hace POST y refetchea el listado", async () => {
     const fetchMock = jest
       .fn()
-      .mockResolvedValueOnce(mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }))
+      .mockResolvedValueOnce(
+        mockResponse({ ok: true, status: 200, body: { properties: [], total: 0 } }),
+      )
       .mockResolvedValueOnce(
         mockResponse({ ok: true, status: 201, body: { property: SAMPLE_PROPERTY } }),
       )
@@ -202,7 +214,11 @@ describe("useTenantProperties (KAN-273)", () => {
   });
 
   it("updateProperty en 409 devuelve el conflicto y actualiza la fila con el estado real", async () => {
-    const conflictProperty: TenantProperty = { ...SAMPLE_PROPERTY, price: 2000, updated_at: "2026-08-02T00:00:00.000Z" };
+    const conflictProperty: TenantProperty = {
+      ...SAMPLE_PROPERTY,
+      price: 2000,
+      updated_at: "2026-08-02T00:00:00.000Z",
+    };
     const fetchMock = jest
       .fn()
       .mockResolvedValueOnce(

@@ -113,7 +113,8 @@ export function useTenantProperties(): UseTenantPropertiesResult {
         setError(null);
       } catch (err) {
         if (!isMountedRef.current) return;
-        const message = err instanceof ApiError ? err.message : "No se pudieron cargar las propiedades.";
+        const message =
+          err instanceof ApiError ? err.message : "No se pudieron cargar las propiedades.";
         setError(message);
         setStatus("error");
       }
@@ -265,38 +266,32 @@ export function useTenantProperties(): UseTenantPropertiesResult {
     [operation, propertyType, search, sort, order, fetchProperties],
   );
 
-  const updateProperty = useCallback(
-    async (id: string, input: UpdatePropertyInput) => {
-      try {
-        const { property } = await updateTenantProperty(id, input);
-        if (!isMountedRef.current) return { conflict: null };
-        setProperties((prev) => prev.map((p) => (p.id === id ? property : p)));
-        return { conflict: null };
-      } catch (err) {
-        if (err instanceof ApiError && err.status === 409) {
-          const conflictProperty = (err.body as { property?: TenantProperty } | undefined)?.property;
-          if (conflictProperty) {
-            if (isMountedRef.current) {
-              setProperties((prev) => prev.map((p) => (p.id === id ? conflictProperty : p)));
-            }
-            return { conflict: conflictProperty };
+  const updateProperty = useCallback(async (id: string, input: UpdatePropertyInput) => {
+    try {
+      const { property } = await updateTenantProperty(id, input);
+      if (!isMountedRef.current) return { conflict: null };
+      setProperties((prev) => prev.map((p) => (p.id === id ? property : p)));
+      return { conflict: null };
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 409) {
+        const conflictProperty = (err.body as { property?: TenantProperty } | undefined)?.property;
+        if (conflictProperty) {
+          if (isMountedRef.current) {
+            setProperties((prev) => prev.map((p) => (p.id === id ? conflictProperty : p)));
           }
+          return { conflict: conflictProperty };
         }
-        throw err;
       }
-    },
-    [],
-  );
+      throw err;
+    }
+  }, []);
 
-  const deleteProperty = useCallback(
-    async (id: string) => {
-      await deleteTenantProperty(id);
-      if (!isMountedRef.current) return;
-      setProperties((prev) => prev.filter((p) => p.id !== id));
-      setTotal((prev) => Math.max(0, prev - 1));
-    },
-    [],
-  );
+  const deleteProperty = useCallback(async (id: string) => {
+    await deleteTenantProperty(id);
+    if (!isMountedRef.current) return;
+    setProperties((prev) => prev.filter((p) => p.id !== id));
+    setTotal((prev) => Math.max(0, prev - 1));
+  }, []);
 
   return {
     status,

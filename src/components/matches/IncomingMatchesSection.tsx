@@ -8,6 +8,7 @@
 
 import type { IncomingMatch } from "@/lib/matches-api";
 import type { IncomingMatchesStatus } from "@/lib/use-incoming-matches";
+import { Card } from "@/components/ui/Card";
 import { IncomingMatchItem } from "./IncomingMatchItem";
 
 export interface IncomingMatchesSectionProps {
@@ -18,27 +19,23 @@ export interface IncomingMatchesSectionProps {
 
 export function IncomingMatchesSection({ status, matches, error }: IncomingMatchesSectionProps) {
   return (
-    <section className="flex flex-col gap-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+    <Card>
       <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-black dark:text-zinc-50">
-          Interesados en tus Propiedades
-        </h2>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <h2 className="text-foreground text-lg font-semibold">Interesados en tus Propiedades</h2>
+        <p className="text-text-secondary text-sm">
           Cuando un agente busca algo que coincide con una de tus propiedades, aparece acá con sus
           datos de contacto.
         </p>
       </div>
 
       {status === "loading" ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          Cargando interesados en tus propiedades...
-        </p>
+        <p className="text-text-secondary text-sm">Cargando interesados en tus propiedades...</p>
       ) : status === "error" ? (
-        <p className="text-sm text-red-600 dark:text-red-400">
+        <p className="text-error text-sm">
           {error ?? "Error al obtener los interesados en tus propiedades."}
         </p>
       ) : matches.length === 0 ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-text-secondary text-sm">
           Todavía nadie buscó ninguna de tus propiedades.
         </p>
       ) : (
@@ -48,6 +45,6 @@ export function IncomingMatchesSection({ status, matches, error }: IncomingMatch
           ))}
         </div>
       )}
-    </section>
+    </Card>
   );
 }

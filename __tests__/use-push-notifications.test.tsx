@@ -175,4 +175,70 @@ describe("usePushNotifications (KAN-257)", () => {
 
     consoleError.mockRestore();
   });
+
+  it("unsubscribe() cancela la suscripción del browser y vuelve a 'idle'", async () => {
+    const unsubscribeMock = jest.fn().mockResolvedValue(undefined);
+    const getSubscription = jest
+      .fn()
+      .mockResolvedValueOnce({ endpoint: "https://push.example/1" }) // bootstrap inicial
+      .mockResolvedValueOnce({ endpoint: "https://push.example/1", unsubscribe: unsubscribeMock });
+    const register = jest.fn().mockResolvedValue(mockRegistration(getSubscription, jest.fn()));
+    Object.defineProperty(navigator, "serviceWorker", { value: { register }, configurable: true });
+    (global as unknown as { Notification: unknown }).Notification = { permission: "granted" };
+
+    const { result } = renderHook(() => usePushNotifications({ enabled: true }));
+    await waitFor(() => expect(result.current.status).toBe("subscribed"));
+
+    await act(async () => {
+      await result.current.unsubscribe();
+    });
+
+    expect(unsubscribeMock).toHaveBeenCalledTimes(1);
+    expect(result.current.status).toBe("idle");
+  });
+
+  it("unsubscribe() no rompe si no hay ninguna suscripción activa", async () => {
+    const getSubscription = jest
+      .fn()
+      .mockResolvedValueOnce({ endpoint: "https://push.example/1" })
+      .mockResolvedValueOnce(null);
+    const register = jest.fn().mockResolvedValue(mockRegistration(getSubscription, jest.fn()));
+    Object.defineProperty(navigator, "serviceWorker", { value: { register }, configurable: true });
+    (global as unknown as { Notification: unknown }).Notification = { permission: "granted" };
+
+    const { result } = renderHook(() => usePushNotifications({ enabled: true }));
+    await waitFor(() => expect(result.current.status).toBe("subscribed"));
+
+    await act(async () => {
+      await result.current.unsubscribe();
+    });
+
+    expect(result.current.status).toBe("idle");
+  });
+
+  it("unsubscribe() loguea la categoría y mantiene el status si el browser tira un error", async () => {
+    const consoleError = jest.spyOn(console, "error").mockImplementation(() => {});
+    const getSubscription = jest
+      .fn()
+      .mockResolvedValueOnce({ endpoint: "https://push.example/1" })
+      .mockRejectedValueOnce(new Error("boom"));
+    const register = jest.fn().mockResolvedValue(mockRegistration(getSubscription, jest.fn()));
+    Object.defineProperty(navigator, "serviceWorker", { value: { register }, configurable: true });
+    (global as unknown as { Notification: unknown }).Notification = { permission: "granted" };
+
+    const { result } = renderHook(() => usePushNotifications({ enabled: true }));
+    await waitFor(() => expect(result.current.status).toBe("subscribed"));
+
+    await act(async () => {
+      await result.current.unsubscribe();
+    });
+
+    expect(result.current.status).toBe("subscribed");
+    expect(consoleError).toHaveBeenCalledWith(
+      "[PUSH] category=pushmanager_unsubscribe_failed",
+      expect.anything(),
+    );
+
+    consoleError.mockRestore();
+  });
 });

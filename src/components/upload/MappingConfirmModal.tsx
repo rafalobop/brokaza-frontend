@@ -22,6 +22,8 @@ import { useMappingFields } from "@/lib/use-mapping-fields";
 import type { ExcelMappingField } from "@/lib/mapping-fields-api";
 import type { PendingMappingSheet, SheetMappingSelections } from "@/lib/upload-api";
 import type { UploadStage } from "@/lib/upload-progress";
+import { Modal } from "@/components/ui/Modal";
+import { Button } from "@/components/ui/Button";
 import { UploadProgressBar } from "./UploadProgressBar";
 
 // Etiquetas de presentación — a diferencia de la lista de campos en sí (KAN-215), esto es texto
@@ -119,113 +121,81 @@ export function MappingConfirmModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-8">
-      <div className="flex w-full max-w-2xl flex-col gap-4 rounded-xl border border-zinc-200 bg-white p-6 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="flex flex-col gap-1">
-          <h3 className="text-lg font-semibold text-black dark:text-zinc-50">
-            Confirmar mapeo de columnas
-          </h3>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            No pudimos reconocer con confianza todas las columnas de tu Excel. Elegí manualmente qué
-            columna corresponde a cada campo.
-          </p>
-        </div>
-
-        <div className="flex max-h-[60vh] flex-col gap-4 overflow-y-auto pr-1">
-          {!fieldsLoaded ? (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">Cargando campos...</p>
-          ) : null}
-
-          {sheets.map((sheet) => (
-            <div
-              key={sheet.sheetName}
-              className="flex flex-col gap-2 rounded-md border border-zinc-200 p-3 dark:border-zinc-800"
-            >
-              <div className="text-sm font-semibold text-black dark:text-zinc-50">
-                {sheet.sheetName}
-              </div>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">{sheetHint(sheet)}</p>
-
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {fields.map((field) => {
-                  const isRequired = requiredSet.has(field);
-                  const isUnresolvedRequired = sheet.unresolvedRequiredFields.includes(field);
-                  const isAmbiguous = sheet.ambiguousFields.includes(field);
-                  const value = selections[sheet.sheetName]?.[field] ?? "";
-
-                  return (
-                    <label key={field} className="flex flex-col gap-1 text-xs">
-                      <span
-                        className={
-                          isUnresolvedRequired
-                            ? "text-red-600 dark:text-red-400"
-                            : "text-zinc-700 dark:text-zinc-300"
-                        }
-                      >
-                        {FIELD_LABELS[field]}
-                        {isRequired ? (
-                          <span className="text-red-600 dark:text-red-400"> *</span>
-                        ) : null}
-                      </span>
-                      <select
-                        value={value ?? ""}
-                        disabled={!fieldsLoaded || confirming}
-                        onChange={(event) =>
-                          handleSelect(sheet.sheetName, field, event.target.value)
-                        }
-                        className={`rounded-md border bg-white px-2 py-1 text-sm text-black outline-none disabled:opacity-60 dark:bg-zinc-900 dark:text-zinc-50 ${
-                          isUnresolvedRequired
-                            ? "border-red-400 dark:border-red-600"
-                            : "border-zinc-300 dark:border-zinc-700"
-                        }`}
-                      >
-                        <option value="">-- Ninguna columna --</option>
-                        {sheet.headers.map((header) => (
-                          <option key={header} value={header}>
-                            {header}
-                          </option>
-                        ))}
-                      </select>
-                      {isAmbiguous ? (
-                        <span className="text-amber-600 dark:text-amber-400">
-                          Varias columnas parecían coincidir con este campo.
-                        </span>
-                      ) : null}
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {confirming ? <UploadProgressBar stage={stage} /> : null}
-
-        {validationError || confirmError ? (
-          <p className="text-sm text-red-600 dark:text-red-400">
-            {validationError ?? confirmError}
-          </p>
-        ) : null}
-
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={!fieldsLoaded || confirming}
-            className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-60 dark:bg-white dark:text-black"
-          >
-            {confirming ? "Cargando..." : "Confirmar y cargar"}
-          </button>
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={confirming}
-            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 disabled:opacity-60 dark:border-zinc-700 dark:text-zinc-300"
-          >
-            Cancelar
-          </button>
-        </div>
+    <Modal wide>
+      <div className="flex flex-col gap-1">
+        <h3 className="text-lg font-semibold">Confirmar mapeo de columnas</h3>
+        <p className="text-sm opacity-80">
+          No pudimos reconocer con confianza todas las columnas de tu Excel. Elegí manualmente qué
+          columna corresponde a cada campo.
+        </p>
       </div>
-    </div>
+
+      <div className="flex max-h-[60vh] flex-col gap-4 overflow-y-auto pr-1">
+        {!fieldsLoaded ? <p className="text-sm opacity-70">Cargando campos...</p> : null}
+
+        {sheets.map((sheet) => (
+          <div
+            key={sheet.sheetName}
+            className="rounded-radius-md flex flex-col gap-2 border border-current/15 p-3"
+          >
+            <div className="text-sm font-semibold">{sheet.sheetName}</div>
+            <p className="text-xs opacity-70">{sheetHint(sheet)}</p>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {fields.map((field) => {
+                const isRequired = requiredSet.has(field);
+                const isUnresolvedRequired = sheet.unresolvedRequiredFields.includes(field);
+                const isAmbiguous = sheet.ambiguousFields.includes(field);
+                const value = selections[sheet.sheetName]?.[field] ?? "";
+
+                return (
+                  <label key={field} className="flex flex-col gap-1 text-xs">
+                    <span className={isUnresolvedRequired ? "text-error" : "opacity-80"}>
+                      {FIELD_LABELS[field]}
+                      {isRequired ? <span className="text-error"> *</span> : null}
+                    </span>
+                    <select
+                      value={value ?? ""}
+                      disabled={!fieldsLoaded || confirming}
+                      onChange={(event) => handleSelect(sheet.sheetName, field, event.target.value)}
+                      className={`rounded-radius-sm border bg-black/5 px-2 py-1 text-sm outline-none disabled:opacity-60 dark:bg-white/5 ${
+                        isUnresolvedRequired ? "border-error" : "border-current/20"
+                      }`}
+                    >
+                      <option value="">-- Ninguna columna --</option>
+                      {sheet.headers.map((header) => (
+                        <option key={header} value={header}>
+                          {header}
+                        </option>
+                      ))}
+                    </select>
+                    {isAmbiguous ? (
+                      <span className="text-warning">
+                        Varias columnas parecían coincidir con este campo.
+                      </span>
+                    ) : null}
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {confirming ? <UploadProgressBar stage={stage} /> : null}
+
+      {validationError || confirmError ? (
+        <p className="text-error text-sm">{validationError ?? confirmError}</p>
+      ) : null}
+
+      <div className="flex justify-end gap-2">
+        <Button type="button" onClick={handleSubmit} disabled={!fieldsLoaded || confirming}>
+          {confirming ? "Cargando..." : "Confirmar y cargar"}
+        </Button>
+        <Button type="button" variant="secondary" onClick={onCancel} disabled={confirming}>
+          Cancelar
+        </Button>
+      </div>
+    </Modal>
   );
 }

@@ -21,7 +21,8 @@ export type PushSubscriptionErrorCategory =
   | "sw_registration_failed"
   | "vapid_key_fetch_failed"
   | "pushmanager_subscribe_failed"
-  | "backend_subscribe_failed";
+  | "backend_subscribe_failed"
+  | "pushmanager_unsubscribe_failed";
 
 export class PushSubscriptionError extends Error {
   readonly category: PushSubscriptionErrorCategory;

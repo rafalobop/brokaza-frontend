@@ -13,7 +13,7 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
       title={isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
-      className="rounded-full p-2 text-zinc-600 transition hover:bg-zinc-200 dark:text-zinc-300 dark:hover:bg-zinc-800"
+      className="text-text-secondary hover:bg-card rounded-full p-2 transition"
     >
       {isDark ? (
         <svg

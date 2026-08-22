@@ -37,6 +37,16 @@ export interface UsePushNotificationsResult {
   status: PushNotificationStatus;
   /** Pide permiso, se suscribe al Push Manager y avisa al backend. No-op si el SW todavía no terminó de registrarse. */
   subscribe: () => Promise<void>;
+  /**
+   * Cancela la suscripción del Push Manager en el navegador (toggle — KAN-257 seguimiento). No
+   * hay `POST /api/notifications/unsubscribe` en el backend: no hace falta uno nuevo porque
+   * `sendWebPushToTenant` (`matchouse/src/services/webPush.ts`) ya borra cualquier suscripción
+   * que responda 410/404 en el próximo envío — cancelar acá solo del lado del browser es
+   * suficiente, el backend se autolimpia solo. No revierte el permiso del navegador (`denied`
+   * después de otorgado) — eso ninguna página puede hacerlo, solo el usuario desde la
+   * configuración del sitio en el navegador.
+   */
+  unsubscribe: () => Promise<void>;
 }
 
 export function usePushNotifications({
@@ -119,5 +129,20 @@ export function usePushNotifications({
     }
   }, []);
 
-  return { status, subscribe };
+  const unsubscribe = useCallback(async () => {
+    const registration = registrationRef.current;
+    if (!registration) return;
+
+    try {
+      const subscription = await registration.pushManager.getSubscription();
+      await subscription?.unsubscribe();
+      setStatus("idle");
+    } catch (error) {
+      logPushIssue("pushmanager_unsubscribe_failed", error);
+      // Se deja `status` como estaba (probablemente "subscribed") — no sabemos si la
+      // desuscripción real del browser quedó a mitad de camino, así que no mentimos un "idle".
+    }
+  }, []);
+
+  return { status, subscribe, unsubscribe };
 }

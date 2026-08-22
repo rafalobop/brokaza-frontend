@@ -12,6 +12,8 @@
 
 import { useCallback, useRef, useState } from "react";
 import { useUpload } from "@/lib/use-upload";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { MappingConfirmModal } from "./MappingConfirmModal";
 import { UploadProgressBar } from "./UploadProgressBar";
 
@@ -81,10 +83,10 @@ export function UploadDropzone() {
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+    <Card className="gap-3">
       <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-black dark:text-zinc-50">Cargar cartera</h2>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <h2 className="text-foreground text-lg font-semibold">Cargar cartera</h2>
+        <p className="text-text-secondary text-sm">
           Arrastrá tu Excel de propiedades acá o hacé click para elegirlo.
         </p>
       </div>
@@ -97,13 +99,9 @@ export function UploadDropzone() {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         data-testid="upload-dropzone"
-        className={`flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed px-4 py-10 text-center text-sm transition-colors ${
+        className={`rounded-radius-md flex flex-col items-center justify-center gap-2 border-2 border-dashed px-4 py-10 text-center text-sm transition-colors ${
           uploading ? "cursor-not-allowed opacity-60" : "cursor-pointer"
-        } ${
-          dragOver
-            ? "border-black bg-zinc-100 dark:border-white dark:bg-zinc-900"
-            : "border-zinc-300 text-zinc-600 dark:border-zinc-700 dark:text-zinc-400"
-        }`}
+        } ${dragOver ? "border-accent bg-accent-glow" : "border-card-border text-text-secondary"}`}
       >
         <span>
           {uploading
@@ -126,7 +124,7 @@ export function UploadDropzone() {
       {uploading ? <UploadProgressBar stage={stage} /> : null}
 
       {status === "success" && result ? (
-        <p className="text-sm text-emerald-600 dark:text-emerald-400">
+        <p className="text-success text-sm">
           {result.priceParseErrors.length > 0
             ? `Se cargaron ${result.count} propiedades. ${result.priceParseErrors.length} con precio no reconocido (se cargaron sin precio).`
             : `¡Éxito! Se cargaron ${result.count} propiedades.`}
@@ -135,7 +133,7 @@ export function UploadDropzone() {
 
       {needsMapping ? (
         <div className="flex flex-col items-start gap-2">
-          <p className="text-sm text-amber-600 dark:text-amber-400">
+          <p className="text-warning text-sm">
             Necesitamos que confirmes el mapeo de columnas antes de cargar el archivo
             {pendingSheets.length > 0
               ? ` (${pendingSheets.length} hoja${pendingSheets.length > 1 ? "s" : ""} pendiente${
@@ -143,25 +141,19 @@ export function UploadDropzone() {
                 }).`
               : "."}
           </p>
-          <button
-            type="button"
-            onClick={() => setMappingModalOpen(true)}
-            className="rounded-md bg-black px-3 py-1.5 text-xs font-medium text-white dark:bg-white dark:text-black"
-          >
+          <Button type="button" size="sm" onClick={() => setMappingModalOpen(true)}>
             Revisar mapeo
-          </button>
+          </Button>
         </div>
       ) : null}
 
-      {status === "error" && error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-      ) : null}
+      {status === "error" && error ? <p className="text-error text-sm">{error}</p> : null}
 
       {status !== "idle" && status !== "uploading" && !needsMapping ? (
         <button
           type="button"
           onClick={reset}
-          className="self-start text-xs font-medium text-zinc-500 underline underline-offset-4 dark:text-zinc-400"
+          className="text-text-secondary self-start text-xs font-medium underline underline-offset-4"
         >
           Subir otro archivo
         </button>
@@ -177,6 +169,6 @@ export function UploadDropzone() {
           onCancel={handleCancelMapping}
         />
       ) : null}
-    </section>
+    </Card>
   );
 }

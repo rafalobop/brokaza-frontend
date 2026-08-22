@@ -11,6 +11,8 @@
 import { useState } from "react";
 import { apiClient, ApiError } from "@/lib/api-client";
 import { useAuth } from "@/lib/auth-context";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 
 type Step = "request" | "sent";
 
@@ -64,22 +66,20 @@ export function LoginForm() {
   }
 
   return (
-    <div className="flex w-full max-w-sm flex-col gap-4 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+    <Card className="w-full max-w-sm shadow-(--shadow)">
       {step === "request" ? (
         <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
           <div className="flex flex-col gap-1">
-            <h1 className="text-lg font-semibold text-black dark:text-zinc-50">
-              Ingresá a Brokaza
-            </h1>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            <h1 className="text-foreground text-lg font-semibold">Ingresá a Brokaza</h1>
+            <p className="text-text-secondary text-sm">
               Te mandamos un link de acceso a tu email, sin contraseña.
             </p>
           </div>
           {sessionMessage && !displayedError ? (
-            <p className="text-sm text-emerald-600 dark:text-emerald-400">{sessionMessage}</p>
+            <p className="text-success text-sm">{sessionMessage}</p>
           ) : null}
           <label className="flex flex-col gap-1 text-sm">
-            <span className="text-zinc-700 dark:text-zinc-300">Email</span>
+            <span className="text-text-secondary">Email</span>
             <input
               type="email"
               value={email}
@@ -87,25 +87,19 @@ export function LoginForm() {
               placeholder="vos@inmobiliaria.com"
               autoComplete="email"
               disabled={submitting}
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-black outline-none focus:border-zinc-500 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+              className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 outline-none disabled:opacity-60"
             />
           </label>
-          {displayedError ? (
-            <p className="text-sm text-red-600 dark:text-red-400">{displayedError}</p>
-          ) : null}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-60 dark:bg-white dark:text-black"
-          >
+          {displayedError ? <p className="text-error text-sm">{displayedError}</p> : null}
+          <Button type="submit" disabled={submitting}>
             {submitting ? "Enviando..." : "Enviar Magic Link"}
-          </button>
+          </Button>
         </form>
       ) : (
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <h1 className="text-lg font-semibold text-black dark:text-zinc-50">Revisá tu email</h1>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            <h1 className="text-foreground text-lg font-semibold">Revisá tu email</h1>
+            <p className="text-text-secondary text-sm">
               Te mandamos un link de acceso a <strong>{email}</strong>. Tocalo desde el mismo
               dispositivo para entrar.
             </p>
@@ -113,12 +107,12 @@ export function LoginForm() {
           <button
             type="button"
             onClick={handleBack}
-            className="text-sm font-medium text-zinc-600 underline underline-offset-4 dark:text-zinc-400"
+            className="text-text-secondary text-sm font-medium underline underline-offset-4"
           >
             Volver
           </button>
         </div>
       )}
-    </div>
+    </Card>
   );
 }

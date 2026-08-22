@@ -3,90 +3,98 @@
 /**
  * `IncomingMatchItem` (KAN-190) — acordeón de un match entrante, portado de
  * `buildIncomingMatchItem` en `matchouse/src/dashboard/app.js` (líneas
- * 1170-1227). Solo lectura: sin acciones de aceptar/rechazar (esa curación
- * es exclusiva del buscador, ver `useMatches`/KAN-189).
+ * 1170-1227). Solo lectura: sin acciones de aceptar/rechazar.
+ *
+ * El motivo "Coincidencia de Zona Geográfica" (KAN-92) se filtra del listado de razones — es una
+ * explicación de cómo el matching interno resuelve la zona, no información útil para el agente
+ * que ve quién se interesó en su propiedad (pedido explícito, no un descarte por error del
+ * backend).
+ *
+ * El detalle de contacto se muestra como filas etiquetadas (Búsqueda/Interesado/Inmobiliaria/
+ * Teléfono/Email) en vez de un párrafo denso con guiones — orden pensado para la UX del agente
+ * que recibe el match: primero qué buscaban (contexto), después quién y cómo contactarlo.
  */
 
-import { isZoneMatchReason, ZONE_MATCH_TOOLTIP } from "@/lib/match-zone-tooltip";
+import type { ReactNode } from "react";
+import { isZoneMatchReason } from "@/lib/match-zone-tooltip";
 import type { IncomingMatch } from "@/lib/matches-api";
-
-function buildContactLabel(contact: IncomingMatch["searcherContact"]): string {
-  const parts = [contact.full_name, contact.agency_name].filter(
-    (value): value is string => !!value,
-  );
-  return parts.length > 0 ? parts.join(" · ") : "Sin datos de contacto";
-}
+import { Badge } from "@/components/ui/Badge";
 
 export interface IncomingMatchItemProps {
   match: IncomingMatch;
 }
 
+// Verde de WhatsApp — mismo `.contact-link` del legacy (matchouse/src/dashboard/style.css),
+// no un token de marca (no cambia con el tema).
+const CONTACT_LINK_CLASS = "font-semibold underline underline-offset-2 [color:#25d366]";
+
+function InfoRow({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-wrap gap-1.5 text-sm">
+      <span className="text-text-secondary shrink-0 font-medium">{label}:</span>
+      <span className="text-foreground">{children}</span>
+    </div>
+  );
+}
+
 export function IncomingMatchItem({ match }: IncomingMatchItemProps) {
   const { searcherContact: contact } = match;
   const phoneDigits = (contact.phone_number || "").replace(/\D/g, "");
+  const visibleReasons = match.reasons.filter((reason) => !isZoneMatchReason(reason));
 
   return (
-    <details className="rounded-lg border border-zinc-200 dark:border-zinc-800">
+    <details className="rounded-radius-md border-card-border border">
       <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-2 px-4 py-3">
         <div className="flex flex-col">
-          <strong className="text-black dark:text-zinc-50">{match.property.domicilio}</strong>
-          <span className="text-sm text-zinc-600 dark:text-zinc-400">
+          <strong className="text-foreground">{match.property.domicilio}</strong>
+          <span className="text-text-secondary text-sm">
             {match.property.moneda} {match.property.precio} ({match.property.operacion})
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">{match.fecha}</span>
-          <span className="rounded-full bg-zinc-900 px-2 py-0.5 text-xs font-medium text-white dark:bg-zinc-100 dark:text-black">
-            {match.score}%
-          </span>
+          <span className="text-text-secondary text-xs">{match.fecha}</span>
+          <Badge variant="info">{match.score}%</Badge>
         </div>
       </summary>
 
-      <div className="flex flex-col gap-3 border-t border-zinc-200 px-4 py-3 dark:border-zinc-800">
-        <p className="text-sm text-zinc-700 italic dark:text-zinc-300">
-          &quot;{match.searchText}&quot;
-        </p>
+      <div className="border-card-border flex flex-col gap-2 border-t px-4 py-3">
+        <InfoRow label="Búsqueda">
+          <span className="italic">&quot;{match.searchText}&quot;</span>
+        </InfoRow>
 
-        <p className="text-sm text-zinc-700 dark:text-zinc-300">
-          <strong>Interesado:</strong> {buildContactLabel(contact)}
-          {phoneDigits ? (
-            <>
-              {" — "}
+        <InfoRow label="Interesado">{contact.full_name || "Sin datos de contacto"}</InfoRow>
+
+        {contact.agency_name ? <InfoRow label="Inmobiliaria">{contact.agency_name}</InfoRow> : null}
+
+        {contact.phone_number ? (
+          <InfoRow label="Teléfono">
+            {phoneDigits ? (
               <a
                 href={`https://wa.me/${phoneDigits}`}
                 target="_blank"
                 rel="noreferrer"
-                className="text-emerald-700 underline underline-offset-2 dark:text-emerald-400"
+                className={CONTACT_LINK_CLASS}
               >
                 {contact.phone_number}
               </a>
-            </>
-          ) : contact.phone_number ? (
-            <> — {contact.phone_number}</>
-          ) : null}
-          {contact.email ? (
-            <>
-              {" — "}
-              <a
-                href={`mailto:${contact.email}`}
-                className="text-emerald-700 underline underline-offset-2 dark:text-emerald-400"
-              >
-                {contact.email}
-              </a>
-            </>
-          ) : null}
-        </p>
+            ) : (
+              contact.phone_number
+            )}
+          </InfoRow>
+        ) : null}
 
-        {match.reasons.length > 0 ? (
-          <ul className="flex list-inside list-disc flex-col gap-1 text-sm text-zinc-600 dark:text-zinc-400">
-            {match.reasons.map((reason, index) => (
-              <li
-                key={`${reason}-${index}`}
-                title={isZoneMatchReason(reason) ? ZONE_MATCH_TOOLTIP : undefined}
-                className={isZoneMatchReason(reason) ? "underline decoration-dotted" : undefined}
-              >
-                {reason}
-              </li>
+        {contact.email ? (
+          <InfoRow label="Email">
+            <a href={`mailto:${contact.email}`} className={CONTACT_LINK_CLASS}>
+              {contact.email}
+            </a>
+          </InfoRow>
+        ) : null}
+
+        {visibleReasons.length > 0 ? (
+          <ul className="text-text-secondary flex list-inside list-disc flex-col gap-1 pt-1 text-sm">
+            {visibleReasons.map((reason, index) => (
+              <li key={`${reason}-${index}`}>{reason}</li>
             ))}
           </ul>
         ) : null}

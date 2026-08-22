@@ -101,13 +101,13 @@ describe("IncomingMatchesSection (KAN-190)", () => {
     expect(screen.getByText(/Sin datos de contacto/)).toBeInTheDocument();
   });
 
-  it("el tooltip de zona geográfica se muestra solo para reasons con el prefijo esperado", () => {
+  it("filtra el motivo de Coincidencia de Zona Geográfica del listado de razones", () => {
     const match = buildIncomingMatch({
       reasons: [`${ZONE_MATCH_REASON_PREFIX} en Barrio Sur`, "Coincidencia de Precio"],
     });
     render(<IncomingMatchesSection status="loaded" matches={[match]} error={null} />);
 
-    expect(screen.getByText(`${ZONE_MATCH_REASON_PREFIX} en Barrio Sur`)).toHaveAttribute("title");
-    expect(screen.getByText("Coincidencia de Precio")).not.toHaveAttribute("title");
+    expect(screen.queryByText(`${ZONE_MATCH_REASON_PREFIX} en Barrio Sur`)).not.toBeInTheDocument();
+    expect(screen.getByText("Coincidencia de Precio")).toBeInTheDocument();
   });
 });

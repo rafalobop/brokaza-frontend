@@ -18,16 +18,16 @@ export function ProfileGate({ children }: { children: ReactNode }) {
 
   if (status === "idle" || status === "loading") {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 dark:bg-black">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">Verificando tu perfil...</p>
+      <div className="bg-background flex flex-1 flex-col items-center justify-center">
+        <p className="text-text-secondary text-sm">Verificando tu perfil...</p>
       </div>
     );
   }
 
   if (status === "error") {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-zinc-50 px-6 text-center dark:bg-black">
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+      <div className="bg-background flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-error text-sm">{error}</p>
         <button
           type="button"
           onClick={() => void refresh()}
@@ -41,7 +41,7 @@ export function ProfileGate({ children }: { children: ReactNode }) {
 
   if (status === "incomplete") {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-6 bg-zinc-50 px-6 dark:bg-black">
+      <div className="bg-background flex flex-1 flex-col items-center justify-center gap-6 px-6">
         <CompleteProfileForm />
       </div>
     );

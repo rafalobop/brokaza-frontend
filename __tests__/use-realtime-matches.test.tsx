@@ -119,6 +119,37 @@ describe("useRealtimeMatches (KAN-187)", () => {
     expect(mockSockets).toHaveLength(1);
   });
 
+  it("no loguea un error de socket disparado por el cierre intencional del unmount", () => {
+    // Repro del bug reportado en manual QA (KAN-150/258): React Strict Mode en dev hace un
+    // mount→cleanup→mount inmediato, y el cleanup cierra el socket todavía en CONNECTING — el
+    // navegador dispara un `error` real ahí (spec de WebSocket), pero no hay ningún problema de
+    // conectividad real, así que no debe ensuciar la consola.
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    const { unmount } = renderHook(() =>
+      useRealtimeMatches({ enabled: true, onRefetch: jest.fn() }),
+    );
+
+    const socket = mockSockets[0];
+    unmount();
+    socket.emit("error", {});
+
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
+  });
+
+  it("sigue logueando un error de socket real durante una sesión activa", () => {
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    renderHook(() => useRealtimeMatches({ enabled: true, onRefetch: jest.fn() }));
+
+    mockSockets[0].emit("error", {});
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "[REALTIME] Error en el socket del contador de matches:",
+      {},
+    );
+    consoleErrorSpy.mockRestore();
+  });
+
   it("llama a onRefetch en cada tick del polling de respaldo", () => {
     const onRefetch = jest.fn();
     renderHook(() => useRealtimeMatches({ enabled: true, onRefetch }));

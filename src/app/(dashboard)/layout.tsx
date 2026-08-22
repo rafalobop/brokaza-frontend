@@ -6,6 +6,7 @@ import { IosInstallBanner } from "@/components/IosInstallBanner";
 import { ProfileGate } from "@/components/profile/ProfileGate";
 import { PushNotificationButton } from "@/components/PushNotificationButton";
 import { DashboardShell } from "@/components/shell/DashboardShell";
+import { Loader } from "@/components/ui/Loader";
 import { useAuth } from "@/lib/auth-context";
 import { MatchesProvider } from "@/lib/matches-context";
 import type { SidebarNavItem } from "@/components/shell/Sidebar";
@@ -28,11 +29,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { status, tenant, logout, loggingOut } = useAuth();
 
   if (status === "loading") {
-    return (
-      <div className="bg-background flex flex-1 flex-col items-center justify-center">
-        <p className="text-text-secondary text-sm">Cargando...</p>
-      </div>
-    );
+    return <Loader label="Confirmando tu acceso..." />;
   }
 
   if (status === "unauthenticated") {

@@ -1,8 +1,16 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function NotFound() {
   return (
     <div className="bg-background flex flex-1 flex-col items-center justify-center gap-2 px-6 text-center">
+      <Image
+        src="/logo_brokaza.png"
+        alt="Brokaza"
+        width={64}
+        height={64}
+        className="mb-2 rounded-full object-cover"
+      />
       <h1 className="font-heading text-foreground text-2xl font-bold tracking-tight">
         Página no encontrada
       </h1>

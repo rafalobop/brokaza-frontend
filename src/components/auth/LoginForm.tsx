@@ -9,6 +9,7 @@
  */
 
 import { useState } from "react";
+import Image from "next/image";
 import { apiClient, ApiError } from "@/lib/api-client";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/Button";
@@ -67,6 +68,14 @@ export function LoginForm() {
 
   return (
     <Card className="w-full max-w-sm shadow-(--shadow)">
+      <Image
+        src="/logo_brokaza.png"
+        alt="Brokaza"
+        width={56}
+        height={56}
+        className="mx-auto rounded-full object-cover"
+        priority
+      />
       {step === "request" ? (
         <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
           <div className="flex flex-col gap-1">

@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { Home, X } from "lucide-react";
+import { X } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export interface SidebarNavItem {
@@ -31,9 +32,13 @@ function SidebarContent({
   return (
     <div className="flex h-full w-full flex-col gap-8 px-4 py-6">
       <Link href="/" onClick={onNavigate} className="flex items-center gap-2 px-2">
-        <span className="rounded-radius-md bg-accent flex h-8 w-8 items-center justify-center text-white">
-          <Home className="h-4 w-4" aria-hidden="true" />
-        </span>
+        <Image
+          src="/logo_brokaza.png"
+          alt=""
+          width={32}
+          height={32}
+          className="rounded-radius-md object-cover"
+        />
         <span className="font-heading text-foreground text-lg font-bold">{brand}</span>
       </Link>
 

@@ -11,17 +11,14 @@
 
 import type { ReactNode } from "react";
 import { useProfile } from "@/lib/profile-context";
+import { Loader } from "@/components/ui/Loader";
 import { CompleteProfileForm } from "./CompleteProfileForm";
 
 export function ProfileGate({ children }: { children: ReactNode }) {
   const { status, error, refresh } = useProfile();
 
   if (status === "idle" || status === "loading") {
-    return (
-      <div className="bg-background flex flex-1 flex-col items-center justify-center">
-        <p className="text-text-secondary text-sm">Verificando tu perfil...</p>
-      </div>
-    );
+    return <Loader label="Verificando tu perfil..." />;
   }
 
   if (status === "error") {

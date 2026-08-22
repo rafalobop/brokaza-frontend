@@ -24,6 +24,10 @@ const notoSansLaoLooped = Noto_Sans_Lao_Looped({
 export const metadata: Metadata = {
   title: "Brokaza",
   description: "Dashboard de Brokaza — matching inmobiliario multi-tenant.",
+  icons: {
+    icon: "/logo_brokaza.png",
+    apple: "/logo_brokaza.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

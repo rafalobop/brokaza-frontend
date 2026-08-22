@@ -4,6 +4,7 @@ import { Building2, LayoutGrid } from "lucide-react";
 import { AdminAuthProvider, useAdminAuth } from "@/lib/admin-auth-context";
 import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
 import { DashboardShell } from "@/components/shell/DashboardShell";
+import { Loader } from "@/components/ui/Loader";
 import type { SidebarNavItem } from "@/components/shell/Sidebar";
 
 const NAV_ITEMS: SidebarNavItem[] = [
@@ -30,11 +31,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   const { status, admin, logout, loggingOut } = useAdminAuth();
 
   if (status === "loading") {
-    return (
-      <div className="bg-background flex flex-1 flex-col items-center justify-center">
-        <p className="text-text-secondary text-sm">Cargando...</p>
-      </div>
-    );
+    return <Loader label="Confirmando tu acceso..." />;
   }
 
   if (status === "unauthenticated") {

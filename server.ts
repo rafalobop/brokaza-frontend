@@ -11,6 +11,7 @@
  * Next.js, no el de Express.
  */
 import { createServer, request as httpRequest, type IncomingMessage } from "http";
+import { request as httpsRequest } from "https";
 import type { Socket } from "net";
 import next from "next";
 
@@ -23,8 +24,12 @@ const handle = app.getRequestHandler();
 
 function proxyWebSocketUpgrade(req: IncomingMessage, socket: Socket, head: Buffer): void {
   const target = new URL(backendOrigin);
+  // BACKEND_ORIGIN es https:// en producción (dominios públicos de Railway) y http:// en local
+  // (`localhost:3000`) — usar siempre `http.request` mandaba el upgrade en texto plano a un
+  // puerto que en producción espera TLS, así que la conexión nunca completaba el handshake.
+  const request = target.protocol === "https:" ? httpsRequest : httpRequest;
 
-  const proxyReq = httpRequest({
+  const proxyReq = request({
     hostname: target.hostname,
     port: target.port || (target.protocol === "https:" ? 443 : 80),
     path: req.url,

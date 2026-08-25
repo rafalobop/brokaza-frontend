@@ -68,3 +68,29 @@ describe("Sidebar — drawer mobile (responsive)", () => {
     expect(onMobileClose).toHaveBeenCalled();
   });
 });
+
+describe("Sidebar — términos críticos sin traducir (KAN-298)", () => {
+  it("marca la marca 'Brokaza' con translate=no/notranslate", () => {
+    renderSidebar();
+
+    const brand = screen.getByText("Brokaza");
+    expect(brand).toHaveAttribute("translate", "no");
+    expect(brand).toHaveClass("notranslate");
+  });
+
+  it("marca un nav item con notranslate=true (ej. 'Matches') sin afectar a los demás", () => {
+    renderSidebar({
+      navItems: [
+        { label: "Resumen", href: "/", icon: LayoutGrid },
+        { label: "Matches", href: "/matches", icon: LayoutGrid, notranslate: true },
+      ],
+    });
+
+    const matchesLabel = screen.getByText("Matches");
+    expect(matchesLabel).toHaveAttribute("translate", "no");
+    expect(matchesLabel).toHaveClass("notranslate");
+
+    const resumenLabel = screen.getByText("Resumen");
+    expect(resumenLabel).not.toHaveAttribute("translate");
+  });
+});

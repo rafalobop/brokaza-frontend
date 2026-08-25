@@ -41,6 +41,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${nunitoSans.variable} ${notoSansLaoLooped.variable} h-full antialiased`}
     >
       <head>
+        {/* KAN-298: le pide a Google Translate que no ofrezca traducir la página — complementa
+            los `translate="no"`/`notranslate` puntuales en los términos críticos (ver
+            `components/ui/NoTranslate.tsx`), que siguen protegiendo esos términos si el usuario
+            fuerza la traducción igual (este meta solo evita que el navegador la *sugiera*). */}
+        <meta name="google" content="notranslate" />
         {/* Corre antes de que el navegador pinte el <body> — evita el flash del tema
             equivocado (FOUC) que un `useEffect` no puede evitar porque llega tarde. */}
         <script dangerouslySetInnerHTML={{ __html: buildThemeInitScript() }} />

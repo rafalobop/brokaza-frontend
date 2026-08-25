@@ -11,6 +11,8 @@ export interface SidebarNavItem {
   label: string;
   href: string;
   icon: LucideIcon;
+  /** KAN-298: marca `label` como término crítico (ej. "Matches") que no debe traducirse. */
+  notranslate?: boolean;
 }
 
 interface SidebarProps {
@@ -38,7 +40,10 @@ function SidebarContent({
           height={32}
           className="rounded-radius-md object-cover"
         />
-        <span className="font-heading text-foreground text-lg font-bold">{brand}</span>
+        {/* KAN-298: "Brokaza" es el nombre de marca — término crítico, ver NoTranslate.tsx. */}
+        <span translate="no" className="notranslate font-heading text-foreground text-lg font-bold">
+          {brand}
+        </span>
       </Link>
 
       <nav className="flex flex-col gap-1">
@@ -57,7 +62,13 @@ function SidebarContent({
               }`}
             >
               <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-              {item.label}
+              {item.notranslate ? (
+                <span translate="no" className="notranslate">
+                  {item.label}
+                </span>
+              ) : (
+                item.label
+              )}
             </Link>
           );
         })}

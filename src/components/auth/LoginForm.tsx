@@ -14,6 +14,7 @@ import { apiClient, ApiError } from "@/lib/api-client";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { NoTranslate } from "@/components/ui/NoTranslate";
 
 type Step = "request" | "sent";
 
@@ -79,7 +80,9 @@ export function LoginForm() {
       {step === "request" ? (
         <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
           <div className="flex flex-col gap-1">
-            <h1 className="text-foreground text-lg font-semibold">Ingresá a Brokaza</h1>
+            <h1 className="text-foreground text-lg font-semibold">
+              Ingresá a <NoTranslate>Brokaza</NoTranslate>
+            </h1>
             <p className="text-text-secondary text-sm">
               Te mandamos un link de acceso a tu email, sin contraseña.
             </p>

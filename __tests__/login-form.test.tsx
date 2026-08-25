@@ -34,7 +34,9 @@ describe("LoginForm (KAN-166)", () => {
         mockResponse({ ok: true, status: 200, body: JSON.stringify({ authenticated: false }) }),
       );
     render(<LoginForm />, { wrapper });
-    await waitFor(() => expect(screen.getByText("Ingresá a Brokaza")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByRole("heading", { name: "Ingresá a Brokaza" })).toBeInTheDocument(),
+    );
   }
 
   it("muestra el paso 1 por default con el botón deshabilitado hasta escribir un email", async () => {
@@ -109,6 +111,6 @@ describe("LoginForm (KAN-166)", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Volver" }));
 
-    expect(await screen.findByText("Ingresá a Brokaza")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Ingresá a Brokaza" })).toBeInTheDocument();
   });
 });

@@ -14,7 +14,7 @@ import type { SidebarNavItem } from "@/components/shell/Sidebar";
 const NAV_ITEMS: SidebarNavItem[] = [
   { label: "Resumen", href: "/", icon: LayoutGrid },
   { label: "Propiedades", href: "/propiedades", icon: Building2 },
-  { label: "Matches", href: "/matches", icon: Sparkles },
+  { label: "Matches", href: "/matches", icon: Sparkles, notranslate: true },
   { label: "Búsquedas", href: "/busquedas", icon: Search },
 ];
 

@@ -3,6 +3,7 @@
 import { Building2, Search, TrendingUp, Users } from "lucide-react";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { MetricCard } from "@/components/ui/MetricCard";
+import { NoTranslate } from "@/components/ui/NoTranslate";
 import { useAdminMetrics } from "@/lib/use-admin-metrics";
 
 /** `/admin` (KAN-239/240) — Resumen: 4 cards de métrica reales desde `GET /admin/api/metrics`. */
@@ -12,7 +13,14 @@ export default function AdminPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Resumen" description="Estado general de la plataforma Brokaza." />
+      <PageHeader
+        title="Resumen"
+        description={
+          <>
+            Estado general de la plataforma <NoTranslate>Brokaza</NoTranslate>.
+          </>
+        }
+      />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           label="Propiedades"

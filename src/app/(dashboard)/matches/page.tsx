@@ -14,7 +14,7 @@ export default function MatchesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Matches" description="Quién se interesó en tu cartera." />
+      <PageHeader title="Matches" description="Quién se interesó en tu cartera." notranslate />
       <IncomingMatchesSection
         status={incomingMatches.status}
         matches={incomingMatches.matches}

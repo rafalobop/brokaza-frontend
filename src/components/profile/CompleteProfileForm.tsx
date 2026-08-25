@@ -7,14 +7,21 @@
  * cuando `useProfile().status === "incomplete"`; al guardar con éxito llama
  * `refresh()` del contexto de perfil, que recalcula el status y desbloquea
  * el resto del dashboard sin necesidad de un redirect real de Next.js.
+ *
+ * KAN-297: el campo "Ciudad" pasó de `<Select>` (combobox cerrado, sin
+ * texto) a `<Combobox>` (input con filtrado por texto + entrada libre). El
+ * fetch de `GET /api/localities/tucuman` ya no dispara al montar el
+ * formulario — se difiere hasta el primer foco del campo (lazy loading, AC),
+ * y solo se pide una vez (`localitiesRequested`) aunque el usuario haga foco
+ * varias veces.
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { apiClient, ApiError } from "@/lib/api-client";
 import { useProfile } from "@/lib/profile-context";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Select } from "@/components/ui/Select";
+import { Combobox } from "@/components/ui/Combobox";
 
 interface LocalitiesResponse {
   localities: string[];
@@ -28,28 +35,32 @@ export function CompleteProfileForm() {
   const [agencyName, setAgencyName] = useState("");
   const [city, setCity] = useState("");
   const [localities, setLocalities] = useState<string[]>([]);
+  const [localitiesLoading, setLocalitiesLoading] = useState(false);
+  const [localitiesRequested, setLocalitiesRequested] = useState(false);
   const [localitiesError, setLocalitiesError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
+  function loadLocalities() {
+    // Lazy loading: se pide una sola vez, recién cuando el campo se usa por primera vez, no al
+    // montar el formulario — evita el request de red si el usuario nunca llega a tocar "Ciudad".
+    if (localitiesRequested) return;
+    setLocalitiesRequested(true);
+    setLocalitiesLoading(true);
     void (async () => {
       try {
         const res = await apiClient<LocalitiesResponse>("/api/localities/tucuman");
-        if (!cancelled) setLocalities(res.localities);
+        setLocalities(res.localities);
       } catch (err) {
-        if (!cancelled) {
-          const message =
-            err instanceof ApiError ? err.message : "No pudimos cargar las localidades.";
-          setLocalitiesError(message);
-        }
+        const message =
+          err instanceof ApiError ? err.message : "No pudimos cargar las localidades.";
+        // Un fallo acá no bloquea el resto del form: el combobox admite texto libre igual (AC).
+        setLocalitiesError(message);
+      } finally {
+        setLocalitiesLoading(false);
       }
     })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -131,15 +142,15 @@ export function CompleteProfileForm() {
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span className="text-text-secondary">Ciudad</span>
-          <Select
+          <Combobox
             value={city}
             onChange={setCity}
-            disabled={submitting || localities.length === 0}
+            onOpen={loadLocalities}
+            options={localities}
+            loading={localitiesLoading}
+            disabled={submitting}
+            placeholder="Escribí para buscar tu ciudad"
             ariaLabel="Ciudad"
-            options={[
-              { value: "", label: "Seleccioná una ciudad" },
-              ...localities.map((locality) => ({ value: locality, label: locality })),
-            ]}
           />
           {localitiesError ? <span className="text-error text-xs">{localitiesError}</span> : null}
         </label>

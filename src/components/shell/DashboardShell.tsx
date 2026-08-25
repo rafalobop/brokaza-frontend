@@ -36,10 +36,16 @@ export function DashboardShell({
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    // `h-screen` (no `min-h-screen`): sin una altura definida acá, `main` (`overflow-y-auto`
-    // más abajo) no tiene contra qué recortar y termina creciendo con el contenido — arrastra
-    // al sidebar con él en vez de quedar fijo al alto de la ventana, con scroll solo en `main`.
-    <div className="bg-background flex h-screen justify-center overflow-hidden p-0 md:p-6">
+    // `h-dvh` (no `h-screen`/`min-h-screen`): `h-screen` (100vh) mide el viewport "largo" de
+    // mobile (con la barra de direcciones oculta), más alto que el área visible real cuando la
+    // barra está mostrada — con `overflow-hidden` en este nodo y en el panel de abajo, esa
+    // franja de más queda recortada y con ella el gesto de swipe que debería llegar a `main`
+    // (KAN-301: "no funciona el scroll en pantallas mobile"). `h-dvh` seguí una altura fija
+    // (mismo motivo que el comentario original: sin altura fija acá, `main` no tiene contra qué
+    // recortar y crece con el contenido) pero recalculada al viewport visible real en cada
+    // resize del navegador (`dvh` = dynamic viewport height), así el área tocable de `main`
+    // siempre coincide con lo que el usuario ve.
+    <div className="bg-background flex h-dvh justify-center overflow-hidden p-0 md:p-6">
       <div className="border-card-border bg-panel md:rounded-radius-lg flex w-full max-w-7xl flex-col overflow-hidden shadow-(--shadow) backdrop-blur-xl md:flex-row md:border">
         <Sidebar
           brand={brand}

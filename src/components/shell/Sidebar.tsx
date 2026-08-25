@@ -109,14 +109,23 @@ export function Sidebar(props: SidebarProps) {
   }, [pathname]);
 
   useEffect(() => {
+    // react-hooks/set-state-in-effect: los `setState` van adentro de un callback de rAF/timeout
+    // (no sincrónicos en el cuerpo del efecto) para que React no los trate como un re-render en
+    // cascada dentro del mismo commit — es justamente lo que hace falta acá: el frame "cerrado"
+    // tiene que llegar a pintarse antes de programar el frame "abierto" que dispara la transición.
     if (mobileOpen) {
-      setRendered(true);
-      const raf = requestAnimationFrame(() => setEntered(true));
+      const raf = requestAnimationFrame(() => {
+        setRendered(true);
+        requestAnimationFrame(() => setEntered(true));
+      });
       return () => cancelAnimationFrame(raf);
     }
-    setEntered(false);
+    const raf = requestAnimationFrame(() => setEntered(false));
     const timeout = setTimeout(() => setRendered(false), DRAWER_TRANSITION_MS);
-    return () => clearTimeout(timeout);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(timeout);
+    };
   }, [mobileOpen]);
 
   return (

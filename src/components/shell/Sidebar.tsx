@@ -31,7 +31,12 @@ function SidebarContent({
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full w-full flex-col gap-6 p-5">
+    // `overflow-y-auto`: los contenedores que envuelven esto (`aside` en desktop, el drawer en
+    // mobile) tienen `overflow-hidden` para recortar las esquinas redondeadas del gradiente de
+    // marca — sin esta línea, si `navItems` alguna vez crece más de lo que entra en la altura
+    // disponible (pantalla chica / mobile en horizontal), ese `overflow-hidden` del padre
+    // bloquea el desplazamiento del propio sidebar en vez de solo recortar el fondo (KAN-301).
+    <div className="flex h-full w-full flex-col gap-6 overflow-y-auto p-5">
       <Link href="/" onClick={onNavigate} className="flex items-center gap-2 px-2">
         <Image
           src="/logo_brokaza.png"

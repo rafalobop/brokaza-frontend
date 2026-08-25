@@ -42,10 +42,17 @@ export function NewSearchForm({ onSubmitted }: NewSearchFormProps) {
     setSubmitting(true);
     setStatus({ message: "Procesando tu búsqueda...", type: "success" });
     try {
-      await submitSearch(trimmed);
+      const { searches } = await submitSearch(trimmed);
+      // Fase 1 pre-lanzamiento: un mensaje segmentado en más sub-búsquedas de las que quedan de
+      // cuota mensual igual devuelve 200 (al menos una se guardó) — el resto queda marcado con
+      // SEARCH_QUOTA_EXCEEDED en vez de silenciarse.
+      const quotaExceededCount = searches.filter((s) => s.code === "SEARCH_QUOTA_EXCEEDED").length;
       setStatus({
-        message: '¡Búsqueda guardada! Ya aparece en "Mis búsquedas activas".',
-        type: "success",
+        message:
+          quotaExceededCount > 0
+            ? `Guardamos parte de tu búsqueda, pero ${quotaExceededCount === 1 ? "una sub-búsqueda no se guardó" : `${quotaExceededCount} sub-búsquedas no se guardaron`} por límite mensual alcanzado.`
+            : '¡Búsqueda guardada! Ya aparece en "Mis búsquedas activas".',
+        type: quotaExceededCount > 0 ? "error" : "success",
       });
       setText("");
       onSubmitted();

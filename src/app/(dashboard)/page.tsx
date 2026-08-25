@@ -4,6 +4,7 @@ import { Building2, ChevronRight, Heart, Search } from "lucide-react";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { LinkCard } from "@/components/ui/LinkCard";
 import { MetricCard } from "@/components/ui/MetricCard";
+import { NoTranslate } from "@/components/ui/NoTranslate";
 import { NewSearchForm } from "@/components/matches/NewSearchForm";
 import { useCatalogCount } from "@/lib/use-catalog-count";
 import { useMatchesContext } from "@/lib/matches-context";
@@ -75,7 +76,8 @@ export default function ResumenPage() {
                 >
                   <span className="text-foreground truncate">{search.raw_text}</span>
                   <span className="text-text-secondary shrink-0 text-xs">
-                    {search.matches_count} match{search.matches_count === 1 ? "" : "es"}
+                    {search.matches_count}{" "}
+                    <NoTranslate>match{search.matches_count === 1 ? "" : "es"}</NoTranslate>
                   </span>
                 </li>
               ))}

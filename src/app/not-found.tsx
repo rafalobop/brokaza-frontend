@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { NoTranslate } from "@/components/ui/NoTranslate";
 
 export default function NotFound() {
   return (
@@ -15,7 +16,7 @@ export default function NotFound() {
         Página no encontrada
       </h1>
       <p className="text-text-secondary max-w-md">
-        La ruta que buscás no existe en el dashboard de Brokaza.
+        La ruta que buscás no existe en el dashboard de <NoTranslate>Brokaza</NoTranslate>.
       </p>
       <Link href="/" className="text-accent mt-2 text-sm font-medium underline underline-offset-4">
         Volver al inicio

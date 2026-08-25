@@ -70,7 +70,9 @@ describe("Mensaje de sesión en el login tras logout/expiración (KAN-168)", () 
     fetchMock.mockResolvedValueOnce(mockResponse({ ok: true, status: 200, body: "null" }));
     fireEvent.click(screen.getByRole("button", { name: "Cerrar sesión" }));
 
-    await waitFor(() => expect(screen.getByText("Ingresá a Brokaza")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByRole("heading", { name: "Ingresá a Brokaza" })).toBeInTheDocument(),
+    );
     expect(screen.getByText("Cerraste sesión correctamente.")).toBeInTheDocument();
   });
 
@@ -89,7 +91,9 @@ describe("Mensaje de sesión en el login tras logout/expiración (KAN-168)", () 
     );
     await expect(apiClient("/api/matches")).rejects.toMatchObject({ status: 401 });
 
-    await waitFor(() => expect(screen.getByText("Ingresá a Brokaza")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByRole("heading", { name: "Ingresá a Brokaza" })).toBeInTheDocument(),
+    );
     expect(screen.getByText("Tu sesión expiró. Volvé a ingresar.")).toBeInTheDocument();
   });
 
@@ -138,6 +142,8 @@ describe("Mensaje de sesión en el login tras logout/expiración (KAN-168)", () 
     );
 
     resolveLogout?.();
-    await waitFor(() => expect(screen.getByText("Ingresá a Brokaza")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByRole("heading", { name: "Ingresá a Brokaza" })).toBeInTheDocument(),
+    );
   });
 });

@@ -93,17 +93,32 @@ export function getActiveSearches(): Promise<ActiveSearchesResponse> {
 /**
  * `POST /api/search` puede segmentar un mismo texto en varias búsquedas
  * (Agente 0, backend) y solo devuelve un status 2xx cuando al menos un
- * segmento tuvo éxito (`allFailed` en el backend fuerza 500/504) — el
+ * segmento tuvo éxito (`allFailed` en el backend fuerza 403/500/504) — el
  * legacy (`app.js` líneas 1300-1338) no distingue ese detalle, solo mira
  * `res.ok`/`data.error` para el mensaje genérico de éxito o error. `apiClient`
  * ya convierte cualquier respuesta no-2xx en un `ApiError` con `message`
- * tomado de `body.error`, así que acá no hace falta modelar el caso de
- * error — solo la forma del body en éxito (`success` siempre `true` en 2xx).
- * Se ignora el detalle de segmentación (`segmented`/`searches`), que ninguna
- * vista consume todavía.
+ * tomado de `body.error`, así que ese caso (incluida la cuota mensual
+ * agotada por completo, `code: 'SEARCH_QUOTA_EXCEEDED'`) no necesita
+ * modelarse acá tampoco.
+ *
+ * Sí hace falta el detalle por segmento (`searches`) para el caso de cuota
+ * PARCIAL (Fase 1 pre-lanzamiento): un mensaje que se segmenta en más
+ * sub-búsquedas de las que quedan de cuota este mes devuelve 200 igual
+ * (al menos un segmento tuvo éxito), con algunos elementos de `searches`
+ * en `success: false, code: 'SEARCH_QUOTA_EXCEEDED'` — `NewSearchForm` los
+ * usa para avisarle al agente que no todas sus sub-búsquedas se guardaron.
  */
+export interface SubmitSearchResult {
+  success: boolean;
+  raw_text: string;
+  error?: string;
+  code?: string;
+}
+
 export interface SubmitSearchResponse {
   success: true;
+  segmented: boolean;
+  searches: SubmitSearchResult[];
 }
 
 export function submitSearch(text: string): Promise<SubmitSearchResponse> {

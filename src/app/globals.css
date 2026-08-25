@@ -61,6 +61,12 @@
   --info-border: rgba(97, 121, 144, 0.28);
 
   --shadow: 0 18px 40px rgba(42, 54, 56, 0.12);
+
+  /* KAN-300: superficie fija del sidebar (gradiente forest -> teal) — no sigue [data-theme]
+     porque, a diferencia del resto del panel, es un bloque de marca, no contenido. Los textos
+     "muted" de acá son los ítems de nav inactivos sobre ese fondo siempre oscuro. */
+  --sidebar-muted: rgba(255, 255, 255, 0.68);
+  --sidebar-muted-hover: rgba(255, 255, 255, 0.92);
 }
 
 [data-theme="dark"] {
@@ -131,6 +137,9 @@
   --color-info: var(--info);
   --color-info-bg: var(--info-bg);
   --color-info-border: var(--info-border);
+
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-muted-hover: var(--sidebar-muted-hover);
 
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);

@@ -62,7 +62,9 @@ function fillForm() {
   fireEvent.change(screen.getByLabelText("Inmobiliaria"), {
     target: { value: "Inmobiliaria Sur" },
   });
-  fireEvent.change(screen.getByRole("combobox", { name: "Ciudad" }), { target: { value: "Yerba Buena" } });
+  fireEvent.change(screen.getByRole("combobox", { name: "Ciudad" }), {
+    target: { value: "Yerba Buena" },
+  });
 }
 
 // KAN-297: el listado de ciudades ahora se pide lazy (recién al primer foco del campo "Ciudad"),
@@ -70,9 +72,7 @@ function fillForm() {
 // encolado por el test resuelva antes de seguir.
 async function openCityField() {
   fireEvent.focus(screen.getByRole("combobox", { name: "Ciudad" }));
-  await waitFor(() =>
-    expect(screen.queryByText(/cargando ciudades/i)).not.toBeInTheDocument(),
-  );
+  await waitFor(() => expect(screen.queryByText(/cargando ciudades/i)).not.toBeInTheDocument());
 }
 
 describe("ProfileGate (KAN-167)", () => {
@@ -217,9 +217,13 @@ describe("ProfileGate (KAN-167)", () => {
     expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(screen.getByRole("option", { name: "San Miguel de Tucumán" })).toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole("combobox", { name: "Ciudad" }), { target: { value: "taf" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Ciudad" }), {
+      target: { value: "taf" },
+    });
     await waitFor(() =>
-      expect(screen.queryByRole("option", { name: "San Miguel de Tucumán" })).not.toBeInTheDocument(),
+      expect(
+        screen.queryByRole("option", { name: "San Miguel de Tucumán" }),
+      ).not.toBeInTheDocument(),
     );
     expect(screen.getByRole("option", { name: "Tafí Viejo" })).toBeInTheDocument();
 
@@ -243,13 +247,15 @@ describe("ProfileGate (KAN-167)", () => {
     fetchMock.mockResolvedValueOnce(localitiesResponse(["Yerba Buena"]));
     await openCityField();
 
-    fireEvent.change(screen.getByRole("combobox", { name: "Ciudad" }), { target: { value: "Villa Nougués" } });
-    await waitFor(() =>
-      expect(screen.getByText(/sin coincidencias/i)).toBeInTheDocument(),
-    );
+    fireEvent.change(screen.getByRole("combobox", { name: "Ciudad" }), {
+      target: { value: "Villa Nougués" },
+    });
+    await waitFor(() => expect(screen.getByText(/sin coincidencias/i)).toBeInTheDocument());
 
     fillForm();
-    fireEvent.change(screen.getByRole("combobox", { name: "Ciudad" }), { target: { value: "Villa Nougués" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Ciudad" }), {
+      target: { value: "Villa Nougués" },
+    });
     expect(screen.getByRole("combobox", { name: "Ciudad" })).toHaveValue("Villa Nougués");
 
     fetchMock.mockResolvedValueOnce(

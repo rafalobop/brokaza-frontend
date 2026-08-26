@@ -21,12 +21,14 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { apiClient } from "./api-client";
+import { ApiError, apiClient } from "./api-client";
 import { consumeAuthCallbackHash } from "./auth-callback";
 import { onUnauthorized } from "./auth-events";
 
 const LOGOUT_SUCCESS_MESSAGE = "Cerraste sesión correctamente.";
 const SESSION_EXPIRED_MESSAGE = "Tu sesión expiró. Volvé a ingresar.";
+export const SESSION_CHECK_ERROR_MESSAGE =
+  "No pudimos confirmar tu sesión. Revisá tu conexión e intentá de nuevo.";
 
 function exchangeTenantToken(accessToken: string): Promise<unknown> {
   return apiClient("/api/auth/exchange-token", {
@@ -35,7 +37,7 @@ function exchangeTenantToken(accessToken: string): Promise<unknown> {
   });
 }
 
-export type AuthStatus = "loading" | "authenticated" | "unauthenticated";
+export type AuthStatus = "loading" | "authenticated" | "unauthenticated" | "error";
 
 export interface TenantSession {
   id: string;
@@ -50,6 +52,7 @@ interface AuthState {
 type AuthAction =
   | { type: "SESSION_LOADING" }
   | { type: "SESSION_RESOLVED"; tenant: TenantSession | null }
+  | { type: "SESSION_CHECK_FAILED" }
   | { type: "SESSION_CLEARED" };
 
 const initialState: AuthState = { status: "loading", tenant: null };
@@ -62,6 +65,8 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
       return action.tenant
         ? { status: "authenticated", tenant: action.tenant }
         : { status: "unauthenticated", tenant: null };
+    case "SESSION_CHECK_FAILED":
+      return { status: "error", tenant: null };
     case "SESSION_CLEARED":
       return { status: "unauthenticated", tenant: null };
     default:
@@ -138,10 +143,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         type: "SESSION_RESOLVED",
         tenant: res.authenticated && res.tenant ? res.tenant : null,
       });
-    } catch {
-      // `/api/auth/session` no debería tirar en uso normal (siempre devuelve
-      // 200), pero ante un error de red real no hay que dejar el estado
-      // colgado en "loading" para siempre.
+    } catch (error) {
+      // Un fallo de red/timeout acá no significa "no autenticado" — significa
+      // que no pudimos preguntar. Tratarlo como `unauthenticated` mandaba al
+      // usuario al login de forma indistinguible de un logout real. Solo un
+      // 4xx/5xx real de `/api/auth/session` (que en uso normal no debería
+      // pasar, siempre devuelve 200) cae al mismo lado que "sin sesión".
+      if (error instanceof ApiError && (error.kind === "network" || error.kind === "timeout")) {
+        dispatch({ type: "SESSION_CHECK_FAILED" });
+        return;
+      }
       dispatch({ type: "SESSION_RESOLVED", tenant: null });
     }
   }, []);

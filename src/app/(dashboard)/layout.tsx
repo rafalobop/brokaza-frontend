@@ -7,7 +7,7 @@ import { ProfileGate } from "@/components/profile/ProfileGate";
 import { PushNotificationButton } from "@/components/PushNotificationButton";
 import { DashboardShell } from "@/components/shell/DashboardShell";
 import { Loader } from "@/components/ui/Loader";
-import { useAuth } from "@/lib/auth-context";
+import { SESSION_CHECK_ERROR_MESSAGE, useAuth } from "@/lib/auth-context";
 import { MatchesProvider } from "@/lib/matches-context";
 import type { SidebarNavItem } from "@/components/shell/Sidebar";
 
@@ -26,10 +26,25 @@ const NAV_ITEMS: SidebarNavItem[] = [
  * página — ver `lib/matches-context.tsx`).
  */
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { status, tenant, logout, loggingOut } = useAuth();
+  const { status, tenant, logout, loggingOut, refresh } = useAuth();
 
   if (status === "loading") {
     return <Loader label="Confirmando tu acceso..." />;
+  }
+
+  if (status === "error") {
+    return (
+      <div className="bg-background flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-error text-sm">{SESSION_CHECK_ERROR_MESSAGE}</p>
+        <button
+          type="button"
+          onClick={() => void refresh()}
+          className="text-sm font-medium underline underline-offset-4"
+        >
+          Reintentar
+        </button>
+      </div>
+    );
   }
 
   if (status === "unauthenticated") {

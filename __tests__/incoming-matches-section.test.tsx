@@ -110,4 +110,71 @@ describe("IncomingMatchesSection (KAN-190)", () => {
     expect(screen.queryByText(`${ZONE_MATCH_REASON_PREFIX} en Barrio Sur`)).not.toBeInTheDocument();
     expect(screen.getByText("Coincidencia de Precio")).toBeInTheDocument();
   });
+
+  describe("highlightIds (KAN-303 — deep-link del push de interesados)", () => {
+    it("un match en highlightIds se abre solo y queda con fondo distintivo", () => {
+      const match = buildIncomingMatch({ id: "im-highlight" });
+      render(
+        <IncomingMatchesSection
+          status="loaded"
+          matches={[match]}
+          error={null}
+          highlightIds={["im-highlight"]}
+        />,
+      );
+
+      const details = document.getElementById("incoming-match-im-highlight") as HTMLDetailsElement;
+      expect(details).not.toBeNull();
+      expect(details.open).toBe(true);
+      expect(details.className).toContain("bg-accent-glow");
+    });
+
+    it("un match que NO está en highlightIds no se abre ni se resalta", () => {
+      const match = buildIncomingMatch({ id: "im-normal" });
+      render(
+        <IncomingMatchesSection
+          status="loaded"
+          matches={[match]}
+          error={null}
+          highlightIds={["otro-id-distinto"]}
+        />,
+      );
+
+      const details = document.getElementById("incoming-match-im-normal") as HTMLDetailsElement;
+      expect(details.open).toBe(false);
+      expect(details.className).not.toContain("bg-accent-glow");
+    });
+
+    it("sin highlightIds (comportamiento default), ningún match se abre solo", () => {
+      const match = buildIncomingMatch({ id: "im-default" });
+      render(<IncomingMatchesSection status="loaded" matches={[match]} error={null} />);
+
+      const details = document.getElementById("incoming-match-im-default") as HTMLDetailsElement;
+      expect(details.open).toBe(false);
+    });
+
+    it("varios ids en highlightIds resaltan a cada uno de los matches correspondientes", () => {
+      const matchA = buildIncomingMatch({ id: "im-a" });
+      const matchB = buildIncomingMatch({ id: "im-b" });
+      const matchC = buildIncomingMatch({ id: "im-c" });
+      render(
+        <IncomingMatchesSection
+          status="loaded"
+          matches={[matchA, matchB, matchC]}
+          error={null}
+          highlightIds={["im-a", "im-c"]}
+        />,
+      );
+
+      expect((document.getElementById("incoming-match-im-a") as HTMLDetailsElement).open).toBe(
+        true,
+      );
+      expect((document.getElementById("incoming-match-im-b") as HTMLDetailsElement).open).toBe(
+        false,
+      );
+      expect((document.getElementById("incoming-match-im-c") as HTMLDetailsElement).open).toBe(
+        true,
+      );
+    });
+  });
 });

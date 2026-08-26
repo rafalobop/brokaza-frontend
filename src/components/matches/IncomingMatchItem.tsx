@@ -15,13 +15,19 @@
  * que recibe el match: primero qué buscaban (contexto), después quién y cómo contactarlo.
  */
 
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { isZoneMatchReason } from "@/lib/match-zone-tooltip";
 import type { IncomingMatch } from "@/lib/matches-api";
 import { Badge } from "@/components/ui/Badge";
 
 export interface IncomingMatchItemProps {
   match: IncomingMatch;
+  /**
+   * KAN-303: true cuando este match llegó vía el deep-link `?highlight=` del push de "interesados
+   * en tus propiedades" (ver `MatchesPage`) — resalta la fila con fondo distintivo y la abre sola,
+   * para diferenciarla del resto si ya había matches previos.
+   */
+  highlighted?: boolean;
 }
 
 // Verde de WhatsApp — mismo `.contact-link` del legacy (matchouse/src/dashboard/style.css),
@@ -37,13 +43,28 @@ function InfoRow({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-export function IncomingMatchItem({ match }: IncomingMatchItemProps) {
+export function IncomingMatchItem({ match, highlighted = false }: IncomingMatchItemProps) {
   const { searcherContact: contact } = match;
   const phoneDigits = (contact.phone_number || "").replace(/\D/g, "");
   const visibleReasons = match.reasons.filter((reason) => !isZoneMatchReason(reason));
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+
+  // Abre el acordeón una sola vez al montar si viene resaltado — imperativo (no `open={highlighted}`
+  // como prop controlada) para no pelear con que el usuario lo cierre manualmente si el componente
+  // vuelve a renderizar después (ej. refetch por WS).
+  useEffect(() => {
+    if (highlighted && detailsRef.current) {
+      detailsRef.current.open = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <details className="rounded-radius-md border-card-border border">
+    <details
+      ref={detailsRef}
+      id={`incoming-match-${match.id}`}
+      className={`rounded-radius-md border-card-border border ${highlighted ? "border-accent bg-accent-glow" : ""}`}
+    >
       <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-2 px-4 py-3">
         <div className="flex flex-col">
           <strong className="text-foreground">{match.property.domicilio}</strong>

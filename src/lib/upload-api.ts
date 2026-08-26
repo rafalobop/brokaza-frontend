@@ -11,6 +11,7 @@ import { apiClient } from "./api-client";
 import type { ExcelMappingField } from "./mapping-fields-api";
 
 export interface UploadPriceParseError {
+  sheetName: string;
   address: string;
   rawValue: string;
 }

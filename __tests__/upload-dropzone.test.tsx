@@ -60,7 +60,7 @@ describe("UploadDropzone (KAN-216)", () => {
     expect(init.method).toBe("POST");
   });
 
-  it("muestra el aviso de precios no reconocidos cuando priceParseErrors no está vacío (KAN-219, §8)", async () => {
+  it("muestra el detalle (hoja, dirección, valor crudo) de cada precio no reconocido (KAN-302: el agente necesita ver qué corregir, no solo el conteo)", async () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
@@ -68,7 +68,9 @@ describe("UploadDropzone (KAN-216)", () => {
         body: {
           success: true,
           count: 10,
-          priceParseErrors: [{ address: "Calle Falsa 123", rawValue: "a convenir" }],
+          priceParseErrors: [
+            { sheetName: "Ventas", address: "Calle Falsa 123", rawValue: "a convenir" },
+          ],
         },
       }),
     );
@@ -79,10 +81,33 @@ describe("UploadDropzone (KAN-216)", () => {
     });
 
     expect(
-      await screen.findByText(
-        "Se cargaron 10 propiedades. 1 con precio no reconocido (se cargaron sin precio).",
-      ),
+      await screen.findByText(/Se cargaron 10 propiedades\. 1 con precio no reconocido/),
     ).toBeInTheDocument();
+    expect(await screen.findByText('Ventas: Calle Falsa 123 ("a convenir")')).toBeInTheDocument();
+  });
+
+  it("con más de 5 priceParseErrors, muestra solo los primeros 5 y el conteo restante", async () => {
+    const priceParseErrors = Array.from({ length: 7 }, (_, i) => ({
+      sheetName: "Ventas",
+      address: `Calle ${i + 1}`,
+      rawValue: "a convenir",
+    }));
+    global.fetch = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: { success: true, count: 20, priceParseErrors },
+      }),
+    );
+
+    render(<UploadDropzone />);
+    fireEvent.drop(screen.getByTestId("upload-dropzone"), {
+      dataTransfer: { files: [excelFile()] },
+    });
+
+    expect(await screen.findByText('Ventas: Calle 5 ("a convenir")')).toBeInTheDocument();
+    expect(screen.queryByText('Ventas: Calle 6 ("a convenir")')).not.toBeInTheDocument();
+    expect(await screen.findByText("y 2 más.")).toBeInTheDocument();
   });
 
   it("elegir un archivo por el input sube el archivo (change event)", async () => {

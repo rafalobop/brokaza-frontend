@@ -24,13 +24,16 @@ import {
   type ReactNode,
 } from "react";
 import { adminApiClient } from "./admin-api-client";
+import { ApiError } from "./api-client";
 import { consumeAuthCallbackHash } from "./auth-callback";
 import { onUnauthorized } from "./auth-events";
 
 const LOGOUT_SUCCESS_MESSAGE = "Cerraste sesión correctamente.";
 const SESSION_EXPIRED_MESSAGE = "Tu sesión expiró. Volvé a ingresar.";
+export const SESSION_CHECK_ERROR_MESSAGE =
+  "No pudimos confirmar tu sesión. Revisá tu conexión e intentá de nuevo.";
 
-export type AdminAuthStatus = "loading" | "authenticated" | "unauthenticated";
+export type AdminAuthStatus = "loading" | "authenticated" | "unauthenticated" | "error";
 
 export interface AdminSession {
   email: string;
@@ -44,6 +47,7 @@ interface AdminAuthState {
 type AdminAuthAction =
   | { type: "SESSION_LOADING" }
   | { type: "SESSION_RESOLVED"; admin: AdminSession | null }
+  | { type: "SESSION_CHECK_FAILED" }
   | { type: "SESSION_CLEARED" };
 
 const initialState: AdminAuthState = { status: "loading", admin: null };
@@ -56,6 +60,8 @@ function adminAuthReducer(state: AdminAuthState, action: AdminAuthAction): Admin
       return action.admin
         ? { status: "authenticated", admin: action.admin }
         : { status: "unauthenticated", admin: null };
+    case "SESSION_CHECK_FAILED":
+      return { status: "error", admin: null };
     case "SESSION_CLEARED":
       return { status: "unauthenticated", admin: null };
     default:
@@ -105,7 +111,13 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         type: "SESSION_RESOLVED",
         admin: res.authenticated && res.admin ? res.admin : null,
       });
-    } catch {
+    } catch (error) {
+      // Ver el mismo caso en `auth-context.tsx`: un fallo de red/timeout no
+      // es "sin sesión", es "no pudimos preguntar".
+      if (error instanceof ApiError && (error.kind === "network" || error.kind === "timeout")) {
+        dispatch({ type: "SESSION_CHECK_FAILED" });
+        return;
+      }
       dispatch({ type: "SESSION_RESOLVED", admin: null });
     }
   }, []);

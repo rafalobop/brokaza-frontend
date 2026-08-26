@@ -1,7 +1,11 @@
 "use client";
 
 import { Building2, LayoutGrid } from "lucide-react";
-import { AdminAuthProvider, useAdminAuth } from "@/lib/admin-auth-context";
+import {
+  AdminAuthProvider,
+  SESSION_CHECK_ERROR_MESSAGE,
+  useAdminAuth,
+} from "@/lib/admin-auth-context";
 import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
 import { DashboardShell } from "@/components/shell/DashboardShell";
 import { Loader } from "@/components/ui/Loader";
@@ -28,10 +32,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 }
 
 function AdminChrome({ children }: { children: React.ReactNode }) {
-  const { status, admin, logout, loggingOut } = useAdminAuth();
+  const { status, admin, logout, loggingOut, refresh } = useAdminAuth();
 
   if (status === "loading") {
     return <Loader label="Confirmando tu acceso..." />;
+  }
+
+  if (status === "error") {
+    return (
+      <div className="bg-background flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-error text-sm">{SESSION_CHECK_ERROR_MESSAGE}</p>
+        <button
+          type="button"
+          onClick={() => void refresh()}
+          className="text-sm font-medium underline underline-offset-4"
+        >
+          Reintentar
+        </button>
+      </div>
+    );
   }
 
   if (status === "unauthenticated") {

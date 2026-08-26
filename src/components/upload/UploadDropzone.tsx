@@ -124,11 +124,26 @@ export function UploadDropzone() {
       {uploading ? <UploadProgressBar stage={stage} /> : null}
 
       {status === "success" && result ? (
-        <p className="text-success text-sm">
-          {result.priceParseErrors.length > 0
-            ? `Se cargaron ${result.count} propiedades. ${result.priceParseErrors.length} con precio no reconocido (se cargaron sin precio).`
-            : `¡Éxito! Se cargaron ${result.count} propiedades.`}
-        </p>
+        result.priceParseErrors.length > 0 ? (
+          <div className="text-warning flex flex-col gap-1 text-sm">
+            <p>
+              Se cargaron {result.count} propiedades. {result.priceParseErrors.length} con precio no
+              reconocido (se cargaron sin precio):
+            </p>
+            <ul className="list-inside list-disc pl-1">
+              {result.priceParseErrors.slice(0, 5).map((e, i) => (
+                <li key={`${e.sheetName}-${e.address}-${i}`}>
+                  {e.sheetName}: {e.address} (&quot;{e.rawValue}&quot;)
+                </li>
+              ))}
+            </ul>
+            {result.priceParseErrors.length > 5 ? (
+              <p>y {result.priceParseErrors.length - 5} más.</p>
+            ) : null}
+          </div>
+        ) : (
+          <p className="text-success text-sm">¡Éxito! Se cargaron {result.count} propiedades.</p>
+        )
       ) : null}
 
       {needsMapping ? (

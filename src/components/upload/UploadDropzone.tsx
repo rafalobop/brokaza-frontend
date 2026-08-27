@@ -16,8 +16,14 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { MappingConfirmModal } from "./MappingConfirmModal";
 import { UploadProgressBar } from "./UploadProgressBar";
+import { UploadResultModal } from "./UploadResultModal";
 
-export function UploadDropzone() {
+export interface UploadDropzoneProps {
+  /** KAN-221: dispara un refresh de la tabla de propiedades apenas la subida termina con éxito. */
+  onUploadSuccess?: () => void;
+}
+
+export function UploadDropzone({ onUploadSuccess }: UploadDropzoneProps = {}) {
   const {
     status,
     error,
@@ -29,12 +35,17 @@ export function UploadDropzone() {
     upload,
     confirmMapping,
     reset,
-  } = useUpload();
+  } = useUpload({ onSuccess: onUploadSuccess });
   const [dragOver, setDragOver] = useState(false);
   const [mappingModalOpen, setMappingModalOpen] = useState(false);
+  // KAN-220 (provisorio): el modal de resultado se abre solo mientras `dismissed` está en false —
+  // se resetea a cada subida nueva, así que arranca abierto apenas `status` pasa a "success" sin
+  // necesitar un efecto que dispare setState por su cuenta.
+  const [resultModalDismissed, setResultModalDismissed] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploading = status === "uploading";
   const needsMapping = status === "needs-mapping";
+  const resultModalOpen = status === "success" && !resultModalDismissed;
 
   const handleFiles = useCallback(
     (files: FileList | null) => {
@@ -43,6 +54,7 @@ export function UploadDropzone() {
       // agente vuelve a decidir explícitamente si quiere "Revisar mapeo" (AC3), no se le reabre
       // automáticamente el estado del archivo anterior.
       setMappingModalOpen(false);
+      setResultModalDismissed(false);
       void upload(files[0]);
     },
     [upload],
@@ -124,26 +136,20 @@ export function UploadDropzone() {
       {uploading ? <UploadProgressBar stage={stage} /> : null}
 
       {status === "success" && result ? (
-        result.priceParseErrors.length > 0 ? (
-          <div className="text-warning flex flex-col gap-1 text-sm">
-            <p>
-              Se cargaron {result.count} propiedades. {result.priceParseErrors.length} con precio no
-              reconocido (se cargaron sin precio):
-            </p>
-            <ul className="list-inside list-disc pl-1">
-              {result.priceParseErrors.slice(0, 5).map((e, i) => (
-                <li key={`${e.sheetName}-${e.address}-${i}`}>
-                  {e.sheetName}: {e.address} (&quot;{e.rawValue}&quot;)
-                </li>
-              ))}
-            </ul>
-            {result.priceParseErrors.length > 5 ? (
-              <p>y {result.priceParseErrors.length - 5} más.</p>
-            ) : null}
-          </div>
-        ) : (
-          <p className="text-success text-sm">¡Éxito! Se cargaron {result.count} propiedades.</p>
-        )
+        <div className="flex flex-col items-start gap-2">
+          <p className={result.failed.length > 0 ? "text-warning text-sm" : "text-success text-sm"}>
+            ¡Listo! Se cargaron {result.count} propiedades
+            {result.failed.length > 0 ? `, ${result.failed.length} con problemas.` : "."}
+          </p>
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={() => setResultModalDismissed(false)}
+          >
+            Ver detalle de la carga
+          </Button>
+        </div>
       ) : null}
 
       {needsMapping ? (
@@ -182,6 +188,14 @@ export function UploadDropzone() {
           stage={stage}
           onConfirm={(mappings) => void confirmMapping(mappings)}
           onCancel={handleCancelMapping}
+        />
+      ) : null}
+
+      {resultModalOpen && result ? (
+        <UploadResultModal
+          loaded={result.loaded}
+          failed={result.failed}
+          onClose={() => setResultModalDismissed(true)}
         />
       ) : null}
     </Card>

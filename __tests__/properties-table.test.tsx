@@ -55,6 +55,31 @@ describe("PropertiesTable (KAN-273)", () => {
     expect(screen.getByText("1 propiedad cargada.")).toBeInTheDocument();
   });
 
+  it("muestra la cantidad de dormitorios para casa/departamento pero no para terreno/local/oficina/otro", async () => {
+    const properties: TenantProperty[] = [
+      { ...SAMPLE_PROPERTY, id: "p-depto", property_type: "departamento", address: "Depto 1" },
+      { ...SAMPLE_PROPERTY, id: "p-casa", property_type: "casa", address: "Casa 1" },
+      { ...SAMPLE_PROPERTY, id: "p-terreno", property_type: "terreno", address: "Terreno 1" },
+      { ...SAMPLE_PROPERTY, id: "p-local", property_type: "local", address: "Local 1" },
+      { ...SAMPLE_PROPERTY, id: "p-oficina", property_type: "oficina", address: "Oficina 1" },
+      { ...SAMPLE_PROPERTY, id: "p-otro", property_type: "otro", address: "Otro 1" },
+    ];
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue(
+        mockResponse({ ok: true, status: 200, body: { properties, total: properties.length } }),
+      );
+
+    render(<PropertiesTable />);
+    await screen.findByText("Depto 1");
+
+    expect(screen.getAllByText("2 dorms.")).toHaveLength(2);
+    ["Terreno 1", "Local 1", "Oficina 1", "Otro 1"].forEach((address) => {
+      const row = screen.getByText(address).closest("div")!.parentElement as HTMLElement;
+      expect(within(row).queryByText(/dorm/)).not.toBeInTheDocument();
+    });
+  });
+
   it("muestra el estado vacío cuando no hay propiedades", async () => {
     global.fetch = jest
       .fn()

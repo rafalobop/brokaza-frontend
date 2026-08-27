@@ -6,9 +6,14 @@
  * Consume `useTenantProperties` (`/api/catalog/properties`). No usa un `<table>` HTML real — se
  * sigue el mismo patrón de lista de `Card`s + filas (`ActiveSearchesSection`/`ActiveSearchItem`)
  * que ya usa el resto del dashboard, con un header de "columnas" que dobla de control de orden.
+ *
+ * `refreshToken` (KAN-221, opcional): cada vez que cambia, se dispara `refresh()` — usado por la
+ * página para refrescar la tabla apenas termina una subida de Excel (`UploadDropzone`), sin que
+ * el agente tenga que recargar la página o navegar afuera y volver para ver la cartera recién
+ * cargada. `undefined` (o sin cambios) no hace nada — la carga inicial ya la maneja el hook solo.
  */
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ApiError } from "@/lib/api-client";
 import { useTenantProperties } from "@/lib/use-tenant-properties";
 import {
@@ -38,7 +43,11 @@ const SORT_OPTIONS: { field: SortableField; label: string }[] = [
   { field: "updated_at", label: "Última edición" },
 ];
 
-export function PropertiesTable() {
+export interface PropertiesTableProps {
+  refreshToken?: number;
+}
+
+export function PropertiesTable({ refreshToken }: PropertiesTableProps = {}) {
   const {
     status,
     properties,
@@ -55,6 +64,7 @@ export function PropertiesTable() {
     setSort,
     nextPage,
     prevPage,
+    refresh,
     createProperty,
     updateProperty,
     deleteProperty,
@@ -62,6 +72,17 @@ export function PropertiesTable() {
 
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+
+  // Se salta el primer render (la carga inicial ya la dispara useTenantProperties solo) — solo
+  // reacciona a cambios reales de refreshToken, uno por cada subida exitosa.
+  const previousRefreshToken = useRef(refreshToken);
+  useEffect(() => {
+    if (refreshToken === undefined || refreshToken === previousRefreshToken.current) return;
+    previousRefreshToken.current = refreshToken;
+    void (async () => {
+      refresh();
+    })();
+  }, [refreshToken, refresh]);
 
   async function handleCreate(input: Parameters<typeof createProperty>[0]) {
     try {

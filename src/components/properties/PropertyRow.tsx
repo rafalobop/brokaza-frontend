@@ -27,6 +27,14 @@ const OPERATION_BADGE_VARIANT: Record<TenantProperty["operation"], BadgeVariant>
   compra: "warning",
 };
 
+// Tipos donde "dormitorios" tiene sentido como dato (casa incluye duplex/PH/chalet — el parseo de
+// Excel los normaliza a "casa", ver `detectTipoPropiedad` en matchouse/src/services/excel.ts).
+// Terreno/local/oficina/otro (lote, galpón, etc.) no tienen dormitorios, mostrarlo ahí confunde.
+const PROPERTY_TYPES_WITH_BEDROOMS: ReadonlySet<TenantProperty["property_type"]> = new Set([
+  "casa",
+  "departamento",
+]);
+
 export interface PropertyRowProps {
   property: TenantProperty;
   onUpdate: (
@@ -95,9 +103,11 @@ export function PropertyRow({ property, onUpdate, onDelete }: PropertyRowProps) 
             </Badge>
             <Badge variant="info">{PROPERTY_TYPE_LABELS[property.property_type]}</Badge>
             <span className="text-text-secondary text-xs">{formatPrice(property)}</span>
-            <span className="text-text-secondary text-xs">
-              {property.bedrooms} dorm{property.bedrooms === 1 ? "" : "s"}.
-            </span>
+            {PROPERTY_TYPES_WITH_BEDROOMS.has(property.property_type) ? (
+              <span className="text-text-secondary text-xs">
+                {property.bedrooms} dorm{property.bedrooms === 1 ? "" : "s"}.
+              </span>
+            ) : null}
           </div>
         </div>
 

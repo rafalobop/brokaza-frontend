@@ -153,7 +153,7 @@ export function Sidebar(props: SidebarProps) {
             }`}
           />
           <div
-            className={`from-forest to-teal rounded-r-radius-lg relative flex w-72 max-w-[80vw] flex-col overflow-hidden bg-gradient-to-b shadow-(--shadow) transition-transform duration-300 ease-out ${
+            className={`from-forest to-teal relative flex w-full flex-col overflow-hidden bg-gradient-to-b shadow-(--shadow) transition-transform duration-300 ease-out ${
               entered ? "translate-x-0" : "-translate-x-full"
             }`}
           >

@@ -17,7 +17,7 @@ export function LinkCard({ href, className = "", ...props }: LinkCardProps) {
     <Link
       href={href}
       {...props}
-      className={`rounded-radius-lg border-card-border bg-card hover:border-accent-glow focus-visible:outline-accent flex flex-col gap-4 border p-5 transition-colors duration-200 focus-visible:outline-2 ${className}`}
+      className={`rounded-radius-lg border-card-border bg-card hover:border-accent-glow focus-visible:outline-accent flex flex-col gap-4 border p-5 shadow-(--shadow) backdrop-blur-md transition-colors duration-200 focus-visible:outline-2 ${className}`}
     />
   );
 }

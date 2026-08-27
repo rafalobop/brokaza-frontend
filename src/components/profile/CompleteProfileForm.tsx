@@ -106,7 +106,7 @@ export function CompleteProfileForm() {
             onChange={(event) => setFirstName(event.target.value)}
             autoComplete="given-name"
             disabled={submitting}
-            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 outline-none disabled:opacity-60"
+            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 shadow-sm outline-none disabled:opacity-60"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -116,7 +116,7 @@ export function CompleteProfileForm() {
             onChange={(event) => setLastName(event.target.value)}
             autoComplete="family-name"
             disabled={submitting}
-            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 outline-none disabled:opacity-60"
+            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 shadow-sm outline-none disabled:opacity-60"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -127,7 +127,7 @@ export function CompleteProfileForm() {
             placeholder="+54 381 555-5555"
             autoComplete="tel"
             disabled={submitting}
-            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 outline-none disabled:opacity-60"
+            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 shadow-sm outline-none disabled:opacity-60"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -137,7 +137,7 @@ export function CompleteProfileForm() {
             onChange={(event) => setAgencyName(event.target.value)}
             autoComplete="organization"
             disabled={submitting}
-            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 outline-none disabled:opacity-60"
+            className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 shadow-sm outline-none disabled:opacity-60"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">

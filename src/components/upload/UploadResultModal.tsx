@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * `UploadResultModal` (KAN-220, implementación provisoria) — al terminar `POST /api/upload` (o
+ * `UploadResultModal` (KAN-220) — al terminar `POST /api/upload` (o
  * `/confirm-mapping`), muestra el detalle propiedad por propiedad de la subida: qué se cargó sin
  * problemas (`loaded`) y qué no se cargó completo y por qué (`failed`, que une precio no
  * reconocido, geocoding fallido y hojas omitidas — ver `buildUploadSummary` en

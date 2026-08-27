@@ -38,7 +38,7 @@ export function UploadDropzone({ onUploadSuccess }: UploadDropzoneProps = {}) {
   } = useUpload({ onSuccess: onUploadSuccess });
   const [dragOver, setDragOver] = useState(false);
   const [mappingModalOpen, setMappingModalOpen] = useState(false);
-  // KAN-220 (provisorio): el modal de resultado se abre solo mientras `dismissed` está en false —
+  // KAN-220: el modal de resultado se abre solo mientras `dismissed` está en false —
   // se resetea a cada subida nueva, así que arranca abierto apenas `status` pasa a "success" sin
   // necesitar un efecto que dispare setState por su cuenta.
   const [resultModalDismissed, setResultModalDismissed] = useState(false);

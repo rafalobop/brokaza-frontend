@@ -16,10 +16,32 @@ export interface UploadPriceParseError {
   rawValue: string;
 }
 
+/** Propiedad cargada sin problemas (KAN-220, ver `UploadResultModal`). */
+export interface UploadLoadedProperty {
+  sheetName: string;
+  address: string;
+  operation: "venta" | "alquiler";
+  price: number;
+  currency: "USD" | "ARS";
+}
+
+/**
+ * Propiedad u hoja que no se cargó completa (KAN-220): une precio no reconocido, geocoding
+ * fallido y hojas omitidas por columnas no resueltas en una sola lista con motivo legible.
+ * `address` es `null` cuando el fallo es de la hoja entera, no de una fila puntual.
+ */
+export interface UploadFailureDetail {
+  sheetName: string;
+  address: string | null;
+  reason: string;
+}
+
 export interface UploadSuccessResponse {
   success: true;
   count: number;
   priceParseErrors: UploadPriceParseError[];
+  loaded: UploadLoadedProperty[];
+  failed: UploadFailureDetail[];
 }
 
 export interface PendingMappingFieldCandidate {

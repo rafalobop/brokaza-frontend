@@ -44,7 +44,7 @@ describe("UploadDropzone (KAN-216)", () => {
       mockResponse({
         ok: true,
         status: 200,
-        body: { success: true, count: 7, priceParseErrors: [] },
+        body: { success: true, count: 7, priceParseErrors: [], loaded: [], failed: [] },
       }),
     );
 
@@ -54,13 +54,13 @@ describe("UploadDropzone (KAN-216)", () => {
 
     fireEvent.drop(dropzone, { dataTransfer: { files: [file] } });
 
-    expect(await screen.findByText("¡Éxito! Se cargaron 7 propiedades.")).toBeInTheDocument();
+    expect(await screen.findByText("¡Listo! Se cargaron 7 propiedades.")).toBeInTheDocument();
     const [url, init] = (global.fetch as jest.Mock).mock.calls[0];
     expect(url).toBe("/api/upload");
     expect(init.method).toBe("POST");
   });
 
-  it("muestra el detalle (hoja, dirección, valor crudo) de cada precio no reconocido (KAN-302: el agente necesita ver qué corregir, no solo el conteo)", async () => {
+  it("abre automáticamente el modal de resultado con el detalle (hoja, dirección, motivo) de lo que no se cargó bien (KAN-220)", async () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
@@ -70,6 +70,14 @@ describe("UploadDropzone (KAN-216)", () => {
           count: 10,
           priceParseErrors: [
             { sheetName: "Ventas", address: "Calle Falsa 123", rawValue: "a convenir" },
+          ],
+          loaded: [],
+          failed: [
+            {
+              sheetName: "Ventas",
+              address: "Calle Falsa 123",
+              reason: 'Precio no reconocido ("a convenir"), se cargó sin precio.',
+            },
           ],
         },
       }),
@@ -81,33 +89,13 @@ describe("UploadDropzone (KAN-216)", () => {
     });
 
     expect(
-      await screen.findByText(/Se cargaron 10 propiedades\. 1 con precio no reconocido/),
+      await screen.findByText("¡Listo! Se cargaron 10 propiedades, 1 con problemas."),
     ).toBeInTheDocument();
-    expect(await screen.findByText('Ventas: Calle Falsa 123 ("a convenir")')).toBeInTheDocument();
-  });
-
-  it("con más de 5 priceParseErrors, muestra solo los primeros 5 y el conteo restante", async () => {
-    const priceParseErrors = Array.from({ length: 7 }, (_, i) => ({
-      sheetName: "Ventas",
-      address: `Calle ${i + 1}`,
-      rawValue: "a convenir",
-    }));
-    global.fetch = jest.fn().mockResolvedValue(
-      mockResponse({
-        ok: true,
-        status: 200,
-        body: { success: true, count: 20, priceParseErrors },
-      }),
-    );
-
-    render(<UploadDropzone />);
-    fireEvent.drop(screen.getByTestId("upload-dropzone"), {
-      dataTransfer: { files: [excelFile()] },
-    });
-
-    expect(await screen.findByText('Ventas: Calle 5 ("a convenir")')).toBeInTheDocument();
-    expect(screen.queryByText('Ventas: Calle 6 ("a convenir")')).not.toBeInTheDocument();
-    expect(await screen.findByText("y 2 más.")).toBeInTheDocument();
+    expect(await screen.findByText("Resultado de la carga")).toBeInTheDocument();
+    expect(screen.getByText("Calle Falsa 123")).toBeInTheDocument();
+    expect(
+      screen.getByText('Precio no reconocido ("a convenir"), se cargó sin precio.'),
+    ).toBeInTheDocument();
   });
 
   it("elegir un archivo por el input sube el archivo (change event)", async () => {
@@ -115,7 +103,7 @@ describe("UploadDropzone (KAN-216)", () => {
       mockResponse({
         ok: true,
         status: 200,
-        body: { success: true, count: 3, priceParseErrors: [] },
+        body: { success: true, count: 3, priceParseErrors: [], loaded: [], failed: [] },
       }),
     );
 
@@ -124,7 +112,7 @@ describe("UploadDropzone (KAN-216)", () => {
 
     fireEvent.change(input, { target: { files: [excelFile()] } });
 
-    expect(await screen.findByText("¡Éxito! Se cargaron 3 propiedades.")).toBeInTheDocument();
+    expect(await screen.findByText("¡Listo! Se cargaron 3 propiedades.")).toBeInTheDocument();
   });
 
   it("un archivo con extensión no permitida muestra el error sin llamar a fetch", () => {
@@ -194,7 +182,7 @@ describe("UploadDropzone (KAN-216)", () => {
       mockResponse({
         ok: true,
         status: 200,
-        body: { success: true, count: 1, priceParseErrors: [] },
+        body: { success: true, count: 1, priceParseErrors: [], loaded: [], failed: [] },
       }),
     );
 
@@ -290,12 +278,12 @@ describe("UploadDropzone (KAN-216)", () => {
         mockResponse({
           ok: true,
           status: 200,
-          body: { success: true, count: 4, priceParseErrors: [] },
+          body: { success: true, count: 4, priceParseErrors: [], loaded: [], failed: [] },
         }),
       );
       fireEvent.click(screen.getByRole("button", { name: "Confirmar y cargar" }));
 
-      expect(await screen.findByText("¡Éxito! Se cargaron 4 propiedades.")).toBeInTheDocument();
+      expect(await screen.findByText("¡Listo! Se cargaron 4 propiedades.")).toBeInTheDocument();
       expect(screen.queryByText("Confirmar mapeo de columnas")).not.toBeInTheDocument();
 
       const [url, init] = fetchMock.mock.calls[2];

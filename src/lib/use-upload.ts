@@ -74,7 +74,17 @@ function validateExtension(file: File): string | null {
   return null;
 }
 
-export function useUpload(): UseUploadResult {
+export interface UseUploadOptions {
+  /**
+   * KAN-221: se dispara justo después de que la subida (o la confirmación de mapeo) termina con
+   * éxito — antes de que el agente tenga que actualizar la página o navegar afuera y volver para
+   * ver la cartera recién cargada, el caller (la página de Propiedades) refresca la tabla acá.
+   */
+  onSuccess?: () => void;
+}
+
+export function useUpload(options: UseUploadOptions = {}): UseUploadResult {
+  const { onSuccess } = options;
   const [status, setStatus] = useState<UploadStatus>("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<UploadSuccessResponse | null>(null);
@@ -156,6 +166,7 @@ export function useUpload(): UseUploadResult {
         }
         setStatus("success");
         setResult(res);
+        onSuccess?.();
       } catch (err) {
         const message = err instanceof ApiError ? err.message : "Error al subir el archivo.";
         setStatus("error");
@@ -164,7 +175,7 @@ export function useUpload(): UseUploadResult {
         closeStatusSocket();
       }
     },
-    [openStatusSocket, closeStatusSocket],
+    [openStatusSocket, closeStatusSocket, onSuccess],
   );
 
   const confirmMapping = useCallback(
@@ -182,6 +193,7 @@ export function useUpload(): UseUploadResult {
         setResult(res);
         setPendingSheets([]);
         setPendingFile(null);
+        onSuccess?.();
       } catch (err) {
         const message =
           err instanceof ApiError ? err.message : "No se pudo confirmar el mapeo de columnas.";
@@ -191,7 +203,7 @@ export function useUpload(): UseUploadResult {
         closeStatusSocket();
       }
     },
-    [pendingFile, openStatusSocket, closeStatusSocket],
+    [pendingFile, openStatusSocket, closeStatusSocket, onSuccess],
   );
 
   const reset = useCallback(() => {

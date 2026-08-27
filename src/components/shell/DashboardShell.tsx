@@ -45,9 +45,7 @@ export function DashboardShell({
     // recortar y crece con el contenido) pero recalculada al viewport visible real en cada
     // resize del navegador (`dvh` = dynamic viewport height), así el área tocable de `main`
     // siempre coincide con lo que el usuario ve.
-    <div
-      className="bg-background flex h-dvh justify-center overflow-hidden bg-[radial-gradient(640px_circle_at_92%_-8%,var(--shell-glow-a),transparent_65%),radial-gradient(680px_circle_at_-8%_108%,var(--shell-glow-b),transparent_65%)] p-0 md:p-6"
-    >
+    <div className="bg-background flex h-dvh justify-center overflow-hidden bg-[radial-gradient(640px_circle_at_92%_-8%,var(--shell-glow-a),transparent_65%),radial-gradient(680px_circle_at_-8%_108%,var(--shell-glow-b),transparent_65%)] p-0 md:p-6">
       {/* Los resplandores de marca (glow) detrás del panel translúcido son este `background`
           (ver `--shell-glow-a`/`--shell-glow-b` en globals.css), no elementos en el DOM — así el
           `backdrop-blur` de las cards tiene color/contraste para desenfocar, sin arriesgar el bug

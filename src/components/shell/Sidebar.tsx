@@ -79,7 +79,7 @@ function SidebarContent({
               } ${
                 isActive
                   ? "text-forest bg-white font-semibold shadow-sm"
-                  : "text-sidebar-muted hover:text-sidebar-muted-hover hover:bg-white/10 font-normal"
+                  : "text-sidebar-muted hover:text-sidebar-muted-hover font-normal hover:bg-white/10"
               }`}
             >
               <Icon

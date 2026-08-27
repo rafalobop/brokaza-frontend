@@ -99,7 +99,7 @@ export function LoginForm() {
               placeholder="vos@inmobiliaria.com"
               autoComplete="email"
               disabled={submitting}
-              className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 shadow-sm px-3 py-2 outline-none disabled:opacity-60"
+              className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 shadow-sm outline-none disabled:opacity-60"
             />
           </label>
           {displayedError ? <p className="text-error text-sm">{displayedError}</p> : null}

@@ -36,7 +36,7 @@ export function Modal({ children, wide = false, onClose }: ModalProps) {
       onClick={handleBackdropClick}
     >
       <div
-        className={`rounded-radius-lg border-card-border bg-paper/75 text-foreground dark:bg-[#1F292B]/75 flex max-h-[85vh] w-full flex-col gap-5 overflow-y-auto border p-6 shadow-(--shadow) backdrop-blur-xl ${wide ? "max-w-2xl" : "max-w-md"}`}
+        className={`rounded-radius-lg border-card-border bg-paper/75 text-foreground flex max-h-[85vh] w-full flex-col gap-5 overflow-y-auto border p-6 shadow-(--shadow) backdrop-blur-xl dark:bg-[#1F292B]/75 ${wide ? "max-w-2xl" : "max-w-md"}`}
       >
         {children}
       </div>

@@ -38,7 +38,7 @@ export function Button({
   return (
     <button
       {...props}
-      className={`rounded-radius-sm shadow-sm transition-colors duration-200 hover:shadow-md font-semibold disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${className}`}
+      className={`rounded-radius-sm font-semibold shadow-sm transition-colors duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${className}`}
     />
   );
 }

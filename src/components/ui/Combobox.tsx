@@ -107,7 +107,7 @@ export function Combobox({
   return (
     <div ref={rootRef} className="relative">
       <div
-        className={`rounded-radius-sm border-card-border text-foreground focus-within:border-accent flex w-full items-center gap-2 border bg-white/8 shadow-sm px-3 py-2 disabled:opacity-60 ${className}`}
+        className={`rounded-radius-sm border-card-border text-foreground focus-within:border-accent flex w-full items-center gap-2 border bg-white/8 px-3 py-2 shadow-sm disabled:opacity-60 ${className}`}
       >
         <input
           ref={inputRef}
@@ -133,7 +133,7 @@ export function Combobox({
           role="listbox"
           id={listboxId}
           aria-label={ariaLabel}
-          className="rounded-radius-sm border-card-border bg-paper/80 text-foreground dark:bg-[#1F292B]/80 absolute top-full left-0 z-20 mt-1 max-h-64 min-w-full overflow-y-auto border py-1 shadow-(--shadow) backdrop-blur-xl"
+          className="rounded-radius-sm border-card-border bg-paper/80 text-foreground absolute top-full left-0 z-20 mt-1 max-h-64 min-w-full overflow-y-auto border py-1 shadow-(--shadow) backdrop-blur-xl dark:bg-[#1F292B]/80"
         >
           {loading ? (
             <li className="text-text-secondary px-3 py-1.5 text-sm">Cargando ciudades...</li>

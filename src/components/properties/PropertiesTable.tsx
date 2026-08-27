@@ -27,7 +27,7 @@ import { PropertyRow } from "./PropertyRow";
 import { AddPropertyModal } from "./AddPropertyModal";
 
 const SELECT_CLASS =
-  "rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 text-sm outline-none";
+  "rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 shadow-sm px-3 py-2 text-sm outline-none";
 
 const SORT_OPTIONS: { field: SortableField; label: string }[] = [
   { field: "address", label: "Dirección" },

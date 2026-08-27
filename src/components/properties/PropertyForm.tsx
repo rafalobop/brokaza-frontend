@@ -25,7 +25,7 @@ import { Select } from "@/components/ui/Select";
 import { LeafletMapDynamic } from "@/components/map/LeafletMapDynamic";
 
 const INPUT_CLASS =
-  "rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 text-sm outline-none disabled:opacity-60";
+  "rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 shadow-sm px-3 py-2 text-sm outline-none disabled:opacity-60";
 const LABEL_CLASS = "text-text-secondary text-xs font-medium";
 
 export interface PropertyFormValues {

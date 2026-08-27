@@ -64,7 +64,7 @@ export function Select({
         aria-label={ariaLabel}
         disabled={disabled}
         onClick={() => setOpen((prev) => !prev)}
-        className={`rounded-radius-sm border-card-border text-foreground focus:border-accent flex w-full items-center justify-between gap-2 border bg-white/8 px-3 py-2 text-left text-sm outline-none disabled:opacity-60 ${className}`}
+        className={`rounded-radius-sm border-card-border text-foreground focus:border-accent flex w-full items-center justify-between gap-2 border bg-white/8 px-3 py-2 text-left text-sm shadow-sm outline-none disabled:opacity-60 ${className}`}
       >
         <span className="truncate">{selected?.label ?? ""}</span>
         <ChevronDown className="h-4 w-4 shrink-0 opacity-70" aria-hidden="true" />
@@ -75,7 +75,7 @@ export function Select({
           role="listbox"
           id={listboxId}
           aria-label={ariaLabel}
-          className="rounded-radius-sm border-card-border bg-paper text-forest dark:text-foreground absolute top-full left-0 z-20 mt-1 max-h-64 min-w-full overflow-y-auto border py-1 shadow-(--shadow) dark:bg-[#1F292B]"
+          className="rounded-radius-sm border-card-border bg-paper/80 text-foreground absolute top-full left-0 z-20 mt-1 max-h-64 min-w-full overflow-y-auto border py-1 shadow-(--shadow) backdrop-blur-xl dark:bg-[#1F292B]/80"
         >
           {options.map((option) => (
             <li key={option.value} role="option" aria-selected={option.value === value}>

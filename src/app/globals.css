@@ -31,9 +31,9 @@
   --terracotta: #9c5c54;
   --amber: #b9862e;
 
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 22px;
+  --radius-sm: 14px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
 
   /* Tema claro (Paper) — default */
   --bg-color: var(--sage);
@@ -67,6 +67,17 @@
      "muted" de acá son los ítems de nav inactivos sobre ese fondo siempre oscuro. */
   --sidebar-muted: rgba(255, 255, 255, 0.68);
   --sidebar-muted-hover: rgba(255, 255, 255, 0.92);
+
+  /* Resplandores de marca detrás del panel translúcido (glassmorphismo) — un `background`
+     estático en `DashboardShell`, no elementos posicionados en el DOM. Antes eran dos `<div>`
+     absolutos con offsets negativos y `-z-10`: su desborde volvía scrolleable con la rueda/
+     trackpad al panel exterior (`overflow-hidden` no bloquea el scroll por wheel/touch en
+     Chrome, solo oculta la scrollbar), y ese scroll quedaba pegado entre navegaciones porque el
+     panel nunca se desmonta — corriendo sidebar+navbar fuera de vista. Un `background-image`
+     no tiene layout box propio: no puede generar overflow ni quedar scrolleado.
+  */
+  --shell-glow-a: rgba(108, 134, 58, 0.22);
+  --shell-glow-b: rgba(42, 54, 56, 0.16);
 }
 
 [data-theme="dark"] {
@@ -76,8 +87,8 @@
   --bg-color: var(--teal);
   --panel-bg: rgba(255, 255, 255, 0.04);
   --panel-border: rgba(255, 255, 255, 0.1);
-  --card-bg: rgba(255, 255, 255, 0.05);
-  --card-border: rgba(255, 255, 255, 0.12);
+  --card-bg: rgba(255, 255, 255, 0.08);
+  --card-border: rgba(255, 255, 255, 0.16);
   --text-primary: var(--paper);
   --text-secondary: rgba(255, 255, 255, 0.72);
   --accent: #9cc168;
@@ -98,6 +109,9 @@
   --info-border: rgba(157, 182, 201, 0.3);
 
   --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+  --shell-glow-a: rgba(156, 193, 104, 0.12);
+  --shell-glow-b: rgba(42, 54, 56, 0.35);
 }
 
 @theme inline {

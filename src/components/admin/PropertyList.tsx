@@ -50,7 +50,7 @@ export function PropertyList() {
         onChange={(event) => setSearch(event.target.value)}
         placeholder="Buscar por dirección..."
         aria-label="Buscar propiedades por dirección"
-        className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 text-sm outline-none"
+        className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 shadow-sm px-3 py-2 text-sm outline-none"
       />
 
       {status === "error" && error ? <p className="text-error text-sm">{error}</p> : null}

@@ -27,7 +27,8 @@ function SidebarContent({
   brand,
   navItems,
   onNavigate,
-}: SidebarProps & { onNavigate?: () => void }) {
+  mobile = false,
+}: SidebarProps & { onNavigate?: () => void; mobile?: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -36,22 +37,35 @@ function SidebarContent({
     // marca — sin esta línea, si `navItems` alguna vez crece más de lo que entra en la altura
     // disponible (pantalla chica / mobile en horizontal), ese `overflow-hidden` del padre
     // bloquea el desplazamiento del propio sidebar en vez de solo recortar el fondo (KAN-301).
-    <div className="flex h-full w-full flex-col gap-6 overflow-y-auto p-5">
-      <Link href="/" onClick={onNavigate} className="flex items-center gap-2 px-2">
+    //
+    // `mobile`: el drawer no es solo el sidebar de desktop angostado — necesita verse como un
+    // panel de navegación mobile real (botones grandes, más aire), no una versión mini adaptada.
+    // Mismo componente para no duplicar la lista de nav, pero escalado vía este flag.
+    <div
+      className={`flex h-full w-full flex-col overflow-y-auto ${mobile ? "gap-10 p-6" : "gap-8 p-6"}`}
+    >
+      <Link
+        href="/"
+        onClick={onNavigate}
+        className={`flex items-center px-2 ${mobile ? "gap-3" : "gap-3"}`}
+      >
         <Image
           src="/logo_brokaza.png"
           alt=""
-          width={32}
-          height={32}
+          width={mobile ? 44 : 40}
+          height={mobile ? 44 : 40}
           className="rounded-radius-md object-cover"
         />
         {/* KAN-298: "Brokaza" es el nombre de marca — término crítico, ver NoTranslate.tsx. */}
-        <span translate="no" className="notranslate font-heading text-lg font-bold text-white">
+        <span
+          translate="no"
+          className={`notranslate font-heading font-bold text-white ${mobile ? "text-2xl" : "text-xl"}`}
+        >
           {brand}
         </span>
       </Link>
 
-      <nav className="flex flex-col gap-2">
+      <nav className={`flex flex-col ${mobile ? "gap-3" : "gap-2.5"}`}>
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
@@ -60,13 +74,18 @@ function SidebarContent({
               key={item.href}
               href={item.href}
               onClick={onNavigate}
-              className={`rounded-radius-md flex w-full items-center gap-3 px-3.5 py-3 text-sm transition-colors duration-150 ${
+              className={`flex w-full items-center rounded-2xl transition-colors duration-150 ${
+                mobile ? "gap-4 px-4 py-4 text-base" : "gap-3.5 px-4 py-3.5 text-[15px]"
+              } ${
                 isActive
                   ? "text-forest bg-white font-semibold shadow-sm"
-                  : "text-sidebar-muted hover:text-sidebar-muted-hover font-normal hover:bg-white/10"
+                  : "text-sidebar-muted hover:text-sidebar-muted-hover hover:bg-white/10 font-normal"
               }`}
             >
-              <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <Icon
+                className={mobile ? "h-6 w-6 shrink-0" : "h-5 w-5 shrink-0"}
+                aria-hidden="true"
+              />
               {item.notranslate ? (
                 <span translate="no" className="notranslate">
                   {item.label}
@@ -138,7 +157,7 @@ export function Sidebar(props: SidebarProps) {
       {/* KAN-300: "container" del spec de diseño — tarjeta flotante con gradiente de marca
           (forest -> teal), en vez de una columna plana con borde. Mismo tratamiento para
           desktop y el drawer mobile de abajo, ya que comparten `SidebarContent`. */}
-      <aside className="from-forest to-teal rounded-radius-lg hidden w-60 shrink-0 overflow-hidden bg-gradient-to-b shadow-(--shadow) md:m-3 md:flex md:flex-col">
+      <aside className="from-forest to-teal rounded-radius-lg hidden w-64 shrink-0 overflow-hidden bg-gradient-to-b shadow-(--shadow) md:m-3 md:flex md:flex-col">
         <SidebarContent {...props} />
       </aside>
 
@@ -153,7 +172,7 @@ export function Sidebar(props: SidebarProps) {
             }`}
           />
           <div
-            className={`from-forest to-teal rounded-r-radius-lg relative flex w-72 max-w-[80vw] flex-col overflow-hidden bg-gradient-to-b shadow-(--shadow) transition-transform duration-300 ease-out ${
+            className={`from-forest to-teal relative flex w-80 max-w-[85vw] flex-col overflow-hidden rounded-r-[28px] bg-gradient-to-b shadow-(--shadow) transition-transform duration-300 ease-out ${
               entered ? "translate-x-0" : "-translate-x-full"
             }`}
           >
@@ -161,11 +180,11 @@ export function Sidebar(props: SidebarProps) {
               type="button"
               aria-label="Cerrar menú"
               onClick={onMobileClose}
-              className="text-sidebar-muted hover:text-sidebar-muted-hover absolute top-4 right-3 rounded-full p-1.5 hover:bg-white/10"
+              className="text-sidebar-muted hover:text-sidebar-muted-hover absolute top-5 right-4 rounded-full p-2.5 hover:bg-white/10"
             >
-              <X className="h-4 w-4" aria-hidden="true" />
+              <X className="h-5 w-5" aria-hidden="true" />
             </button>
-            <SidebarContent {...props} onNavigate={onMobileClose} />
+            <SidebarContent {...props} onNavigate={onMobileClose} mobile />
           </div>
         </div>
       ) : null}

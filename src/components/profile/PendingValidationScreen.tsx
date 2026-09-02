@@ -37,7 +37,12 @@ export function PendingValidationScreen() {
           Esto puede tardar un rato — te avisamos apenas esté listo.
         </p>
       </div>
-      <Button type="button" variant="secondary" onClick={() => void handleCheckAgain()} disabled={checking}>
+      <Button
+        type="button"
+        variant="secondary"
+        onClick={() => void handleCheckAgain()}
+        disabled={checking}
+      >
         {checking ? "Verificando..." : "Verificar de nuevo"}
       </Button>
     </Card>

@@ -35,7 +35,8 @@ function profileBody(
     country: profileCompleted ? "Argentina" : null,
     profile_completed: profileCompleted,
     license_number: overrides.license_number ?? (profileCompleted ? "350" : null),
-    license_validation_status: overrides.license_validation_status ?? (profileCompleted ? "validated" : "rejected"),
+    license_validation_status:
+      overrides.license_validation_status ?? (profileCompleted ? "validated" : "rejected"),
     role: overrides.role ?? "owner",
     created_at: "2026-08-01T00:00:00.000Z",
   };
@@ -272,7 +273,10 @@ describe("ProfileGate (KAN-167)", () => {
         status: 200,
         body: JSON.stringify({
           success: true,
-          profile: profileBody(false, { license_validation_status: "pending", license_number: "350" }),
+          profile: profileBody(false, {
+            license_validation_status: "pending",
+            license_number: "350",
+          }),
         }),
       }),
     );
@@ -282,7 +286,9 @@ describe("ProfileGate (KAN-167)", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /guardar y continuar/i }));
 
-    await waitFor(() => expect(screen.getByText(/tu cuenta está en revisión/i)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText(/tu cuenta está en revisión/i)).toBeInTheDocument(),
+    );
     expect(screen.queryByText("Dashboard real")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Nombre")).not.toBeInTheDocument();
   });
@@ -322,7 +328,8 @@ describe("ProfileGate (KAN-167)", () => {
         ok: false,
         status: 403,
         body: JSON.stringify({
-          error: "El número de matrícula ingresado no figura en el padrón de matriculados. Verificalo e intentá de nuevo.",
+          error:
+            "El número de matrícula ingresado no figura en el padrón de matriculados. Verificalo e intentá de nuevo.",
           license_validation_status: "rejected",
         }),
       }),
@@ -346,7 +353,9 @@ describe("ProfileGate (KAN-167)", () => {
     );
 
     renderGate();
-    await waitFor(() => expect(screen.getByText(/tu cuenta está en revisión/i)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText(/tu cuenta está en revisión/i)).toBeInTheDocument(),
+    );
 
     fetchMock.mockResolvedValueOnce(profileResponse(true));
     fireEvent.click(screen.getByRole("button", { name: /verificar de nuevo/i }));
@@ -397,7 +406,9 @@ describe("ProfileGate (KAN-167)", () => {
     const fetchMock = jest.fn();
     global.fetch = fetchMock;
     fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION);
-    fetchMock.mockResolvedValueOnce(profileResponse(false, { role: "collaborator", license_number: null }));
+    fetchMock.mockResolvedValueOnce(
+      profileResponse(false, { role: "collaborator", license_number: null }),
+    );
 
     renderGate();
 
@@ -409,7 +420,9 @@ describe("ProfileGate (KAN-167)", () => {
     const fetchMock = jest.fn();
     global.fetch = fetchMock;
     fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION);
-    fetchMock.mockResolvedValueOnce(profileResponse(false, { role: "collaborator", license_number: null }));
+    fetchMock.mockResolvedValueOnce(
+      profileResponse(false, { role: "collaborator", license_number: null }),
+    );
 
     renderGate();
     await waitFor(() => expect(screen.getByRole("combobox", { name: "Ciudad" })).toBeEnabled());
@@ -417,23 +430,34 @@ describe("ProfileGate (KAN-167)", () => {
     fireEvent.change(screen.getByLabelText("Nombre"), { target: { value: "Juan" } });
     fireEvent.change(screen.getByLabelText("Apellido"), { target: { value: "Pérez" } });
     fireEvent.change(screen.getByLabelText("Teléfono"), { target: { value: "+5493815551234" } });
-    fireEvent.change(screen.getByLabelText("Inmobiliaria"), { target: { value: "Inmobiliaria Sur" } });
-    fireEvent.change(screen.getByRole("combobox", { name: "Ciudad" }), { target: { value: "Yerba Buena" } });
+    fireEvent.change(screen.getByLabelText("Inmobiliaria"), {
+      target: { value: "Inmobiliaria Sur" },
+    });
+    fireEvent.change(screen.getByRole("combobox", { name: "Ciudad" }), {
+      target: { value: "Yerba Buena" },
+    });
 
     fetchMock.mockResolvedValueOnce(
       mockResponse({
         ok: true,
         status: 200,
-        body: JSON.stringify({ success: true, profile: profileBody(true, { role: "collaborator", license_number: null }) }),
+        body: JSON.stringify({
+          success: true,
+          profile: profileBody(true, { role: "collaborator", license_number: null }),
+        }),
       }),
     );
-    fetchMock.mockResolvedValueOnce(profileResponse(true, { role: "collaborator", license_number: null }));
+    fetchMock.mockResolvedValueOnce(
+      profileResponse(true, { role: "collaborator", license_number: null }),
+    );
 
     fireEvent.click(screen.getByRole("button", { name: /guardar y continuar/i }));
 
     await waitFor(() => expect(screen.getByText("Dashboard real")).toBeInTheDocument());
 
-    const postCall = fetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === "POST");
+    const postCall = fetchMock.mock.calls.find(
+      ([, init]) => (init as RequestInit)?.method === "POST",
+    );
     const sentBody = JSON.parse((postCall![1] as RequestInit).body as string);
     expect(sentBody).not.toHaveProperty("license_number");
   });

@@ -22,7 +22,13 @@ export interface TeamSectionProps {
   onRevoke: (collaboratorId: string) => Promise<void>;
 }
 
-export function TeamSection({ status, collaborators, error, onInvited, onRevoke }: TeamSectionProps) {
+export function TeamSection({
+  status,
+  collaborators,
+  error,
+  onInvited,
+  onRevoke,
+}: TeamSectionProps) {
   if (status === "forbidden") {
     return (
       <Card>
@@ -51,7 +57,11 @@ export function TeamSection({ status, collaborators, error, onInvited, onRevoke 
         ) : (
           <div className="flex flex-col gap-2">
             {collaborators.map((collaborator) => (
-              <CollaboratorRow key={collaborator.id} collaborator={collaborator} onRevoke={onRevoke} />
+              <CollaboratorRow
+                key={collaborator.id}
+                collaborator={collaborator}
+                onRevoke={onRevoke}
+              />
             ))}
           </div>
         )}

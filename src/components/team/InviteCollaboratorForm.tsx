@@ -52,8 +52,8 @@ export function InviteCollaboratorForm({ onInvited }: InviteCollaboratorFormProp
       <div className="flex flex-col gap-1">
         <h2 className="text-foreground text-lg font-semibold">Otorgar acceso a un colaborador</h2>
         <p className="text-text-secondary text-sm">
-          Ingresá el email del colaborador. Le mandamos un mail para que entre — si todavía no
-          tiene cuenta, se la creamos automáticamente.
+          Ingresá el email del colaborador. Le mandamos un mail para que entre — si todavía no tiene
+          cuenta, se la creamos automáticamente.
         </p>
       </div>
 

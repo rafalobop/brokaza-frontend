@@ -29,12 +29,7 @@ import { useAuth } from "./auth-context";
 // formulario, o la matrícula fue rechazada) porque no tiene sentido volver a mostrar el mismo
 // formulario — no hay nada más que el agente pueda hacer salvo esperar.
 export type ProfileStatus =
-  | "idle"
-  | "loading"
-  | "complete"
-  | "incomplete"
-  | "pending_validation"
-  | "error";
+  "idle" | "loading" | "complete" | "incomplete" | "pending_validation" | "error";
 
 // KAN-306: estado real de la validación de matrícula contra el padrón de matriculados (backend,
 // `matchouse/src/services/licenseRegistry.ts`). 'rejected' deja `profile_completed=false` igual

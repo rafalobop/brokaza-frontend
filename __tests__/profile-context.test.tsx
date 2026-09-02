@@ -53,7 +53,8 @@ function profileResponse(
         country: profileCompleted ? "Argentina" : null,
         profile_completed: profileCompleted,
         license_number: overrides.license_number ?? (profileCompleted ? "350" : null),
-        license_validation_status: overrides.license_validation_status ?? (profileCompleted ? "validated" : "rejected"),
+        license_validation_status:
+          overrides.license_validation_status ?? (profileCompleted ? "validated" : "rejected"),
         role: overrides.role ?? "owner",
         created_at: "2026-08-01T00:00:00.000Z",
       },
@@ -157,7 +158,9 @@ describe("ProfileProvider / useProfile (KAN-167)", () => {
     const fetchMock = jest.fn();
     global.fetch = fetchMock;
     fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION);
-    fetchMock.mockResolvedValueOnce(profileResponse(false, { license_validation_status: "rejected" }));
+    fetchMock.mockResolvedValueOnce(
+      profileResponse(false, { license_validation_status: "rejected" }),
+    );
 
     const { result } = renderHook(() => useProfile(), { wrapper });
 

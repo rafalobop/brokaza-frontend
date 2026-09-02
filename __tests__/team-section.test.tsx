@@ -34,14 +34,26 @@ describe("TeamSection (KAN-306)", () => {
 
   it("muestra el estado de carga", () => {
     render(
-      <TeamSection status="loading" collaborators={[]} error={null} onInvited={jest.fn()} onRevoke={jest.fn()} />,
+      <TeamSection
+        status="loading"
+        collaborators={[]}
+        error={null}
+        onInvited={jest.fn()}
+        onRevoke={jest.fn()}
+      />,
     );
     expect(screen.getByText(/cargando equipo/i)).toBeInTheDocument();
   });
 
   it("muestra el placeholder sin colaboradores", () => {
     render(
-      <TeamSection status="loaded" collaborators={[]} error={null} onInvited={jest.fn()} onRevoke={jest.fn()} />,
+      <TeamSection
+        status="loaded"
+        collaborators={[]}
+        error={null}
+        onInvited={jest.fn()}
+        onRevoke={jest.fn()}
+      />,
     );
     expect(
       screen.getByText(/todavía no otorgaste acceso a ningún colaborador/i),
@@ -66,9 +78,21 @@ describe("TeamSection (KAN-306)", () => {
       <TeamSection
         status="loaded"
         collaborators={[
-          buildCollaborator({ id: "c1", full_name: "Ana Gómez", license_validation_status: "validated" }),
-          buildCollaborator({ id: "c2", full_name: "Beto Ruiz", license_validation_status: "pending" }),
-          buildCollaborator({ id: "c3", full_name: "Cami Díaz", license_validation_status: "rejected" }),
+          buildCollaborator({
+            id: "c1",
+            full_name: "Ana Gómez",
+            license_validation_status: "validated",
+          }),
+          buildCollaborator({
+            id: "c2",
+            full_name: "Beto Ruiz",
+            license_validation_status: "pending",
+          }),
+          buildCollaborator({
+            id: "c3",
+            full_name: "Cami Díaz",
+            license_validation_status: "rejected",
+          }),
         ]}
         error={null}
         onInvited={jest.fn()}

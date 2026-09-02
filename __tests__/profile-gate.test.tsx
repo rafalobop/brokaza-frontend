@@ -17,7 +17,14 @@ const AUTHENTICATED_SESSION = mockResponse({
   body: JSON.stringify({ authenticated: true, tenant: { id: "t1", email: "agente@brokaza.com" } }),
 });
 
-function profileBody(profileCompleted: boolean) {
+function profileBody(
+  profileCompleted: boolean,
+  overrides: {
+    license_validation_status?: "validated" | "pending" | "rejected";
+    license_number?: string | null;
+    role?: "owner" | "collaborator";
+  } = {},
+) {
   return {
     id: "t1",
     full_name: profileCompleted ? "Juan Pérez" : "",
@@ -27,15 +34,25 @@ function profileBody(profileCompleted: boolean) {
     city: profileCompleted ? "San Miguel de Tucumán" : null,
     country: profileCompleted ? "Argentina" : null,
     profile_completed: profileCompleted,
+    license_number: overrides.license_number ?? (profileCompleted ? "350" : null),
+    license_validation_status: overrides.license_validation_status ?? (profileCompleted ? "validated" : "rejected"),
+    role: overrides.role ?? "owner",
     created_at: "2026-08-01T00:00:00.000Z",
   };
 }
 
-function profileResponse(profileCompleted: boolean): Response {
+function profileResponse(
+  profileCompleted: boolean,
+  overrides: {
+    license_validation_status?: "validated" | "pending" | "rejected";
+    license_number?: string | null;
+    role?: "owner" | "collaborator";
+  } = {},
+): Response {
   return mockResponse({
     ok: true,
     status: 200,
-    body: JSON.stringify({ profile: profileBody(profileCompleted) }),
+    body: JSON.stringify({ profile: profileBody(profileCompleted, overrides) }),
   });
 }
 
@@ -59,6 +76,7 @@ function fillForm() {
   fireEvent.change(screen.getByLabelText("Nombre"), { target: { value: "Juan" } });
   fireEvent.change(screen.getByLabelText("Apellido"), { target: { value: "Pérez" } });
   fireEvent.change(screen.getByLabelText("Teléfono"), { target: { value: "+5493815551234" } });
+  fireEvent.change(screen.getByLabelText("Número de matrícula"), { target: { value: "350" } });
   fireEvent.change(screen.getByLabelText("Inmobiliaria"), {
     target: { value: "Inmobiliaria Sur" },
   });
@@ -235,6 +253,107 @@ describe("ProfileGate (KAN-167)", () => {
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
+  // --- KAN-306 ---
+
+  it("guardar con matrícula pendiente de validación muestra la pantalla de espera, no el dashboard", async () => {
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+    fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION);
+    fetchMock.mockResolvedValueOnce(profileResponse(false));
+
+    renderGate();
+    await waitFor(() => expect(screen.getByRole("combobox", { name: "Ciudad" })).toBeEnabled());
+
+    fillForm();
+
+    fetchMock.mockResolvedValueOnce(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: JSON.stringify({
+          success: true,
+          profile: profileBody(false, { license_validation_status: "pending", license_number: "350" }),
+        }),
+      }),
+    );
+    fetchMock.mockResolvedValueOnce(
+      profileResponse(false, { license_validation_status: "pending", license_number: "350" }),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /guardar y continuar/i }));
+
+    await waitFor(() => expect(screen.getByText(/tu cuenta está en revisión/i)).toBeInTheDocument());
+    expect(screen.queryByText("Dashboard real")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Nombre")).not.toBeInTheDocument();
+  });
+
+  // Fix QA: `license_validation_status` tiene DEFAULT 'pending' en la base — una cuenta recién
+  // creada por magic link (nunca completó el formulario, `license_number` todavía null) también
+  // trae 'pending' desde el primer `GET /api/profile`. Regresión del bug real encontrado por
+  // @qa en navegador: sin este chequeo, `ProfileGate` mostraba la pantalla de espera en vez del
+  // formulario de registro, bloqueando el onboarding de cualquier cuenta nueva.
+  it("una cuenta nueva (license_number=null, pending por default) ve el formulario de registro, no la pantalla de espera", async () => {
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+    fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION);
+    fetchMock.mockResolvedValueOnce(
+      profileResponse(false, { license_validation_status: "pending", license_number: null }),
+    );
+
+    renderGate();
+
+    await waitFor(() => expect(screen.getByText(/completá tu perfil/i)).toBeInTheDocument());
+    expect(screen.queryByText(/tu cuenta está en revisión/i)).not.toBeInTheDocument();
+  });
+
+  it("una matrícula rechazada (403) muestra el error del backend y deja el formulario para reintentar", async () => {
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+    fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION);
+    fetchMock.mockResolvedValueOnce(profileResponse(false));
+
+    renderGate();
+    await waitFor(() => expect(screen.getByRole("combobox", { name: "Ciudad" })).toBeEnabled());
+
+    fillForm();
+
+    fetchMock.mockResolvedValueOnce(
+      mockResponse({
+        ok: false,
+        status: 403,
+        body: JSON.stringify({
+          error: "El número de matrícula ingresado no figura en el padrón de matriculados. Verificalo e intentá de nuevo.",
+          license_validation_status: "rejected",
+        }),
+      }),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /guardar y continuar/i }));
+
+    await waitFor(() =>
+      expect(screen.getByText(/no figura en el padrón de matriculados/i)).toBeInTheDocument(),
+    );
+    // El formulario sigue disponible para corregir el número e intentar de nuevo.
+    expect(screen.getByLabelText("Número de matrícula")).toHaveValue("350");
+  });
+
+  it("la pantalla de espera permite verificar de nuevo y desbloquear el dashboard si ya se validó", async () => {
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+    fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION);
+    fetchMock.mockResolvedValueOnce(
+      profileResponse(false, { license_validation_status: "pending", license_number: "350" }),
+    );
+
+    renderGate();
+    await waitFor(() => expect(screen.getByText(/tu cuenta está en revisión/i)).toBeInTheDocument());
+
+    fetchMock.mockResolvedValueOnce(profileResponse(true));
+    fireEvent.click(screen.getByRole("button", { name: /verificar de nuevo/i }));
+
+    await waitFor(() => expect(screen.getByText("Dashboard real")).toBeInTheDocument());
+  });
+
   it("permite guardar una ciudad escrita a mano que no figura en la lista sugerida", async () => {
     const fetchMock = jest.fn();
     global.fetch = fetchMock;
@@ -270,5 +389,52 @@ describe("ProfileGate (KAN-167)", () => {
     fireEvent.click(screen.getByRole("button", { name: /guardar y continuar/i }));
 
     await waitFor(() => expect(screen.getByText("Dashboard real")).toBeInTheDocument());
+  });
+
+  // --- KAN-306 (cambio de flujo de colaboradores): el campo de matrícula se oculta para role="collaborator" ---
+
+  it("un colaborador no ve el campo de matrícula en el formulario de completar perfil", async () => {
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+    fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION);
+    fetchMock.mockResolvedValueOnce(profileResponse(false, { role: "collaborator", license_number: null }));
+
+    renderGate();
+
+    await waitFor(() => expect(screen.getByText(/completá tu perfil/i)).toBeInTheDocument());
+    expect(screen.queryByLabelText("Número de matrícula")).not.toBeInTheDocument();
+  });
+
+  it("un colaborador completa el perfil sin mandar license_number en el body", async () => {
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+    fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION);
+    fetchMock.mockResolvedValueOnce(profileResponse(false, { role: "collaborator", license_number: null }));
+
+    renderGate();
+    await waitFor(() => expect(screen.getByRole("combobox", { name: "Ciudad" })).toBeEnabled());
+
+    fireEvent.change(screen.getByLabelText("Nombre"), { target: { value: "Juan" } });
+    fireEvent.change(screen.getByLabelText("Apellido"), { target: { value: "Pérez" } });
+    fireEvent.change(screen.getByLabelText("Teléfono"), { target: { value: "+5493815551234" } });
+    fireEvent.change(screen.getByLabelText("Inmobiliaria"), { target: { value: "Inmobiliaria Sur" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Ciudad" }), { target: { value: "Yerba Buena" } });
+
+    fetchMock.mockResolvedValueOnce(
+      mockResponse({
+        ok: true,
+        status: 200,
+        body: JSON.stringify({ success: true, profile: profileBody(true, { role: "collaborator", license_number: null }) }),
+      }),
+    );
+    fetchMock.mockResolvedValueOnce(profileResponse(true, { role: "collaborator", license_number: null }));
+
+    fireEvent.click(screen.getByRole("button", { name: /guardar y continuar/i }));
+
+    await waitFor(() => expect(screen.getByText("Dashboard real")).toBeInTheDocument());
+
+    const postCall = fetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === "POST");
+    const sentBody = JSON.parse((postCall![1] as RequestInit).body as string);
+    expect(sentBody).not.toHaveProperty("license_number");
   });
 });

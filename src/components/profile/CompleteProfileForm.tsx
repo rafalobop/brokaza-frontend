@@ -14,6 +14,21 @@
  * formulario — se difiere hasta el primer foco del campo (lazy loading, AC),
  * y solo se pide una vez (`localitiesRequested`) aunque el usuario haga foco
  * varias veces.
+ *
+ * KAN-306: nuevo campo "Número de matrícula". El backend valida contra el
+ * padrón de matriculados y puede devolver 3 resultados distintos, todos
+ * mapeados por `refresh()` a través de `useProfile().status` — este
+ * formulario no necesita distinguirlos, solo mostrar el error si `apiClient`
+ * lanza (caso 'rejected', 403) y dejar que `ProfileGate` decida qué pantalla
+ * mostrar después de un submit exitoso ('validated' → "complete",
+ * 'pending' → "pending_validation").
+ *
+ * KAN-306 (cambio de flujo de colaboradores): un tenant `role: "collaborator"` no necesita
+ * matrícula propia — opera bajo la del dueño de su agencia (`updateProfile` en el backend ya
+ * salta esa validación para este rol). `profile.role` está disponible desde el primer
+ * `GET /api/profile` porque el backend setea el rol al momento de la invitación, antes de que el
+ * colaborador llegue a ver este formulario — así que el campo se puede ocultar directo, sin
+ * estado de carga intermedio.
  */
 
 import { useState } from "react";
@@ -28,12 +43,14 @@ interface LocalitiesResponse {
 }
 
 export function CompleteProfileForm() {
-  const { refresh } = useProfile();
+  const { refresh, profile } = useProfile();
+  const isCollaborator = profile?.role === "collaborator";
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [agencyName, setAgencyName] = useState("");
   const [city, setCity] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
   const [localities, setLocalities] = useState<string[]>([]);
   const [localitiesLoading, setLocalitiesLoading] = useState(false);
   const [localitiesRequested, setLocalitiesRequested] = useState(false);
@@ -75,6 +92,10 @@ export function CompleteProfileForm() {
           phone_number: phoneNumber.trim(),
           agency_name: agencyName.trim(),
           city,
+          // Un colaborador no tiene el campo en pantalla — no manda license_number en vez de
+          // mandar un string vacío, para no depender de que el backend lo trate como "sin
+          // valor" (contrato más explícito: el campo directamente no aplica a este rol).
+          ...(isCollaborator ? {} : { license_number: licenseNumber.trim() }),
         }),
       });
       // `refresh()` recalcula `status` a partir del `profile_completed` que
@@ -130,6 +151,19 @@ export function CompleteProfileForm() {
             className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 shadow-sm outline-none disabled:opacity-60"
           />
         </label>
+        {isCollaborator ? null : (
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="text-text-secondary">Número de matrícula</span>
+            <input
+              value={licenseNumber}
+              onChange={(event) => setLicenseNumber(event.target.value)}
+              inputMode="numeric"
+              placeholder="Ej: 350"
+              disabled={submitting}
+              className="rounded-radius-sm border-card-border text-foreground focus:border-accent border bg-white/8 px-3 py-2 shadow-sm outline-none disabled:opacity-60"
+            />
+          </label>
+        )}
         <label className="flex flex-col gap-1 text-sm">
           <span className="text-text-secondary">Inmobiliaria</span>
           <input

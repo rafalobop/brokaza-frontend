@@ -12,7 +12,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "./api-client";
-import { getCollaborators, reactivateCollaborator, revokeCollaborator, type Collaborator } from "./team-api";
+import {
+  getCollaborators,
+  reactivateCollaborator,
+  revokeCollaborator,
+  type Collaborator,
+} from "./team-api";
 
 export type TeamStatus = "loading" | "loaded" | "forbidden" | "error";
 

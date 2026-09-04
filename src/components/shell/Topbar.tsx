@@ -39,7 +39,15 @@ interface TopbarProps {
  * (`full_name` del perfil, con fallback a email si todavía no se completó) — acá solo se pinta,
  * junto con el rol resaltado debajo, mismo criterio que `CollaboratorRow` para el fallback.
  */
-export function Topbar({ email, displayName, role, onLogout, loggingOut, extraActions, onMenuClick }: TopbarProps) {
+export function Topbar({
+  email,
+  displayName,
+  role,
+  onLogout,
+  loggingOut,
+  extraActions,
+  onMenuClick,
+}: TopbarProps) {
   const initial = (displayName ?? email)?.trim().charAt(0).toUpperCase() || "?";
   const roleLabel = role ? ROLE_LABELS[role] : undefined;
   const [confirmingLogout, setConfirmingLogout] = useState(false);
@@ -94,7 +102,9 @@ export function Topbar({ email, displayName, role, onLogout, loggingOut, extraAc
               {initial}
             </NoTranslate>
             <span className="hidden max-w-40 flex-col items-start sm:flex">
-              <span className="text-foreground truncate text-sm font-medium">{displayName ?? email}</span>
+              <span className="text-foreground truncate text-sm font-medium">
+                {displayName ?? email}
+              </span>
               {roleLabel ? (
                 <span className="text-foreground truncate text-xs font-bold">{roleLabel}</span>
               ) : null}

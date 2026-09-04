@@ -62,7 +62,9 @@ interface ReactivateCollaboratorResponse {
   collaborator: Collaborator;
 }
 
-export function reactivateCollaborator(collaboratorId: string): Promise<ReactivateCollaboratorResponse> {
+export function reactivateCollaborator(
+  collaboratorId: string,
+): Promise<ReactivateCollaboratorResponse> {
   return apiClient<ReactivateCollaboratorResponse>(
     `/api/admin-panel/collaborators/${collaboratorId}/reactivate`,
     { method: "POST" },

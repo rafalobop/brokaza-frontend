@@ -81,7 +81,13 @@ export function CollaboratorRow({ collaborator, onRevoke, onReactivate }: Collab
         <div className="flex shrink-0 items-center gap-2">
           <Badge variant={statusBadge.variant}>{statusBadge.label}</Badge>
           {isRevoked ? (
-            <Button type="button" variant="success" size="sm" onClick={() => void handleReactivate()} disabled={busy}>
+            <Button
+              type="button"
+              variant="success"
+              size="sm"
+              onClick={() => void handleReactivate()}
+              disabled={busy}
+            >
               {busy ? "Reactivando..." : "Reactivar"}
             </Button>
           ) : (

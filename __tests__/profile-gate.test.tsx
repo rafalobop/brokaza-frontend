@@ -31,11 +31,12 @@ function profileBody(
     full_name: profileCompleted ? "Juan Pérez" : "",
     email: "agente@brokaza.com",
     phone_number: profileCompleted ? "+5493815551234" : null,
-    agency_name: overrides.agency_name !== undefined
-      ? overrides.agency_name
-      : profileCompleted
-        ? "Inmobiliaria Sur"
-        : null,
+    agency_name:
+      overrides.agency_name !== undefined
+        ? overrides.agency_name
+        : profileCompleted
+          ? "Inmobiliaria Sur"
+          : null,
     city: profileCompleted ? "San Miguel de Tucumán" : null,
     country: profileCompleted ? "Argentina" : null,
     profile_completed: profileCompleted,
@@ -216,7 +217,9 @@ describe("ProfileGate (KAN-167)", () => {
     await waitFor(() => expect(screen.getByLabelText("Nombre")).toBeEnabled());
     fillStep1();
     fireEvent.click(screen.getByRole("button", { name: /siguiente/i }));
-    await waitFor(() => expect(screen.getByLabelText("Inmobiliaria", { exact: false })).toBeEnabled());
+    await waitFor(() =>
+      expect(screen.getByLabelText("Inmobiliaria", { exact: false })).toBeEnabled(),
+    );
 
     // KAN-297: la carga es lazy — el error de /api/localities/tucuman recién aparece cuando el
     // agente hace foco en "Ciudad", no al montar el formulario.
@@ -459,7 +462,11 @@ describe("ProfileGate (KAN-167)", () => {
     global.fetch = fetchMock;
     fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION);
     fetchMock.mockResolvedValueOnce(
-      profileResponse(false, { role: "collaborator", license_number: null, agency_name: "Inmobiliaria del Dueño" }),
+      profileResponse(false, {
+        role: "collaborator",
+        license_number: null,
+        agency_name: "Inmobiliaria del Dueño",
+      }),
     );
 
     renderGate();
@@ -477,12 +484,20 @@ describe("ProfileGate (KAN-167)", () => {
         status: 200,
         body: JSON.stringify({
           success: true,
-          profile: profileBody(true, { role: "collaborator", license_number: null, agency_name: "Inmobiliaria del Dueño" }),
+          profile: profileBody(true, {
+            role: "collaborator",
+            license_number: null,
+            agency_name: "Inmobiliaria del Dueño",
+          }),
         }),
       }),
     );
     fetchMock.mockResolvedValueOnce(
-      profileResponse(true, { role: "collaborator", license_number: null, agency_name: "Inmobiliaria del Dueño" }),
+      profileResponse(true, {
+        role: "collaborator",
+        license_number: null,
+        agency_name: "Inmobiliaria del Dueño",
+      }),
     );
 
     fireEvent.click(screen.getByRole("button", { name: /guardar y continuar/i }));
@@ -507,7 +522,11 @@ describe("ProfileGate (KAN-167)", () => {
     global.fetch = fetchMock;
     fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION);
     fetchMock.mockResolvedValueOnce(
-      profileResponse(false, { role: "collaborator", license_number: null, agency_name: "Inmobiliaria del Dueño" }),
+      profileResponse(false, {
+        role: "collaborator",
+        license_number: null,
+        agency_name: "Inmobiliaria del Dueño",
+      }),
     );
 
     renderGate();
@@ -590,7 +609,9 @@ describe("ProfileGate (KAN-167)", () => {
     expect(screen.getByText("1/3")).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Apellido"), { target: { value: "Pérez" } });
-    fireEvent.change(screen.getByLabelText("Número de teléfono"), { target: { value: "38155512" } });
+    fireEvent.change(screen.getByLabelText("Número de teléfono"), {
+      target: { value: "38155512" },
+    });
     expect(screen.getByText("3/3")).toBeInTheDocument();
   });
 

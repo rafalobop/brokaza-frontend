@@ -119,8 +119,21 @@ export function CompleteProfileForm() {
         ? [firstNameValid, lastNameValid, phoneValid]
         : [...(isCollaborator ? [] : [licenseValid]), agencyValid, cityValid];
     const done = fields.filter(Boolean).length;
-    return { done, total: fields.length, percent: fields.length === 0 ? 100 : (done / fields.length) * 100 };
-  }, [step, firstNameValid, lastNameValid, phoneValid, isCollaborator, licenseValid, agencyValid, cityValid]);
+    return {
+      done,
+      total: fields.length,
+      percent: fields.length === 0 ? 100 : (done / fields.length) * 100,
+    };
+  }, [
+    step,
+    firstNameValid,
+    lastNameValid,
+    phoneValid,
+    isCollaborator,
+    licenseValid,
+    agencyValid,
+    cityValid,
+  ]);
 
   function loadLocalities() {
     // Lazy loading: se pide una sola vez, recién cuando el campo se usa por primera vez, no al
@@ -151,7 +164,9 @@ export function CompleteProfileForm() {
       return;
     }
     if (!phoneValid) {
-      setError(`El teléfono debe tener ${PHONE_LOCAL_NUMBER_LENGTH} dígitos después del código de país.`);
+      setError(
+        `El teléfono debe tener ${PHONE_LOCAL_NUMBER_LENGTH} dígitos después del código de país.`,
+      );
       return;
     }
     setStep(2);
@@ -211,7 +226,7 @@ export function CompleteProfileForm() {
             {stepProgress.done}/{stepProgress.total}
           </span>
         </div>
-        <div className="bg-white/10 h-1.5 w-full overflow-hidden rounded-full">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
           <div
             className="bg-accent h-full rounded-full transition-[width] duration-300"
             style={{ width: `${stepProgress.percent}%` }}
@@ -256,7 +271,9 @@ export function CompleteProfileForm() {
               <input
                 value={phoneLocalNumber}
                 onChange={(event) =>
-                  setPhoneLocalNumber(event.target.value.replace(/\D/g, "").slice(0, PHONE_LOCAL_NUMBER_LENGTH))
+                  setPhoneLocalNumber(
+                    event.target.value.replace(/\D/g, "").slice(0, PHONE_LOCAL_NUMBER_LENGTH),
+                  )
                 }
                 inputMode="numeric"
                 placeholder="38155555"

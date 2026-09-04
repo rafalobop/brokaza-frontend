@@ -80,9 +80,7 @@ export function TeamSection({
                 type="button"
                 onClick={() => setTab(key)}
                 className={`rounded-full px-3 py-1 font-medium transition-colors ${
-                  tab === key
-                    ? "bg-accent text-white"
-                    : "text-text-secondary hover:bg-white/10"
+                  tab === key ? "bg-accent text-white" : "text-text-secondary hover:bg-white/10"
                 }`}
               >
                 {label}

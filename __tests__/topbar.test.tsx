@@ -16,6 +16,28 @@ function renderTopbar(props: Partial<Parameters<typeof Topbar>[0]> = {}) {
   );
 }
 
+// Pase de UI (2026-09-04, punto 1): nombre + apellido y rol resaltado en vez del email crudo.
+describe("Topbar — nombre y rol (pase de UI 2026-09-04)", () => {
+  it("muestra displayName y el rol en bold cuando se pasan", () => {
+    renderTopbar({ displayName: "Juan Pérez", role: "owner" });
+
+    expect(screen.getByText("Juan Pérez")).toBeInTheDocument();
+    expect(screen.getByText("Dueño")).toBeInTheDocument();
+  });
+
+  it("etiqueta 'Colaborador' para role='collaborator'", () => {
+    renderTopbar({ displayName: "Ana Gómez", role: "collaborator" });
+
+    expect(screen.getByText("Colaborador")).toBeInTheDocument();
+  });
+
+  it("sin displayName ni role (ej. panel sysadmin), cae al email y no rompe", () => {
+    renderTopbar({ displayName: undefined, role: undefined });
+
+    expect(screen.getByText("agente@brokaza.com")).toBeInTheDocument();
+  });
+});
+
 describe("Topbar — ícono de usuario sin traducir (KAN-299)", () => {
   it("marca la inicial del avatar con translate=no/notranslate", () => {
     renderTopbar();

@@ -12,7 +12,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "./api-client";
-import { getCollaborators, revokeCollaborator, type Collaborator } from "./team-api";
+import { getCollaborators, reactivateCollaborator, revokeCollaborator, type Collaborator } from "./team-api";
 
 export type TeamStatus = "loading" | "loaded" | "forbidden" | "error";
 
@@ -22,6 +22,7 @@ export interface UseTeamResult {
   error: string | null;
   refetch: () => Promise<void>;
   revoke: (collaboratorId: string) => Promise<void>;
+  reactivate: (collaboratorId: string) => Promise<void>;
 }
 
 export function useTeam(): UseTeamResult {
@@ -77,5 +78,15 @@ export function useTeam(): UseTeamResult {
     [refetch],
   );
 
-  return { status, collaborators, error, refetch, revoke };
+  // Mismo criterio que `revoke`: no atrapa el error, lo deja propagarse para que la fila
+  // muestre el mensaje puntual sin pisar el resto de la lista.
+  const reactivate = useCallback(
+    async (collaboratorId: string) => {
+      await reactivateCollaborator(collaboratorId);
+      await refetch();
+    },
+    [refetch],
+  );
+
+  return { status, collaborators, error, refetch, revoke, reactivate };
 }

@@ -13,12 +13,21 @@
 import { apiClient } from "./api-client";
 import type { LicenseValidationStatus } from "./profile-context";
 
+// KAN-306 (pase de UI, 2026-09-04): estado real de acceso del colaborador, independiente de
+// `license_validation_status` (que un colaborador nunca deja de tener en 'pending' porque no
+// pasa por esa validación — no sirve para pintar su estado real en el panel). `null` no debería
+// verse acá (todo lo que devuelve `GET /api/admin-panel/collaborators` es, por definición, un
+// colaborador), pero el tipo lo permite porque la columna es nullable a nivel de base.
+export type CollaboratorStatus = "active" | "revoked" | null;
+
 export interface Collaborator {
   id: string;
   full_name: string;
   email: string;
   license_number: string | null;
   license_validation_status: LicenseValidationStatus;
+  profile_completed: boolean;
+  collaborator_status: CollaboratorStatus;
   created_at: string;
 }
 
@@ -46,4 +55,16 @@ export function revokeCollaborator(collaboratorId: string): Promise<{ success: t
   return apiClient<{ success: true }>(`/api/admin-panel/collaborators/${collaboratorId}`, {
     method: "DELETE",
   });
+}
+
+interface ReactivateCollaboratorResponse {
+  success: true;
+  collaborator: Collaborator;
+}
+
+export function reactivateCollaborator(collaboratorId: string): Promise<ReactivateCollaboratorResponse> {
+  return apiClient<ReactivateCollaboratorResponse>(
+    `/api/admin-panel/collaborators/${collaboratorId}/reactivate`,
+    { method: "POST" },
+  );
 }

@@ -5,7 +5,7 @@ import { TeamSection } from "@/components/team/TeamSection";
 import { useTeam } from "@/lib/use-team";
 
 export default function EquipoPage() {
-  const { status, collaborators, error, refetch, revoke } = useTeam();
+  const { status, collaborators, error, refetch, revoke, reactivate } = useTeam();
 
   return (
     <div className="flex flex-col gap-6">
@@ -19,6 +19,7 @@ export default function EquipoPage() {
         error={error}
         onInvited={() => void refetch()}
         onRevoke={revoke}
+        onReactivate={reactivate}
       />
     </div>
   );

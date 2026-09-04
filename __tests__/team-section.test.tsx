@@ -9,6 +9,8 @@ function buildCollaborator(overrides: Partial<Collaborator> = {}): Collaborator 
     email: "ana@example.com",
     license_number: "350",
     license_validation_status: "validated",
+    profile_completed: true,
+    collaborator_status: "active",
     created_at: "2026-09-01T00:00:00.000Z",
     ...overrides,
   };
@@ -23,6 +25,7 @@ describe("TeamSection (KAN-306)", () => {
         error="Solo los dueños de agencia pueden acceder al panel de administración."
         onInvited={jest.fn()}
         onRevoke={jest.fn()}
+        onReactivate={jest.fn()}
       />,
     );
 
@@ -40,12 +43,13 @@ describe("TeamSection (KAN-306)", () => {
         error={null}
         onInvited={jest.fn()}
         onRevoke={jest.fn()}
+        onReactivate={jest.fn()}
       />,
     );
     expect(screen.getByText(/cargando equipo/i)).toBeInTheDocument();
   });
 
-  it("muestra el placeholder sin colaboradores", () => {
+  it("muestra el placeholder sin colaboradores en la pestaña Activos", () => {
     render(
       <TeamSection
         status="loaded"
@@ -53,6 +57,7 @@ describe("TeamSection (KAN-306)", () => {
         error={null}
         onInvited={jest.fn()}
         onRevoke={jest.fn()}
+        onReactivate={jest.fn()}
       />,
     );
     expect(
@@ -68,70 +73,89 @@ describe("TeamSection (KAN-306)", () => {
         error="Error interno."
         onInvited={jest.fn()}
         onRevoke={jest.fn()}
+        onReactivate={jest.fn()}
       />,
     );
     expect(screen.getByText("Error interno.")).toBeInTheDocument();
   });
 
-  it("renderiza cada colaborador con su badge de estado de validación (AC6, supervisión)", () => {
+  // Pase de UI (2026-09-04, punto 5): el badge dejó de reflejar license_validation_status (que
+  // un colaborador nunca deja en 'pending', no aplica) — ahora refleja profile_completed +
+  // collaborator_status.
+  it("renderiza cada colaborador con el badge derivado de profile_completed/collaborator_status", () => {
     render(
       <TeamSection
         status="loaded"
         collaborators={[
-          buildCollaborator({
-            id: "c1",
-            full_name: "Ana Gómez",
-            license_validation_status: "validated",
-          }),
-          buildCollaborator({
-            id: "c2",
-            full_name: "Beto Ruiz",
-            license_validation_status: "pending",
-          }),
-          buildCollaborator({
-            id: "c3",
-            full_name: "Cami Díaz",
-            license_validation_status: "rejected",
-          }),
+          buildCollaborator({ id: "c1", full_name: "Ana Gómez", profile_completed: false }),
+          buildCollaborator({ id: "c2", full_name: "Beto Ruiz", profile_completed: true }),
         ]}
         error={null}
         onInvited={jest.fn()}
         onRevoke={jest.fn()}
+        onReactivate={jest.fn()}
       />,
     );
 
     expect(screen.getByText("Ana Gómez")).toBeInTheDocument();
-    expect(screen.getByText("Matrícula validada")).toBeInTheDocument();
+    expect(screen.getByText("Invitación pendiente")).toBeInTheDocument();
     expect(screen.getByText("Beto Ruiz")).toBeInTheDocument();
-    expect(screen.getByText("Validación pendiente")).toBeInTheDocument();
-    expect(screen.getByText("Cami Díaz")).toBeInTheDocument();
-    expect(screen.getByText("Matrícula rechazada")).toBeInTheDocument();
+    expect(screen.getByText("Activo")).toBeInTheDocument();
   });
 
-  it("revocar pide confirmación (modal propio) y llama a onRevoke solo al confirmar", async () => {
+  it("la pestaña Activos no incluye colaboradores revocados, y la pestaña Revocados sí", () => {
+    render(
+      <TeamSection
+        status="loaded"
+        collaborators={[
+          buildCollaborator({ id: "c1", full_name: "Ana Gómez", collaborator_status: "active" }),
+          buildCollaborator({ id: "c2", full_name: "Beto Ruiz", collaborator_status: "revoked" }),
+        ]}
+        error={null}
+        onInvited={jest.fn()}
+        onRevoke={jest.fn()}
+        onReactivate={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Ana Gómez")).toBeInTheDocument();
+    expect(screen.queryByText("Beto Ruiz")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Revocados" }));
+
+    expect(screen.queryByText("Ana Gómez")).not.toBeInTheDocument();
+    expect(screen.getByText("Beto Ruiz")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reactivar" })).toBeInTheDocument();
+  });
+
+  it("una invitación sin confirmar muestra 'Revocar'; un colaborador activo muestra 'Dar de baja' — ambos llaman a onRevoke", async () => {
     const onRevoke = jest.fn().mockResolvedValue(undefined);
     render(
       <TeamSection
         status="loaded"
-        collaborators={[buildCollaborator()]}
+        collaborators={[
+          buildCollaborator({ id: "c1", full_name: "Ana Gómez", profile_completed: false }),
+          buildCollaborator({ id: "c2", full_name: "Beto Ruiz", profile_completed: true }),
+        ]}
         error={null}
         onInvited={jest.fn()}
         onRevoke={onRevoke}
+        onReactivate={jest.fn()}
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Revocar" }));
+    expect(screen.getByRole("button", { name: "Revocar" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Dar de baja" })).toBeInTheDocument();
 
-    const confirmHeading = await screen.findByRole("heading", { name: "Revocar acceso" });
+    fireEvent.click(screen.getByRole("button", { name: "Dar de baja" }));
+    const confirmHeading = await screen.findByRole("heading", { name: "Dar de baja acceso" });
     const modal = confirmHeading.closest("div")!.parentElement as HTMLElement;
-    expect(onRevoke).not.toHaveBeenCalled();
+    fireEvent.click(within(modal).getByRole("button", { name: "Dar de baja" }));
 
-    fireEvent.click(within(modal).getByRole("button", { name: "Revocar" }));
-
-    await waitFor(() => expect(onRevoke).toHaveBeenCalledWith("c1"));
+    await waitFor(() => expect(onRevoke).toHaveBeenCalledWith("c2"));
   });
 
-  it("cancelar el modal de revocación no llama a onRevoke", async () => {
+  it("cancelar el modal de baja no llama a onRevoke", async () => {
     const onRevoke = jest.fn();
     render(
       <TeamSection
@@ -140,17 +164,18 @@ describe("TeamSection (KAN-306)", () => {
         error={null}
         onInvited={jest.fn()}
         onRevoke={onRevoke}
+        onReactivate={jest.fn()}
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Revocar" }));
-    const confirmHeading = await screen.findByRole("heading", { name: "Revocar acceso" });
+    fireEvent.click(screen.getByRole("button", { name: "Dar de baja" }));
+    const confirmHeading = await screen.findByRole("heading", { name: "Dar de baja acceso" });
     const modal = confirmHeading.closest("div")!.parentElement as HTMLElement;
 
     fireEvent.click(within(modal).getByRole("button", { name: "Cancelar" }));
 
     await waitFor(() =>
-      expect(screen.queryByRole("heading", { name: "Revocar acceso" })).not.toBeInTheDocument(),
+      expect(screen.queryByRole("heading", { name: "Dar de baja acceso" })).not.toBeInTheDocument(),
     );
     expect(onRevoke).not.toHaveBeenCalled();
   });
@@ -164,15 +189,35 @@ describe("TeamSection (KAN-306)", () => {
         error={null}
         onInvited={jest.fn()}
         onRevoke={onRevoke}
+        onReactivate={jest.fn()}
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Revocar" }));
-    const confirmHeading = await screen.findByRole("heading", { name: "Revocar acceso" });
+    fireEvent.click(screen.getByRole("button", { name: "Dar de baja" }));
+    const confirmHeading = await screen.findByRole("heading", { name: "Dar de baja acceso" });
     const modal = confirmHeading.closest("div")!.parentElement as HTMLElement;
-    fireEvent.click(within(modal).getByRole("button", { name: "Revocar" }));
+    fireEvent.click(within(modal).getByRole("button", { name: "Dar de baja" }));
 
-    expect(await screen.findByText("No se pudo revocar el acceso.")).toBeInTheDocument();
+    expect(await screen.findByText("No se pudo actualizar el acceso.")).toBeInTheDocument();
     expect(screen.getByText("Ana Gómez")).toBeInTheDocument();
+  });
+
+  it("reactivar un colaborador revocado llama a onReactivate", async () => {
+    const onReactivate = jest.fn().mockResolvedValue(undefined);
+    render(
+      <TeamSection
+        status="loaded"
+        collaborators={[buildCollaborator({ collaborator_status: "revoked" })]}
+        error={null}
+        onInvited={jest.fn()}
+        onRevoke={jest.fn()}
+        onReactivate={onReactivate}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Revocados" }));
+    fireEvent.click(screen.getByRole("button", { name: "Reactivar" }));
+
+    await waitFor(() => expect(onReactivate).toHaveBeenCalledWith("c1"));
   });
 });

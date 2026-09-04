@@ -73,6 +73,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           brand="Brokaza"
           navItems={navItems}
           email={tenant?.email}
+          displayName={profile?.full_name || tenant?.email}
+          role={profile?.role}
           onLogout={() => void logout()}
           loggingOut={loggingOut}
           topbarExtraActions={<PushNotificationButton enabled={status === "authenticated"} />}

@@ -3,9 +3,18 @@ import { Menu } from "lucide-react";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NoTranslate } from "@/components/ui/NoTranslate";
+import type { TenantRole } from "@/lib/profile-context";
+
+const ROLE_LABELS: Record<TenantRole, string> = {
+  owner: "Dueño",
+  collaborator: "Colaborador",
+};
 
 interface TopbarProps {
   email: string | undefined;
+  /** Opcional: el panel sysadmin (`app/admin/layout.tsx`) reusa este shell sin perfil de tenant. */
+  displayName?: string;
+  role?: TenantRole;
   onLogout: () => void;
   loggingOut: boolean;
   /** Slot para acciones extra a la izquierda del perfil (ej. `PushNotificationButton` en tenant). */
@@ -16,18 +25,31 @@ interface TopbarProps {
 
 /**
  * Barra superior — "topbar" del brief, adaptado: sin buscador global (no existe esa
- * funcionalidad todavía), foco en el área de perfil (avatar con inicial + email). En mobile suma
- * el botón hamburguesa que abre el drawer de `Sidebar` (oculto en desktop, donde el sidebar ya es
- * una columna fija siempre visible).
+ * funcionalidad todavía), foco en el área de perfil (avatar con inicial + nombre/rol). En mobile
+ * suma el botón hamburguesa que abre el drawer de `Sidebar` (oculto en desktop, donde el sidebar
+ * ya es una columna fija siempre visible).
  *
  * KAN-299: el icono de avatar es un botón que despliega un menú con "Cerrar sesión" (antes era un
  * link siempre visible, oculto en mobile bajo el breakpoint `sm` junto con el email — sin
  * reemplazo, dejaba a los usuarios de mobile sin forma de cerrar sesión). El avatar usa
  * `NoTranslate` porque el traductor automático del navegador puede reescribir la inicial de una
  * sola letra y romper el layout del círculo (mismo mecanismo que KAN-298, ver `NoTranslate.tsx`).
+ *
+ * Nombre + rol (en vez del email crudo): `displayName` ya viene resuelto por el caller
+ * (`full_name` del perfil, con fallback a email si todavía no se completó) — acá solo se pinta,
+ * junto con el rol resaltado debajo, mismo criterio que `CollaboratorRow` para el fallback.
  */
-export function Topbar({ email, onLogout, loggingOut, extraActions, onMenuClick }: TopbarProps) {
-  const initial = email?.trim().charAt(0).toUpperCase() || "?";
+export function Topbar({
+  email,
+  displayName,
+  role,
+  onLogout,
+  loggingOut,
+  extraActions,
+  onMenuClick,
+}: TopbarProps) {
+  const initial = (displayName ?? email)?.trim().charAt(0).toUpperCase() || "?";
+  const roleLabel = role ? ROLE_LABELS[role] : undefined;
   const [confirmingLogout, setConfirmingLogout] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -79,8 +101,13 @@ export function Topbar({ email, onLogout, loggingOut, extraActions, onMenuClick 
             >
               {initial}
             </NoTranslate>
-            <span className="text-foreground hidden max-w-40 truncate text-sm font-medium sm:inline">
-              {email}
+            <span className="hidden max-w-40 flex-col items-start sm:flex">
+              <span className="text-foreground truncate text-sm font-medium">
+                {displayName ?? email}
+              </span>
+              {roleLabel ? (
+                <span className="text-foreground truncate text-xs font-bold">{roleLabel}</span>
+              ) : null}
             </span>
           </button>
 
@@ -89,7 +116,10 @@ export function Topbar({ email, onLogout, loggingOut, extraActions, onMenuClick 
               role="menu"
               className="rounded-radius-sm border-card-border bg-paper text-forest dark:text-foreground absolute top-full right-0 z-20 mt-2 min-w-40 border py-1 shadow-(--shadow) dark:bg-[#1F292B]"
             >
-              <span className="block truncate px-4 py-1 text-xs opacity-70 sm:hidden">{email}</span>
+              <div className="flex flex-col px-4 py-1 text-xs opacity-70 sm:hidden">
+                <span className="truncate">{displayName ?? email}</span>
+                {roleLabel ? <span className="font-bold">{roleLabel}</span> : null}
+              </div>
               <button
                 type="button"
                 role="menuitem"

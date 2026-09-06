@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, LayoutGrid, Search, Sparkles } from "lucide-react";
+import { Building2, LayoutGrid, Search, Sparkles, Users } from "lucide-react";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { IosInstallBanner } from "@/components/IosInstallBanner";
 import { ProfileGate } from "@/components/profile/ProfileGate";
@@ -8,15 +8,21 @@ import { PushNotificationButton } from "@/components/PushNotificationButton";
 import { DashboardShell } from "@/components/shell/DashboardShell";
 import { Loader } from "@/components/ui/Loader";
 import { SESSION_CHECK_ERROR_MESSAGE, useAuth } from "@/lib/auth-context";
+import { useProfile } from "@/lib/profile-context";
 import { MatchesProvider } from "@/lib/matches-context";
 import type { SidebarNavItem } from "@/components/shell/Sidebar";
 
-const NAV_ITEMS: SidebarNavItem[] = [
+const BASE_NAV_ITEMS: SidebarNavItem[] = [
   { label: "Resumen", href: "/", icon: LayoutGrid },
   { label: "Propiedades", href: "/propiedades", icon: Building2 },
   { label: "Matches", href: "/matches", icon: Sparkles, notranslate: true },
   { label: "Búsquedas", href: "/busquedas", icon: Search },
 ];
+
+// KAN-306: "Equipo" solo tiene sentido para un dueño de agencia (`profile.role === "owner"`) —
+// un colaborador no tiene nada para gestionar ahí (el backend le devuelve 403 igual, esto es la
+// primera capa, no la única — ver TeamSection para la segunda).
+const TEAM_NAV_ITEM: SidebarNavItem = { label: "Equipo", href: "/equipo", icon: Users };
 
 /**
  * Layout del grupo de rutas `(dashboard)` — no agrega segmento a la URL (`/`, `/propiedades`,
@@ -27,6 +33,11 @@ const NAV_ITEMS: SidebarNavItem[] = [
  */
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { status, tenant, logout, loggingOut, refresh } = useAuth();
+  // KAN-306: `useProfile()` ya está disponible acá aunque `ProfileProvider` se monte más abajo en
+  // el árbol (en `app/layout.tsx`, junto a `AuthProvider`) — mismo criterio que el resto de este
+  // componente, que ya lee `useAuth()` sin ser el propio provider.
+  const { profile } = useProfile();
+  const navItems = profile?.role === "owner" ? [...BASE_NAV_ITEMS, TEAM_NAV_ITEM] : BASE_NAV_ITEMS;
 
   if (status === "loading") {
     return <Loader label="Confirmando tu acceso..." />;
@@ -60,8 +71,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <MatchesProvider>
         <DashboardShell
           brand="Brokaza"
-          navItems={NAV_ITEMS}
+          navItems={navItems}
           email={tenant?.email}
+          displayName={profile?.full_name || tenant?.email}
+          role={profile?.role}
           onLogout={() => void logout()}
           loggingOut={loggingOut}
           topbarExtraActions={<PushNotificationButton enabled={status === "authenticated"} />}

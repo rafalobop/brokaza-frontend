@@ -13,6 +13,7 @@ import type { ReactNode } from "react";
 import { useProfile } from "@/lib/profile-context";
 import { Loader } from "@/components/ui/Loader";
 import { CompleteProfileForm } from "./CompleteProfileForm";
+import { PendingValidationScreen } from "./PendingValidationScreen";
 
 export function ProfileGate({ children }: { children: ReactNode }) {
   const { status, error, refresh } = useProfile();
@@ -40,6 +41,16 @@ export function ProfileGate({ children }: { children: ReactNode }) {
     return (
       <div className="bg-background flex flex-1 flex-col items-center justify-center gap-6 px-6">
         <CompleteProfileForm />
+      </div>
+    );
+  }
+
+  // KAN-306 (AC5): cuenta guardada pero con la matrícula todavía pendiente de validar contra el
+  // padrón — no tiene sentido volver a mostrar el formulario de completar perfil.
+  if (status === "pending_validation") {
+    return (
+      <div className="bg-background flex flex-1 flex-col items-center justify-center gap-6 px-6">
+        <PendingValidationScreen />
       </div>
     );
   }

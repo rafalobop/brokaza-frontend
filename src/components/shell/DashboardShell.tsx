@@ -3,11 +3,15 @@
 import { useState, type ReactNode } from "react";
 import { Sidebar, type SidebarNavItem } from "./Sidebar";
 import { Topbar } from "./Topbar";
+import type { TenantRole } from "@/lib/profile-context";
 
 interface DashboardShellProps {
   brand: string;
   navItems: SidebarNavItem[];
   email: string | undefined;
+  /** Opcional: el panel sysadmin (`app/admin/layout.tsx`) reusa este shell sin perfil de tenant. */
+  displayName?: string;
+  role?: TenantRole;
   onLogout: () => void;
   loggingOut: boolean;
   topbarExtraActions?: ReactNode;
@@ -28,6 +32,8 @@ export function DashboardShell({
   brand,
   navItems,
   email,
+  displayName,
+  role,
   onLogout,
   loggingOut,
   topbarExtraActions,
@@ -60,6 +66,8 @@ export function DashboardShell({
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <Topbar
             email={email}
+            displayName={displayName}
+            role={role}
             onLogout={onLogout}
             loggingOut={loggingOut}
             extraActions={topbarExtraActions}

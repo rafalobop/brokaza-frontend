@@ -1,0 +1,2009 @@
+﻿2026-09-04T22:09:21.1740728Z Current runner version: '2.337.0'
+2026-09-04T22:09:21.1776388Z ##[group]Runner Image Provisioner
+2026-09-04T22:09:21.1777700Z Hosted Compute Agent
+2026-09-04T22:09:21.1778662Z Version: 20260828.587
+2026-09-04T22:09:21.1779766Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+2026-09-04T22:09:21.1780942Z Build Date: 2026-08-28T16:44:25Z
+2026-09-04T22:09:21.1782033Z Worker ID: {9db5e7f4-ceef-42b2-ace6-f2ba7d26690e}
+2026-09-04T22:09:21.1783315Z Azure Region: eastus
+2026-09-04T22:09:21.1784273Z ##[endgroup]
+2026-09-04T22:09:21.1786736Z ##[group]Operating System
+2026-09-04T22:09:21.1787743Z Ubuntu
+2026-09-04T22:09:21.1788546Z 24.04.4
+2026-09-04T22:09:21.1789521Z LTS
+2026-09-04T22:09:21.1790408Z ##[endgroup]
+2026-09-04T22:09:21.1791334Z ##[group]Runner Image
+2026-09-04T22:09:21.1792309Z Image: ubuntu-24.04
+2026-09-04T22:09:21.1793273Z Version: 20260831.293.1
+2026-09-04T22:09:21.1795334Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260831.293/images/ubuntu/Ubuntu2404-Readme.md
+2026-09-04T22:09:21.1798438Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260831.293
+2026-09-04T22:09:21.1800094Z ##[endgroup]
+2026-09-04T22:09:21.1801998Z ##[group]GITHUB_TOKEN Permissions
+2026-09-04T22:09:21.1804704Z Contents: read
+2026-09-04T22:09:21.1806094Z Metadata: read
+2026-09-04T22:09:21.1806988Z Packages: read
+2026-09-04T22:09:21.1807842Z ##[endgroup]
+2026-09-04T22:09:21.1810771Z Secret source: Actions
+2026-09-04T22:09:21.1812523Z Prepare workflow directory
+2026-09-04T22:09:21.2272748Z Prepare all required actions
+2026-09-04T22:09:21.2341797Z Getting action download info
+2026-09-04T22:09:21.4290739Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-09-04T22:09:21.5292245Z Download action repository 'pnpm/action-setup@v4' (SHA:b906affcce14559ad1aafd4ab0e942779e9f58b1)
+2026-09-04T22:09:21.7401874Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-09-04T22:09:21.9424546Z Complete job name: lint-format-build
+2026-09-04T22:09:22.0175659Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-04T22:09:22.0184248Z ##[group]Run actions/checkout@v4
+2026-09-04T22:09:22.0184945Z with:
+2026-09-04T22:09:22.0185423Z   repository: rafalobop/brokaza-frontend
+2026-09-04T22:09:22.0189743Z   token: ***
+2026-09-04T22:09:22.0190199Z   ssh-strict: true
+2026-09-04T22:09:22.0190656Z   ssh-user: git
+2026-09-04T22:09:22.0191114Z   persist-credentials: true
+2026-09-04T22:09:22.0191612Z   clean: true
+2026-09-04T22:09:22.0192070Z   sparse-checkout-cone-mode: true
+2026-09-04T22:09:22.0192599Z   fetch-depth: 1
+2026-09-04T22:09:22.0193034Z   fetch-tags: false
+2026-09-04T22:09:22.0193484Z   show-progress: true
+2026-09-04T22:09:22.0193968Z   lfs: false
+2026-09-04T22:09:22.0194429Z   submodules: false
+2026-09-04T22:09:22.0194895Z   set-safe-directory: true
+2026-09-04T22:09:22.0195415Z   allow-unsafe-pr-checkout: false
+2026-09-04T22:09:22.0196610Z ##[endgroup]
+2026-09-04T22:09:22.1362593Z Syncing repository: rafalobop/brokaza-frontend
+2026-09-04T22:09:22.1526325Z ##[group]Getting Git version info
+2026-09-04T22:09:22.1528528Z Working directory is '/home/runner/work/brokaza-frontend/brokaza-frontend'
+2026-09-04T22:09:22.1531266Z [command]/usr/bin/git version
+2026-09-04T22:09:22.1594511Z git version 2.55.0
+2026-09-04T22:09:22.2643938Z ##[endgroup]
+2026-09-04T22:09:22.2651428Z Temporarily overriding HOME='/home/runner/work/_temp/6dc7df92-3b8f-4a4e-b4aa-1c405f9f41d8' before making global git config changes
+2026-09-04T22:09:22.2653655Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-04T22:09:22.2658456Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/brokaza-frontend/brokaza-frontend
+2026-09-04T22:09:22.2692544Z Deleting the contents of '/home/runner/work/brokaza-frontend/brokaza-frontend'
+2026-09-04T22:09:22.2697268Z ##[group]Initializing the repository
+2026-09-04T22:09:22.2708862Z [command]/usr/bin/git init /home/runner/work/brokaza-frontend/brokaza-frontend
+2026-09-04T22:09:22.2712852Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-09-04T22:09:22.2720230Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-09-04T22:09:22.2723967Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-09-04T22:09:22.2726710Z hint: call:
+2026-09-04T22:09:22.2728002Z hint:
+2026-09-04T22:09:22.2729831Z hint: 	git config --global init.defaultBranch <name>
+2026-09-04T22:09:22.2733650Z hint:
+2026-09-04T22:09:22.2734754Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-09-04T22:09:22.2736743Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-09-04T22:09:22.2738147Z hint:
+2026-09-04T22:09:22.2738936Z hint: 	git branch -m <name>
+2026-09-04T22:09:22.2739982Z hint:
+2026-09-04T22:09:22.2741164Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-09-04T22:09:22.2743161Z Initialized empty Git repository in /home/runner/work/brokaza-frontend/brokaza-frontend/.git/
+2026-09-04T22:09:22.2746623Z [command]/usr/bin/git remote add origin https://github.com/rafalobop/brokaza-frontend
+2026-09-04T22:09:22.2749716Z ##[endgroup]
+2026-09-04T22:09:22.2751151Z ##[group]Disabling automatic garbage collection
+2026-09-04T22:09:22.2752334Z [command]/usr/bin/git config --local gc.auto 0
+2026-09-04T22:09:22.2755043Z ##[endgroup]
+2026-09-04T22:09:22.2756709Z ##[group]Setting up auth
+2026-09-04T22:09:22.2758001Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-04T22:09:22.2762705Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-04T22:09:22.3003323Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-04T22:09:22.3037821Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-04T22:09:22.3377923Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-04T22:09:22.3421663Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-04T22:09:22.3787551Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-04T22:09:22.3821383Z ##[endgroup]
+2026-09-04T22:09:22.3823396Z ##[group]Fetching the repository
+2026-09-04T22:09:22.3833346Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +31cbebd1a0ce1a407c5526fd9c10ae32794e32d1:refs/remotes/pull/42/merge
+2026-09-04T22:09:22.9722038Z From https://github.com/rafalobop/brokaza-frontend
+2026-09-04T22:09:22.9724725Z  * [new ref]         31cbebd1a0ce1a407c5526fd9c10ae32794e32d1 -> pull/42/merge
+2026-09-04T22:09:22.9730943Z ##[endgroup]
+2026-09-04T22:09:22.9733239Z ##[group]Determining the checkout info
+2026-09-04T22:09:22.9738410Z ##[endgroup]
+2026-09-04T22:09:22.9739929Z [command]/usr/bin/git sparse-checkout disable
+2026-09-04T22:09:22.9756438Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-09-04T22:09:22.9795963Z ##[group]Checking out the ref
+2026-09-04T22:09:22.9810627Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/42/merge
+2026-09-04T22:09:22.9987365Z Note: switching to 'refs/remotes/pull/42/merge'.
+2026-09-04T22:09:22.9988861Z 
+2026-09-04T22:09:22.9992172Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-09-04T22:09:22.9995037Z changes and commit them, and you can discard any commits you make in this
+2026-09-04T22:09:22.9997777Z state without impacting any branches by switching back to a branch.
+2026-09-04T22:09:22.9999078Z 
+2026-09-04T22:09:23.0000013Z If you want to create a new branch to retain commits you create, you may
+2026-09-04T22:09:23.0002160Z do so (now or later) by using -c with the switch command. Example:
+2026-09-04T22:09:23.0003537Z 
+2026-09-04T22:09:23.0004152Z   git switch -c <new-branch-name>
+2026-09-04T22:09:23.0004898Z 
+2026-09-04T22:09:23.0005856Z Or undo this operation with:
+2026-09-04T22:09:23.0006985Z 
+2026-09-04T22:09:23.0007774Z   git switch -
+2026-09-04T22:09:23.0008693Z 
+2026-09-04T22:09:23.0009815Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-09-04T22:09:23.0011377Z 
+2026-09-04T22:09:23.0013043Z HEAD is now at 31cbebd Merge 7cd557e9d8bbf3445ac5da241e1069228c49d8d4 into 30006adbc3373fdf244892c65aa89f996d85e407
+2026-09-04T22:09:23.0021141Z ##[endgroup]
+2026-09-04T22:09:23.0056582Z [command]/usr/bin/git log -1 --format=%H
+2026-09-04T22:09:23.0088469Z 31cbebd1a0ce1a407c5526fd9c10ae32794e32d1
+2026-09-04T22:09:23.0481085Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-04T22:09:23.0484511Z ##[group]Run pnpm/action-setup@v4
+2026-09-04T22:09:23.0485442Z with:
+2026-09-04T22:09:23.0486396Z   dest: ~/setup-pnpm
+2026-09-04T22:09:23.0487243Z   run_install: null
+2026-09-04T22:09:23.0488060Z   cache: false
+2026-09-04T22:09:23.0488906Z   cache_dependency_path: pnpm-lock.yaml
+2026-09-04T22:09:23.0489922Z   package_json_file: package.json
+2026-09-04T22:09:23.0490837Z   standalone: false
+2026-09-04T22:09:23.0491653Z ##[endgroup]
+2026-09-04T22:09:23.2061977Z ##[group]Running self-installer...
+2026-09-04T22:09:23.8247610Z (node:2026) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-09-04T22:09:23.8276216Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-04T22:09:23.9988732Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2026-09-04T22:09:24.0083714Z Packages: +1
+2026-09-04T22:09:24.0084446Z +
+2026-09-04T22:09:24.3367182Z Progress: resolved 1, reused 0, downloaded 1, added 1, done
+2026-09-04T22:09:24.3628503Z 
+2026-09-04T22:09:24.3630195Z dependencies:
+2026-09-04T22:09:24.3630721Z + pnpm 11.9.0 (11.25.0 is available)
+2026-09-04T22:09:24.3633696Z 
+2026-09-04T22:09:24.3653995Z Done in 822ms
+2026-09-04T22:09:24.3819309Z ##[endgroup]
+2026-09-04T22:09:24.3820184Z Installation Completed!
+2026-09-04T22:09:24.4036269Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-04T22:09:24.4037617Z ##[group]Run actions/setup-node@v4
+2026-09-04T22:09:24.4037906Z with:
+2026-09-04T22:09:24.4038141Z   node-version: 22
+2026-09-04T22:09:24.4038384Z   cache: pnpm
+2026-09-04T22:09:24.4038645Z   cache-dependency-path: pnpm-lock.yaml
+2026-09-04T22:09:24.4038959Z   always-auth: false
+2026-09-04T22:09:24.4039208Z   check-latest: false
+2026-09-04T22:09:24.4041764Z   token: ***
+2026-09-04T22:09:24.4041998Z env:
+2026-09-04T22:09:24.4042313Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-09-04T22:09:24.4042673Z ##[endgroup]
+2026-09-04T22:09:24.5747934Z (node:2042) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-04T22:09:24.5758687Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-04T22:09:24.5760464Z Found in cache @ /opt/hostedtoolcache/node/22.23.2/x64
+2026-09-04T22:09:24.5761544Z ##[group]Environment details
+2026-09-04T22:09:25.0717048Z node: v22.23.2
+2026-09-04T22:09:25.0724801Z npm: 10.9.8
+2026-09-04T22:09:25.0736474Z yarn: 1.22.22
+2026-09-04T22:09:25.0764089Z ##[endgroup]
+2026-09-04T22:09:25.0765131Z [command]/home/runner/setup-pnpm/node_modules/.bin/pnpm store path --silent
+2026-09-04T22:09:25.7386761Z /home/runner/setup-pnpm/node_modules/.bin/store/v11
+2026-09-04T22:09:25.8438027Z pnpm cache is not found
+2026-09-04T22:09:25.8566832Z ##[group]Run pnpm install --frozen-lockfile
+2026-09-04T22:09:25.8567281Z [36;1mpnpm install --frozen-lockfile[0m
+2026-09-04T22:09:25.8617447Z shell: /usr/bin/bash -e {0}
+2026-09-04T22:09:25.8617737Z env:
+2026-09-04T22:09:25.8618025Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-09-04T22:09:25.8618361Z ##[endgroup]
+2026-09-04T22:09:26.7454774Z ? Verifying lockfile against supply-chain policies (720 entries)...
+2026-09-04T22:09:26.7545332Z Lockfile is up to date, resolution step is skipped
+2026-09-04T22:09:26.9051131Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2026-09-04T22:09:26.9879777Z Packages: +640
+2026-09-04T22:09:26.9885353Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2026-09-04T22:09:27.9201437Z Progress: resolved 640, reused 0, downloaded 0, added 0
+2026-09-04T22:09:28.9608815Z Progress: resolved 640, reused 0, downloaded 32, added 0
+2026-09-04T22:09:29.9667861Z Progress: resolved 640, reused 0, downloaded 59, added 0
+2026-09-04T22:09:30.9787023Z Progress: resolved 640, reused 0, downloaded 61, added 0
+2026-09-04T22:09:32.1240642Z Progress: resolved 640, reused 0, downloaded 62, added 0
+2026-09-04T22:09:33.1838643Z Progress: resolved 640, reused 0, downloaded 88, added 4
+2026-09-04T22:09:34.2087494Z Progress: resolved 640, reused 0, downloaded 124, added 4
+2026-09-04T22:09:36.5935402Z Progress: resolved 640, reused 0, downloaded 125, added 4
+2026-09-04T22:09:37.6121031Z Progress: resolved 640, reused 0, downloaded 209, added 12
+2026-09-04T22:09:38.6197440Z Progress: resolved 640, reused 0, downloaded 286, added 16
+2026-09-04T22:09:39.1834526Z [WARN] Request took 10081ms: https://registry.npmjs.org/@typescript-eslint%2Feslint-plugin
+2026-09-04T22:09:39.6192428Z Progress: resolved 640, reused 0, downloaded 377, added 24
+2026-09-04T22:09:40.6370226Z Progress: resolved 640, reused 0, downloaded 420, added 24
+2026-09-04T22:09:41.6335850Z Progress: resolved 640, reused 0, downloaded 550, added 33
+2026-09-04T22:09:42.7637569Z Progress: resolved 640, reused 0, downloaded 639, added 40
+2026-09-04T22:09:43.7431739Z ✓ Lockfile passes supply-chain policies (720 entries in 16.9s)
+2026-09-04T22:09:43.7637459Z Progress: resolved 640, reused 0, downloaded 640, added 151
+2026-09-04T22:09:44.0770903Z Progress: resolved 640, reused 0, downloaded 640, added 640, done
+2026-09-04T22:09:44.4393112Z 
+2026-09-04T22:09:44.4405926Z dependencies:
+2026-09-04T22:09:44.4406481Z + leaflet 1.9.4
+2026-09-04T22:09:44.4406978Z + lucide-react 1.33.0
+2026-09-04T22:09:44.4412253Z + next 16.3.1
+2026-09-04T22:09:44.4412959Z + react 19.2.8
+2026-09-04T22:09:44.4413576Z + react-dom 19.2.8
+2026-09-04T22:09:44.4414208Z + react-leaflet 5.0.0
+2026-09-04T22:09:44.4414670Z 
+2026-09-04T22:09:44.4415317Z devDependencies:
+2026-09-04T22:09:44.4416230Z + @tailwindcss/postcss 4.3.3
+2026-09-04T22:09:44.4416938Z + @testing-library/dom 10.4.1
+2026-09-04T22:09:44.4417673Z + @testing-library/jest-dom 7.0.1
+2026-09-04T22:09:44.4418392Z + @testing-library/react 16.3.2
+2026-09-04T22:09:44.4419055Z + @types/jest 30.0.0
+2026-09-04T22:09:44.4419657Z + @types/leaflet 1.9.22
+2026-09-04T22:09:44.4420277Z + @types/node 20.19.43
+2026-09-04T22:09:44.4420881Z + @types/react 19.2.18
+2026-09-04T22:09:44.4421458Z + @types/react-dom 19.2.4
+2026-09-04T22:09:44.4422119Z + cross-env 10.1.0
+2026-09-04T22:09:44.4422691Z + eslint 9.39.5
+2026-09-04T22:09:44.4423279Z + eslint-config-next 16.3.1
+2026-09-04T22:09:44.4424000Z + eslint-config-prettier 10.1.8
+2026-09-04T22:09:44.4425164Z + husky 9.1.7
+2026-09-04T22:09:44.4428022Z + jest 30.4.2
+2026-09-04T22:09:44.4446257Z + jest-environment-jsdom 30.4.1
+2026-09-04T22:09:44.4466033Z + prettier 3.9.6
+2026-09-04T22:09:44.4472525Z + prettier-plugin-tailwindcss 0.8.1
+2026-09-04T22:09:44.4476415Z + tailwindcss 4.3.3
+2026-09-04T22:09:44.4477056Z + ts-node 10.9.2
+2026-09-04T22:09:44.4477728Z + typescript 5.9.3
+2026-09-04T22:09:44.4478130Z 
+2026-09-04T22:09:44.4668520Z . prepare$ husky
+2026-09-04T22:09:44.5316321Z . prepare: Done
+2026-09-04T22:09:44.5637081Z Done in 18.6s using pnpm v11.9.0
+2026-09-04T22:09:44.6648573Z ##[group]Run pnpm run lint
+2026-09-04T22:09:44.6648895Z [36;1mpnpm run lint[0m
+2026-09-04T22:09:44.6688771Z shell: /usr/bin/bash -e {0}
+2026-09-04T22:09:44.6689047Z env:
+2026-09-04T22:09:44.6689326Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-09-04T22:09:44.6689659Z ##[endgroup]
+2026-09-04T22:09:45.1524703Z $ eslint
+2026-09-04T22:09:55.8868603Z ##[group]Run pnpm run format:check
+2026-09-04T22:09:55.8868976Z [36;1mpnpm run format:check[0m
+2026-09-04T22:09:55.8907931Z shell: /usr/bin/bash -e {0}
+2026-09-04T22:09:55.8908202Z env:
+2026-09-04T22:09:55.8908479Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-09-04T22:09:55.8908815Z ##[endgroup]
+2026-09-04T22:09:56.3553358Z $ prettier --check .
+2026-09-04T22:09:56.4578809Z Checking formatting...
+2026-09-04T22:10:01.2929482Z All matched files use Prettier code style!
+2026-09-04T22:10:01.3417159Z ##[group]Run pnpm run test
+2026-09-04T22:10:01.3417486Z [36;1mpnpm run test[0m
+2026-09-04T22:10:01.3456868Z shell: /usr/bin/bash -e {0}
+2026-09-04T22:10:01.3457144Z env:
+2026-09-04T22:10:01.3457424Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-09-04T22:10:01.3457755Z ##[endgroup]
+2026-09-04T22:10:01.9536775Z $ jest
+2026-09-04T22:10:04.7153848Z PASS __tests__/profile-gate.test.tsx
+2026-09-04T22:10:05.6195274Z PASS __tests__/auth-context.test.tsx
+2026-09-04T22:10:05.6316360Z   ● Console
+2026-09-04T22:10:05.6316644Z 
+2026-09-04T22:10:05.6317068Z     console.error
+2026-09-04T22:10:05.6317857Z       [API] Error de red al conectar con /api/auth/logout: TypeError Failed to fetch
+2026-09-04T22:10:05.6318500Z 
+2026-09-04T22:10:05.6318896Z     [0m [90m 119 |[39m     }
+2026-09-04T22:10:05.6319886Z      [90m 120 |[39m     [36mconst[39m err [33m=[39m error [36mas[39m [33mError[39m[33m;[39m
+2026-09-04T22:10:05.6321982Z     [31m[1m>[22m[39m[90m 121 |[39m     console[33m.[39merror([32m`${logTag} Error de red al conectar con ${path}:`[39m[33m,[39m err[33m.[39mname[33m,[39m err[33m.[39mmessage)[33m;[39m
+2026-09-04T22:10:05.6323578Z      [90m     |[39m             [31m[1m^[22m[39m
+2026-09-04T22:10:05.6325112Z      [90m 122 |[39m     [36mthrow[39m [36mnew[39m [33mApiError[39m(err[33m.[39mmessage [33m||[39m [32m"Error de red"[39m[33m,[39m [32m"network"[39m)[33m;[39m
+2026-09-04T22:10:05.6326665Z      [90m 123 |[39m   } [36mfinally[39m {
+2026-09-04T22:10:05.6327450Z      [90m 124 |[39m     clearTimeout(timer)[33m;[39m[0m
+2026-09-04T22:10:05.6327946Z 
+2026-09-04T22:10:05.6328315Z       at error (src/lib/api-client.ts:121:13)
+2026-09-04T22:10:05.6329058Z       at Object.logout (src/lib/auth-context.tsx:168:7)
+2026-09-04T22:10:05.6329948Z       at __tests__/auth-context.test.tsx:113:7
+2026-09-04T22:10:05.6330492Z 
+2026-09-04T22:10:06.0307151Z PASS __tests__/upload-dropzone.test.tsx
+2026-09-04T22:10:06.4870864Z PASS __tests__/use-push-notifications.test.tsx
+2026-09-04T22:10:07.0875764Z PASS __tests__/use-tenant-properties.test.ts
+2026-09-04T22:10:07.4765187Z PASS __tests__/team-section.test.tsx
+2026-09-04T22:10:08.8107562Z [next] ▲ Next.js 16.3.1 (Turbopack)
+2026-09-04T22:10:08.8130837Z [next] - Local:         http://localhost:36813
+2026-09-04T22:10:08.8146229Z - Network:       http://10.1.0.84:36813
+2026-09-04T22:10:08.8166253Z [next] ✓ Ready in 452ms
+2026-09-04T22:10:08.8168091Z [next] ✓ Running next.config.ts took 42ms
+2026-09-04T22:10:08.9306768Z [next] Attention: Next.js now collects completely anonymous telemetry regarding usage.
+2026-09-04T22:10:08.9308745Z This information is used to shape Next.js' roadmap and prioritize features.
+2026-09-04T22:10:08.9315676Z You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+2026-09-04T22:10:08.9317076Z https://nextjs.org/telemetry
+2026-09-04T22:10:08.9317742Z 
+2026-09-04T22:10:09.2184451Z [next] 
+2026-09-04T22:10:09.2186845Z [next]   We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+2026-09-04T22:10:09.2188719Z   The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+2026-09-04T22:10:09.2189846Z 
+2026-09-04T22:10:09.2190449Z   	- include was updated to add '.next/dev/dev/types/**/*.ts'
+2026-09-04T22:10:09.2191105Z 
+2026-09-04T22:10:09.3458659Z [next] 
+2026-09-04T22:10:12.8892082Z [next]  GET / 200 in 3.5s (next.js: 3.2s, application-code: 322ms)
+2026-09-04T22:10:13.1857089Z PASS __tests__/integration/rewrites-proxy.test.ts (5.695 s)
+2026-09-04T22:10:13.3695405Z [next]  GET /esta-ruta-no-existe 404 in 297ms (next.js: 244ms, application-code: 53ms)
+2026-09-04T22:10:13.4688357Z [next]  GET /esta-ruta-no-existe 404 in 40ms (next.js: 5ms, application-code: 35ms)
+2026-09-04T22:10:13.8582706Z PASS __tests__/profile-context.test.tsx
+2026-09-04T22:10:13.8656730Z   ● Console
+2026-09-04T22:10:13.8675959Z 
+2026-09-04T22:10:13.8677079Z     console.error
+2026-09-04T22:10:13.8691335Z       An update to ProfileProvider inside a test was not wrapped in act(...).
+2026-09-04T22:10:13.8692319Z       
+2026-09-04T22:10:13.8693191Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:13.8694117Z       
+2026-09-04T22:10:13.8694645Z       act(() => {
+2026-09-04T22:10:13.8695278Z         /* fire events that update state */
+2026-09-04T22:10:13.8696180Z       });
+2026-09-04T22:10:13.8696789Z       /* assert on the output */
+2026-09-04T22:10:13.8697427Z       
+2026-09-04T22:10:13.8698637Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:13.8699738Z 
+2026-09-04T22:10:13.8700203Z     [0m [90m 119 |[39m
+2026-09-04T22:10:13.8701347Z      [90m 120 |[39m   [36mconst[39m refresh [33m=[39m useCallback([36masync[39m () [33m=>[39m {
+2026-09-04T22:10:13.8702775Z     [31m[1m>[22m[39m[90m 121 |[39m     dispatch({ type[33m:[39m [32m"LOADING"[39m })[33m;[39m
+2026-09-04T22:10:13.8703827Z      [90m     |[39m     [31m[1m^[22m[39m
+2026-09-04T22:10:13.8704596Z      [90m 122 |[39m     [36mtry[39m {
+2026-09-04T22:10:13.8706397Z      [90m 123 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m apiClient[33m<[39m[33mProfileResponse[39m[33m>[39m([32m"/api/profile"[39m)[33m;[39m
+2026-09-04T22:10:13.8708421Z      [90m 124 |[39m       dispatch({ type[33m:[39m [32m"RESOLVED"[39m[33m,[39m profile[33m:[39m res[33m.[39mprofile })[33m;[39m[0m
+2026-09-04T22:10:13.8709375Z 
+2026-09-04T22:10:13.8710292Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:13.8712103Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:13.8714125Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:13.8716314Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:13.8718371Z       at dispatchReducerAction (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9117:13)
+2026-09-04T22:10:13.8719842Z       at Object.dispatch [as refresh] (src/lib/profile-context.tsx:121:5)
+2026-09-04T22:10:13.8721248Z       at Object.refresh (__tests__/profile-context.test.tsx:192:26)
+2026-09-04T22:10:13.8721888Z 
+2026-09-04T22:10:13.8722235Z     console.error
+2026-09-04T22:10:13.8723034Z       An update to ProfileProvider inside a test was not wrapped in act(...).
+2026-09-04T22:10:13.8723857Z       
+2026-09-04T22:10:13.8724704Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:13.8725759Z       
+2026-09-04T22:10:13.8726275Z       act(() => {
+2026-09-04T22:10:13.8726905Z         /* fire events that update state */
+2026-09-04T22:10:13.8727556Z       });
+2026-09-04T22:10:13.8728116Z       /* assert on the output */
+2026-09-04T22:10:13.8728718Z       
+2026-09-04T22:10:13.8729925Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:13.8730970Z 
+2026-09-04T22:10:13.8731511Z     [0m [90m 122 |[39m     [36mtry[39m {
+2026-09-04T22:10:13.8733102Z      [90m 123 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m apiClient[33m<[39m[33mProfileResponse[39m[33m>[39m([32m"/api/profile"[39m)[33m;[39m
+2026-09-04T22:10:13.8735153Z     [31m[1m>[22m[39m[90m 124 |[39m       dispatch({ type[33m:[39m [32m"RESOLVED"[39m[33m,[39m profile[33m:[39m res[33m.[39mprofile })[33m;[39m
+2026-09-04T22:10:13.8736817Z      [90m     |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:13.8737684Z      [90m 125 |[39m     } [36mcatch[39m (error) {
+2026-09-04T22:10:13.8739890Z      [90m 126 |[39m       [36mconst[39m message [33m=[39m error [36minstanceof[39m [33mApiError[39m [33m?[39m error[33m.[39mmessage [33m:[39m [32m"No pudimos verificar tu perfil."[39m[33m;[39m
+2026-09-04T22:10:13.8751772Z      [90m 127 |[39m       dispatch({ type[33m:[39m [32m"FAILED"[39m[33m,[39m error[33m:[39m message })[33m;[39m[0m
+2026-09-04T22:10:13.8752718Z 
+2026-09-04T22:10:13.8753685Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:13.8755744Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:13.8757859Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:13.8760006Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:13.8762088Z       at dispatchReducerAction (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9117:13)
+2026-09-04T22:10:13.8763632Z       at Object.dispatch [as refresh] (src/lib/profile-context.tsx:124:7)
+2026-09-04T22:10:13.8764783Z       at Object.<anonymous> (__tests__/profile-context.test.tsx:192:5)
+2026-09-04T22:10:13.8765654Z 
+2026-09-04T22:10:14.3636931Z PASS __tests__/admin-auth-context.test.tsx
+2026-09-04T22:10:14.3657378Z   ● Console
+2026-09-04T22:10:14.3666015Z 
+2026-09-04T22:10:14.3686354Z     console.error
+2026-09-04T22:10:14.3691548Z       [API] Error de red al conectar con /admin/api/auth/logout: TypeError Failed to fetch
+2026-09-04T22:10:14.3692329Z 
+2026-09-04T22:10:14.3693016Z     [0m [90m 119 |[39m     }
+2026-09-04T22:10:14.3694187Z      [90m 120 |[39m     [36mconst[39m err [33m=[39m error [36mas[39m [33mError[39m[33m;[39m
+2026-09-04T22:10:14.3696434Z     [31m[1m>[22m[39m[90m 121 |[39m     console[33m.[39merror([32m`${logTag} Error de red al conectar con ${path}:`[39m[33m,[39m err[33m.[39mname[33m,[39m err[33m.[39mmessage)[33m;[39m
+2026-09-04T22:10:14.3698121Z      [90m     |[39m             [31m[1m^[22m[39m
+2026-09-04T22:10:14.3699789Z      [90m 122 |[39m     [36mthrow[39m [36mnew[39m [33mApiError[39m(err[33m.[39mmessage [33m||[39m [32m"Error de red"[39m[33m,[39m [32m"network"[39m)[33m;[39m
+2026-09-04T22:10:14.3701812Z      [90m 123 |[39m   } [36mfinally[39m {
+2026-09-04T22:10:14.3702715Z      [90m 124 |[39m     clearTimeout(timer)[33m;[39m[0m
+2026-09-04T22:10:14.3703298Z 
+2026-09-04T22:10:14.3703734Z       at error (src/lib/api-client.ts:121:13)
+2026-09-04T22:10:14.3704581Z       at Object.logout (src/lib/admin-auth-context.tsx:130:7)
+2026-09-04T22:10:14.3705678Z       at __tests__/admin-auth-context.test.tsx:88:7
+2026-09-04T22:10:14.3706266Z 
+2026-09-04T22:10:14.9176920Z PASS __tests__/property-list.test.tsx
+2026-09-04T22:10:14.9594871Z   ● Console
+2026-09-04T22:10:14.9601972Z 
+2026-09-04T22:10:14.9602424Z     console.error
+2026-09-04T22:10:14.9603274Z       An update to PropertyList inside a test was not wrapped in act(...).
+2026-09-04T22:10:14.9603942Z       
+2026-09-04T22:10:14.9604640Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:14.9605703Z       
+2026-09-04T22:10:14.9606178Z       act(() => {
+2026-09-04T22:10:14.9626040Z         /* fire events that update state */
+2026-09-04T22:10:14.9626526Z       });
+2026-09-04T22:10:14.9633036Z       /* assert on the output */
+2026-09-04T22:10:14.9666386Z       
+2026-09-04T22:10:14.9676972Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:14.9686430Z 
+2026-09-04T22:10:14.9707375Z     [0m [90m 58 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m getProperties({ page[33m:[39m fetchPage[33m,[39m search[33m:[39m fetchSearch [33m||[39m undefined })[33m;[39m
+2026-09-04T22:10:14.9726768Z      [90m 59 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:14.9727975Z     [31m[1m>[22m[39m[90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:14.9728766Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:14.9729467Z      [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:14.9730250Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:14.9731065Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m[0m
+2026-09-04T22:10:14.9731472Z 
+2026-09-04T22:10:14.9732224Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:14.9733775Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:14.9735762Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:14.9737637Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:14.9739348Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:14.9740968Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:14.9742085Z       at setProperties (src/lib/use-properties.ts:60:7)
+2026-09-04T22:10:14.9742684Z       at src/lib/use-properties.ts:80:7
+2026-09-04T22:10:14.9743010Z 
+2026-09-04T22:10:14.9743170Z     console.error
+2026-09-04T22:10:14.9743761Z       An update to PropertyList inside a test was not wrapped in act(...).
+2026-09-04T22:10:14.9744358Z       
+2026-09-04T22:10:14.9745020Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:14.9776047Z       
+2026-09-04T22:10:14.9776405Z       act(() => {
+2026-09-04T22:10:14.9776850Z         /* fire events that update state */
+2026-09-04T22:10:14.9777691Z       });
+2026-09-04T22:10:14.9778062Z       /* assert on the output */
+2026-09-04T22:10:14.9778473Z       
+2026-09-04T22:10:14.9779578Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:14.9780437Z 
+2026-09-04T22:10:14.9781249Z     [0m [90m 59 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:14.9782362Z      [90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:14.9783327Z     [31m[1m>[22m[39m[90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:14.9784099Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:14.9784848Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:14.9785854Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:14.9786655Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m[0m
+2026-09-04T22:10:14.9787078Z 
+2026-09-04T22:10:14.9787806Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:14.9789352Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:14.9791464Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:14.9793446Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:14.9795252Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:14.9817616Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:14.9818822Z       at setPage (src/lib/use-properties.ts:61:7)
+2026-09-04T22:10:14.9819432Z       at src/lib/use-properties.ts:80:7
+2026-09-04T22:10:14.9819776Z 
+2026-09-04T22:10:14.9819946Z     console.error
+2026-09-04T22:10:14.9820572Z       An update to PropertyList inside a test was not wrapped in act(...).
+2026-09-04T22:10:14.9821209Z       
+2026-09-04T22:10:14.9821885Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:14.9822580Z       
+2026-09-04T22:10:14.9822886Z       act(() => {
+2026-09-04T22:10:14.9823327Z         /* fire events that update state */
+2026-09-04T22:10:14.9823803Z       });
+2026-09-04T22:10:14.9824195Z       /* assert on the output */
+2026-09-04T22:10:14.9824587Z       
+2026-09-04T22:10:14.9825802Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:14.9826685Z 
+2026-09-04T22:10:14.9827258Z     [0m [90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:14.9828214Z      [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:14.9829194Z     [31m[1m>[22m[39m[90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:14.9830006Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:14.9830737Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:14.9831504Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:14.9832272Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m[0m
+2026-09-04T22:10:14.9832672Z 
+2026-09-04T22:10:14.9833433Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:14.9835031Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:14.9857736Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:14.9859715Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:14.9861523Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:14.9863281Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:14.9864437Z       at setPageSize (src/lib/use-properties.ts:62:7)
+2026-09-04T22:10:14.9865033Z       at src/lib/use-properties.ts:80:7
+2026-09-04T22:10:14.9865364Z 
+2026-09-04T22:10:14.9865750Z     console.error
+2026-09-04T22:10:14.9866537Z       An update to PropertyList inside a test was not wrapped in act(...).
+2026-09-04T22:10:14.9867176Z       
+2026-09-04T22:10:14.9867851Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:14.9868546Z       
+2026-09-04T22:10:14.9868857Z       act(() => {
+2026-09-04T22:10:14.9869275Z         /* fire events that update state */
+2026-09-04T22:10:14.9869994Z       });
+2026-09-04T22:10:14.9870423Z       /* assert on the output */
+2026-09-04T22:10:14.9870833Z       
+2026-09-04T22:10:14.9871845Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:14.9872681Z 
+2026-09-04T22:10:14.9873176Z     [0m [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:14.9874022Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:14.9874955Z     [31m[1m>[22m[39m[90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:14.9886354Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:14.9887165Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:14.9887937Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:14.9888656Z      [90m 66 |[39m     } [36mcatch[39m (err) {[0m
+2026-09-04T22:10:14.9889032Z 
+2026-09-04T22:10:14.9889768Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:14.9891388Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:14.9893276Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:14.9895193Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:14.9897187Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:14.9899098Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:14.9900261Z       at setTotal (src/lib/use-properties.ts:63:7)
+2026-09-04T22:10:14.9900836Z       at src/lib/use-properties.ts:80:7
+2026-09-04T22:10:14.9901158Z 
+2026-09-04T22:10:14.9901308Z     console.error
+2026-09-04T22:10:14.9901911Z       An update to PropertyList inside a test was not wrapped in act(...).
+2026-09-04T22:10:14.9902515Z       
+2026-09-04T22:10:14.9903180Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:14.9903873Z       
+2026-09-04T22:10:14.9904457Z       act(() => {
+2026-09-04T22:10:14.9904883Z         /* fire events that update state */
+2026-09-04T22:10:14.9905342Z       });
+2026-09-04T22:10:14.9936112Z       /* assert on the output */
+2026-09-04T22:10:14.9936579Z       
+2026-09-04T22:10:14.9937609Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:14.9938470Z 
+2026-09-04T22:10:14.9939043Z     [0m [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:14.9939905Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:14.9940810Z     [31m[1m>[22m[39m[90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:14.9941578Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:14.9942266Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:14.9942959Z      [90m 66 |[39m     } [36mcatch[39m (err) {
+2026-09-04T22:10:14.9944017Z      [90m 67 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m[0m
+2026-09-04T22:10:14.9944635Z 
+2026-09-04T22:10:14.9945390Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:14.9947858Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:14.9949769Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:14.9951649Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:14.9953451Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:14.9955209Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:14.9976788Z       at setStatus (src/lib/use-properties.ts:64:7)
+2026-09-04T22:10:14.9977431Z       at src/lib/use-properties.ts:80:7
+2026-09-04T22:10:14.9977755Z 
+2026-09-04T22:10:14.9977926Z     console.error
+2026-09-04T22:10:14.9978548Z       An update to PropertyList inside a test was not wrapped in act(...).
+2026-09-04T22:10:14.9979172Z       
+2026-09-04T22:10:14.9979846Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:14.9980545Z       
+2026-09-04T22:10:14.9980856Z       act(() => {
+2026-09-04T22:10:14.9981282Z         /* fire events that update state */
+2026-09-04T22:10:14.9981734Z       });
+2026-09-04T22:10:14.9982112Z       /* assert on the output */
+2026-09-04T22:10:14.9982512Z       
+2026-09-04T22:10:14.9983515Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:14.9984392Z 
+2026-09-04T22:10:14.9984911Z     [0m [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:14.9985936Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:14.9986825Z     [31m[1m>[22m[39m[90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:14.9987590Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:14.9988216Z      [90m 66 |[39m     } [36mcatch[39m (err) {
+2026-09-04T22:10:14.9989241Z      [90m 67 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:14.9990243Z      [90m 68 |[39m       [36mconst[39m message [33m=[39m[0m
+2026-09-04T22:10:14.9990641Z 
+2026-09-04T22:10:14.9991385Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:15.0017930Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:15.0019818Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:15.0021728Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:15.0023526Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:15.0025289Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:15.0026822Z       at setError (src/lib/use-properties.ts:65:7)
+2026-09-04T22:10:15.0027404Z       at src/lib/use-properties.ts:80:7
+2026-09-04T22:10:15.0027746Z 
+2026-09-04T22:10:15.0027906Z     console.error
+2026-09-04T22:10:15.0028508Z       An update to PropertyList inside a test was not wrapped in act(...).
+2026-09-04T22:10:15.0029122Z       
+2026-09-04T22:10:15.0029792Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:15.0030483Z       
+2026-09-04T22:10:15.0030800Z       act(() => {
+2026-09-04T22:10:15.0031454Z         /* fire events that update state */
+2026-09-04T22:10:15.0031937Z       });
+2026-09-04T22:10:15.0032311Z       /* assert on the output */
+2026-09-04T22:10:15.0032719Z       
+2026-09-04T22:10:15.0033729Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:15.0034569Z 
+2026-09-04T22:10:15.0034870Z     [0m [90m 54 |[39m
+2026-09-04T22:10:15.0036754Z      [90m 55 |[39m   [36mconst[39m fetchProperties [33m=[39m useCallback([36masync[39m (fetchPage[33m:[39m number[33m,[39m fetchSearch[33m:[39m string) [33m=>[39m {
+2026-09-04T22:10:15.0038287Z     [31m[1m>[22m[39m[90m 56 |[39m     setStatus([32m"loading"[39m)[33m;[39m
+2026-09-04T22:10:15.0039082Z      [90m    |[39m     [31m[1m^[22m[39m
+2026-09-04T22:10:15.0039665Z      [90m 57 |[39m     [36mtry[39m {
+2026-09-04T22:10:15.0041233Z      [90m 58 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m getProperties({ page[33m:[39m fetchPage[33m,[39m search[33m:[39m fetchSearch [33m||[39m undefined })[33m;[39m
+2026-09-04T22:10:15.0042981Z      [90m 59 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m[0m
+2026-09-04T22:10:15.0043619Z 
+2026-09-04T22:10:15.0044384Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:15.0066349Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:15.0068383Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:15.0070284Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:15.0072101Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:15.0073849Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:15.0074990Z       at setStatus (src/lib/use-properties.ts:56:5)
+2026-09-04T22:10:15.0075976Z       at fetchProperties (src/lib/use-properties.ts:98:14)
+2026-09-04T22:10:15.0077165Z       at callTimer (node_modules/.pnpm/@sinonjs+fake-timers@15.4.0/node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:1525:24)
+2026-09-04T22:10:15.0079114Z       at runTimersInRange (node_modules/.pnpm/@sinonjs+fake-timers@15.4.0/node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:2223:25)
+2026-09-04T22:10:15.0080749Z       at doTickInner (node_modules/.pnpm/@sinonjs+fake-timers@15.4.0/node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:2318:21)
+2026-09-04T22:10:15.0082310Z       at doTick (node_modules/.pnpm/@sinonjs+fake-timers@15.4.0/node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:2334:20)
+2026-09-04T22:10:15.0083844Z       at Object.tick (node_modules/.pnpm/@sinonjs+fake-timers@15.4.0/node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:2342:20)
+2026-09-04T22:10:15.0085461Z       at FakeTimers.advanceTimersByTime (node_modules/.pnpm/@jest+fake-timers@30.4.1/node_modules/@jest/fake-timers/build/index.js:580:19)
+2026-09-04T22:10:15.0107218Z       at Object.advanceTimersByTime (__tests__/property-list.test.tsx:117:10)
+2026-09-04T22:10:15.0107795Z 
+2026-09-04T22:10:15.0107964Z     console.error
+2026-09-04T22:10:15.0108577Z       An update to PropertyList inside a test was not wrapped in act(...).
+2026-09-04T22:10:15.0109191Z       
+2026-09-04T22:10:15.0109914Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:15.0110605Z       
+2026-09-04T22:10:15.0110925Z       act(() => {
+2026-09-04T22:10:15.0111614Z         /* fire events that update state */
+2026-09-04T22:10:15.0112117Z       });
+2026-09-04T22:10:15.0112507Z       /* assert on the output */
+2026-09-04T22:10:15.0112925Z       
+2026-09-04T22:10:15.0113946Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:15.0114811Z 
+2026-09-04T22:10:15.0116455Z     [0m [90m 58 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m getProperties({ page[33m:[39m fetchPage[33m,[39m search[33m:[39m fetchSearch [33m||[39m undefined })[33m;[39m
+2026-09-04T22:10:15.0118205Z      [90m 59 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:15.0119413Z     [31m[1m>[22m[39m[90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:15.0120252Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:15.0120963Z      [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:15.0121783Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:15.0122629Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m[0m
+2026-09-04T22:10:15.0123044Z 
+2026-09-04T22:10:15.0123778Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:15.0125379Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:15.0127527Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:15.0129445Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:15.0131269Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:15.0133045Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:15.0134202Z       at setProperties (src/lib/use-properties.ts:60:7)
+2026-09-04T22:10:15.0134596Z 
+2026-09-04T22:10:15.0134762Z     console.error
+2026-09-04T22:10:15.0135358Z       An update to PropertyList inside a test was not wrapped in act(...).
+2026-09-04T22:10:15.0156742Z       
+2026-09-04T22:10:15.0157428Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:15.0158130Z       
+2026-09-04T22:10:15.0158453Z       act(() => {
+2026-09-04T22:10:15.0158889Z         /* fire events that update state */
+2026-09-04T22:10:15.0159357Z       });
+2026-09-04T22:10:15.0159729Z       /* assert on the output */
+2026-09-04T22:10:15.0160128Z       
+2026-09-04T22:10:15.0161163Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:15.0162044Z 
+2026-09-04T22:10:15.0162846Z     [0m [90m 59 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:15.0163959Z      [90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:15.0164906Z     [31m[1m>[22m[39m[90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:15.0165878Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:15.0166658Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:15.0167496Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:15.0168286Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m[0m
+2026-09-04T22:10:15.0168685Z 
+2026-09-04T22:10:15.0169679Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:15.0171304Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:15.0173183Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:15.0175082Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:15.0197452Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:15.0199428Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:15.0200627Z       at setPage (src/lib/use-properties.ts:61:7)
+2026-09-04T22:10:15.0201002Z 
+2026-09-04T22:10:15.0201169Z     console.error
+2026-09-04T22:10:15.0201795Z       An update to PropertyList inside a test was not wrapped in act(...).
+2026-09-04T22:10:15.0202425Z       
+2026-09-04T22:10:15.0203109Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:15.0203826Z       
+2026-09-04T22:10:15.0204152Z       act(() => {
+2026-09-04T22:10:15.0204581Z         /* fire events that update state */
+2026-09-04T22:10:15.0205055Z       });
+2026-09-04T22:10:15.0205441Z       /* assert on the output */
+2026-09-04T22:10:15.0205996Z       
+2026-09-04T22:10:15.0207029Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:15.0207922Z 
+2026-09-04T22:10:15.0208495Z     [0m [90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:15.0209376Z      [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:15.0210310Z     [31m[1m>[22m[39m[90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:15.0211113Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:15.0211837Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:15.0212613Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:15.0213380Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m[0m
+2026-09-04T22:10:15.0213771Z 
+2026-09-04T22:10:15.0214763Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:15.0227173Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:15.0229150Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:15.0231096Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:15.0232977Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:15.0234791Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:15.0236116Z       at setPageSize (src/lib/use-properties.ts:62:7)
+2026-09-04T22:10:15.0236518Z 
+2026-09-04T22:10:15.0236687Z     console.error
+2026-09-04T22:10:15.0237334Z       An update to PropertyList inside a test was not wrapped in act(...).
+2026-09-04T22:10:15.0237975Z       
+2026-09-04T22:10:15.0238673Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:15.0239633Z       
+2026-09-04T22:10:15.0239957Z       act(() => {
+2026-09-04T22:10:15.0240390Z         /* fire events that update state */
+2026-09-04T22:10:15.0240859Z       });
+2026-09-04T22:10:15.0241236Z       /* assert on the output */
+2026-09-04T22:10:15.0241660Z       
+2026-09-04T22:10:15.0242694Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:15.0243575Z 
+2026-09-04T22:10:15.0244053Z     [0m [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:15.0244904Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:15.0278355Z     [31m[1m>[22m[39m[90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:15.0279295Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:15.0280050Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:15.0280908Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:15.0281683Z      [90m 66 |[39m     } [36mcatch[39m (err) {[0m
+2026-09-04T22:10:15.0282083Z 
+2026-09-04T22:10:15.0282856Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:15.0284524Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:15.0286622Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:15.0288530Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:15.0290369Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:15.0292146Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:15.0293271Z       at setTotal (src/lib/use-properties.ts:63:7)
+2026-09-04T22:10:15.0293663Z 
+2026-09-04T22:10:15.0293819Z     console.error
+2026-09-04T22:10:15.0294445Z       An update to PropertyList inside a test was not wrapped in act(...).
+2026-09-04T22:10:15.0295070Z       
+2026-09-04T22:10:15.0316097Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:15.0317179Z       
+2026-09-04T22:10:15.0317519Z       act(() => {
+2026-09-04T22:10:15.0317978Z         /* fire events that update state */
+2026-09-04T22:10:15.0318465Z       });
+2026-09-04T22:10:15.0318856Z       /* assert on the output */
+2026-09-04T22:10:15.0319262Z       
+2026-09-04T22:10:15.0320324Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:15.0321230Z 
+2026-09-04T22:10:15.0321788Z     [0m [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:15.0322673Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:15.0323555Z     [31m[1m>[22m[39m[90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:15.0324305Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:15.0324977Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:15.0325819Z      [90m 66 |[39m     } [36mcatch[39m (err) {
+2026-09-04T22:10:15.0326848Z      [90m 67 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m[0m
+2026-09-04T22:10:15.0327455Z 
+2026-09-04T22:10:15.0328194Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:15.0330070Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:15.0331916Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:15.0333759Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:15.0355942Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:15.0357935Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:15.0359128Z       at setStatus (src/lib/use-properties.ts:64:7)
+2026-09-04T22:10:15.0359516Z 
+2026-09-04T22:10:15.0359680Z     console.error
+2026-09-04T22:10:15.0360307Z       An update to PropertyList inside a test was not wrapped in act(...).
+2026-09-04T22:10:15.0360920Z       
+2026-09-04T22:10:15.0361363Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:15.0361791Z       
+2026-09-04T22:10:15.0362000Z       act(() => {
+2026-09-04T22:10:15.0362284Z         /* fire events that update state */
+2026-09-04T22:10:15.0362576Z       });
+2026-09-04T22:10:15.0362820Z       /* assert on the output */
+2026-09-04T22:10:15.0363077Z       
+2026-09-04T22:10:15.0363684Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:15.0364190Z 
+2026-09-04T22:10:15.0364523Z     [0m [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:15.0365019Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:15.0365796Z     [31m[1m>[22m[39m[90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:15.0366263Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:15.0366651Z      [90m 66 |[39m     } [36mcatch[39m (err) {
+2026-09-04T22:10:15.0367270Z      [90m 67 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:15.0367844Z      [90m 68 |[39m       [36mconst[39m message [33m=[39m[0m
+2026-09-04T22:10:15.0368075Z 
+2026-09-04T22:10:15.0368521Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:15.0369695Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:15.0370766Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:15.0371871Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:15.0372901Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:15.0373901Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:15.0374551Z       at setError (src/lib/use-properties.ts:65:7)
+2026-09-04T22:10:15.0374765Z 
+2026-09-04T22:10:15.2019296Z PASS __tests__/incoming-matches-section.test.tsx
+2026-09-04T22:10:15.3757364Z PASS __tests__/use-realtime-matches.test.tsx
+2026-09-04T22:10:15.6388707Z PASS __tests__/use-upload-progress.test.ts
+2026-09-04T22:10:15.6446392Z   ● Console
+2026-09-04T22:10:15.6465832Z 
+2026-09-04T22:10:15.6486016Z     console.error
+2026-09-04T22:10:15.6486961Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:15.6506547Z       
+2026-09-04T22:10:15.6526416Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:15.6546037Z       
+2026-09-04T22:10:15.6546575Z       act(() => {
+2026-09-04T22:10:15.6566156Z         /* fire events that update state */
+2026-09-04T22:10:15.6585359Z       });
+2026-09-04T22:10:15.6622177Z       /* assert on the output */
+2026-09-04T22:10:15.6625422Z       
+2026-09-04T22:10:15.6666825Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:15.6705838Z 
+2026-09-04T22:10:15.6746623Z     [0m [90m 165 |[39m           [36mreturn[39m[33m;[39m
+2026-09-04T22:10:15.6796215Z      [90m 166 |[39m         }
+2026-09-04T22:10:15.6836513Z     [31m[1m>[22m[39m[90m 167 |[39m         setStatus([32m"success"[39m)[33m;[39m
+2026-09-04T22:10:15.6876265Z      [90m     |[39m         [31m[1m^[22m[39m
+2026-09-04T22:10:15.6916337Z      [90m 168 |[39m         setResult(res)[33m;[39m
+2026-09-04T22:10:15.6936219Z      [90m 169 |[39m         onSuccess[33m?[39m[33m.[39m()[33m;[39m
+2026-09-04T22:10:15.6936967Z      [90m 170 |[39m       } [36mcatch[39m (err) {[0m
+2026-09-04T22:10:15.6937335Z 
+2026-09-04T22:10:15.6938073Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:15.6939741Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:15.6941580Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:15.6943463Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:15.6945234Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:15.6947212Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:15.6948417Z       at Object.setStatus [as upload] (src/lib/use-upload.ts:167:9)
+2026-09-04T22:10:15.6948860Z 
+2026-09-04T22:10:15.6949017Z     console.error
+2026-09-04T22:10:15.6949611Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:15.6950617Z       
+2026-09-04T22:10:15.6951281Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:15.6951993Z       
+2026-09-04T22:10:15.6952304Z       act(() => {
+2026-09-04T22:10:15.6952735Z         /* fire events that update state */
+2026-09-04T22:10:15.6953202Z       });
+2026-09-04T22:10:15.6953573Z       /* assert on the output */
+2026-09-04T22:10:15.6953989Z       
+2026-09-04T22:10:15.6955088Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:15.6996255Z 
+2026-09-04T22:10:15.6996672Z     [0m [90m 166 |[39m         }
+2026-09-04T22:10:15.7016353Z      [90m 167 |[39m         setStatus([32m"success"[39m)[33m;[39m
+2026-09-04T22:10:15.7017238Z     [31m[1m>[22m[39m[90m 168 |[39m         setResult(res)[33m;[39m
+2026-09-04T22:10:15.7017977Z      [90m     |[39m         [31m[1m^[22m[39m
+2026-09-04T22:10:15.7018752Z      [90m 169 |[39m         onSuccess[33m?[39m[33m.[39m()[33m;[39m
+2026-09-04T22:10:15.7019490Z      [90m 170 |[39m       } [36mcatch[39m (err) {
+2026-09-04T22:10:15.7021137Z      [90m 171 |[39m         [36mconst[39m message [33m=[39m err [36minstanceof[39m [33mApiError[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m"Error al subir el archivo."[39m[33m;[39m[0m
+2026-09-04T22:10:15.7022192Z 
+2026-09-04T22:10:15.7023199Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:15.7028855Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:15.7066906Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:15.7106786Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:15.7166824Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:15.7186956Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:15.7226470Z       at Object.setResult [as upload] (src/lib/use-upload.ts:168:9)
+2026-09-04T22:10:15.7285739Z 
+2026-09-04T22:10:15.8916847Z PASS __tests__/use-properties.test.ts
+2026-09-04T22:10:16.0097010Z   ● Console
+2026-09-04T22:10:16.0135720Z 
+2026-09-04T22:10:16.0156135Z     console.error
+2026-09-04T22:10:16.0206763Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0216438Z       
+2026-09-04T22:10:16.0236627Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0462175Z       
+2026-09-04T22:10:16.0486168Z       act(() => {
+2026-09-04T22:10:16.0505196Z         /* fire events that update state */
+2026-09-04T22:10:16.0506159Z       });
+2026-09-04T22:10:16.0506747Z       /* assert on the output */
+2026-09-04T22:10:16.0507331Z       
+2026-09-04T22:10:16.0508529Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0509625Z 
+2026-09-04T22:10:16.0511257Z     [0m [90m 58 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m getProperties({ page[33m:[39m fetchPage[33m,[39m search[33m:[39m fetchSearch [33m||[39m undefined })[33m;[39m
+2026-09-04T22:10:16.0513291Z      [90m 59 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:16.0514810Z     [31m[1m>[22m[39m[90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:16.0516810Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0517759Z      [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.0518821Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0519887Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m[0m
+2026-09-04T22:10:16.0520531Z 
+2026-09-04T22:10:16.0521527Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0523443Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0525725Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0527921Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0530035Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0532051Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0533611Z       at setProperties (src/lib/use-properties.ts:60:7)
+2026-09-04T22:10:16.0534234Z 
+2026-09-04T22:10:16.0534595Z     console.error
+2026-09-04T22:10:16.0535681Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0536561Z       
+2026-09-04T22:10:16.0537448Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0538430Z       
+2026-09-04T22:10:16.0538990Z       act(() => {
+2026-09-04T22:10:16.0539673Z         /* fire events that update state */
+2026-09-04T22:10:16.0540409Z       });
+2026-09-04T22:10:16.0541011Z       /* assert on the output */
+2026-09-04T22:10:16.0541665Z       
+2026-09-04T22:10:16.0542905Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0544094Z 
+2026-09-04T22:10:16.0545155Z     [0m [90m 59 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:16.0546758Z      [90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:16.0548006Z     [31m[1m>[22m[39m[90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.0549065Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0550097Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0551202Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.0552278Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m[0m
+2026-09-04T22:10:16.0552957Z 
+2026-09-04T22:10:16.0553947Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0556050Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0558260Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0560432Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0562463Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0564447Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0566104Z       at setPage (src/lib/use-properties.ts:61:7)
+2026-09-04T22:10:16.0566685Z 
+2026-09-04T22:10:16.0567058Z     console.error
+2026-09-04T22:10:16.0567889Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0568828Z       
+2026-09-04T22:10:16.0569724Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0570667Z       
+2026-09-04T22:10:16.0571188Z       act(() => {
+2026-09-04T22:10:16.0571829Z         /* fire events that update state */
+2026-09-04T22:10:16.0572504Z       });
+2026-09-04T22:10:16.0573087Z       /* assert on the output */
+2026-09-04T22:10:16.0573707Z       
+2026-09-04T22:10:16.0574964Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0576215Z 
+2026-09-04T22:10:16.0577045Z     [0m [90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:16.0578175Z      [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.0579396Z     [31m[1m>[22m[39m[90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0580441Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0581620Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.0582730Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.0583710Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m[0m
+2026-09-04T22:10:16.0584349Z 
+2026-09-04T22:10:16.0585437Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0587487Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0589589Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0592191Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0594180Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0596416Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0597788Z       at setPageSize (src/lib/use-properties.ts:62:7)
+2026-09-04T22:10:16.0598365Z 
+2026-09-04T22:10:16.0598698Z     console.error
+2026-09-04T22:10:16.0599517Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0600338Z       
+2026-09-04T22:10:16.0601189Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0602086Z       
+2026-09-04T22:10:16.0602576Z       act(() => {
+2026-09-04T22:10:16.0603203Z         /* fire events that update state */
+2026-09-04T22:10:16.0603853Z       });
+2026-09-04T22:10:16.0604423Z       /* assert on the output */
+2026-09-04T22:10:16.0605014Z       
+2026-09-04T22:10:16.0606382Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0607481Z 
+2026-09-04T22:10:16.0608148Z     [0m [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.0609170Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0610308Z     [31m[1m>[22m[39m[90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.0611248Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0612335Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.0613253Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:16.0614125Z      [90m 66 |[39m     } [36mcatch[39m (err) {[0m
+2026-09-04T22:10:16.0614682Z 
+2026-09-04T22:10:16.0615750Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0617578Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0619697Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0621807Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0623783Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0625884Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0627236Z       at setTotal (src/lib/use-properties.ts:63:7)
+2026-09-04T22:10:16.0627802Z 
+2026-09-04T22:10:16.0628391Z     console.error
+2026-09-04T22:10:16.0629235Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0630055Z       
+2026-09-04T22:10:16.0630919Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0631810Z       
+2026-09-04T22:10:16.0632305Z       act(() => {
+2026-09-04T22:10:16.0632925Z         /* fire events that update state */
+2026-09-04T22:10:16.0633580Z       });
+2026-09-04T22:10:16.0634152Z       /* assert on the output */
+2026-09-04T22:10:16.0634765Z       
+2026-09-04T22:10:16.0636130Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0637206Z 
+2026-09-04T22:10:16.0638027Z     [0m [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0639086Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.0640218Z     [31m[1m>[22m[39m[90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.0641246Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0642135Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:16.0643056Z      [90m 66 |[39m     } [36mcatch[39m (err) {
+2026-09-04T22:10:16.0644264Z      [90m 67 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m[0m
+2026-09-04T22:10:16.0645090Z 
+2026-09-04T22:10:16.0646317Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0648213Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0650222Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0652355Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0654396Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0656517Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0657854Z       at setStatus (src/lib/use-properties.ts:64:7)
+2026-09-04T22:10:16.0658706Z 
+2026-09-04T22:10:16.0659049Z     console.error
+2026-09-04T22:10:16.0659851Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0660674Z       
+2026-09-04T22:10:16.0661538Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0662576Z       
+2026-09-04T22:10:16.0663108Z       act(() => {
+2026-09-04T22:10:16.0663753Z         /* fire events that update state */
+2026-09-04T22:10:16.0664401Z       });
+2026-09-04T22:10:16.0664964Z       /* assert on the output */
+2026-09-04T22:10:16.0665699Z       
+2026-09-04T22:10:16.0666907Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0668022Z 
+2026-09-04T22:10:16.0668732Z     [0m [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.0669815Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.0670937Z     [31m[1m>[22m[39m[90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:16.0671866Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0672722Z      [90m 66 |[39m     } [36mcatch[39m (err) {
+2026-09-04T22:10:16.0674156Z      [90m 67 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:16.0675683Z      [90m 68 |[39m       [36mconst[39m message [33m=[39m[0m
+2026-09-04T22:10:16.0676303Z 
+2026-09-04T22:10:16.0677262Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0679123Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0681286Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0683477Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0685774Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0687814Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0689165Z       at setError (src/lib/use-properties.ts:65:7)
+2026-09-04T22:10:16.0689735Z 
+2026-09-04T22:10:16.0690080Z     console.error
+2026-09-04T22:10:16.0690886Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0691661Z       
+2026-09-04T22:10:16.0692513Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0693460Z       
+2026-09-04T22:10:16.0693995Z       act(() => {
+2026-09-04T22:10:16.0694622Z         /* fire events that update state */
+2026-09-04T22:10:16.0695293Z       });
+2026-09-04T22:10:16.0696074Z       /* assert on the output */
+2026-09-04T22:10:16.0696695Z       
+2026-09-04T22:10:16.0697915Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0699022Z 
+2026-09-04T22:10:16.0700587Z     [0m [90m 58 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m getProperties({ page[33m:[39m fetchPage[33m,[39m search[33m:[39m fetchSearch [33m||[39m undefined })[33m;[39m
+2026-09-04T22:10:16.0702554Z      [90m 59 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:16.0704049Z     [31m[1m>[22m[39m[90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:16.0705063Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0706414Z      [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.0707415Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0708464Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m[0m
+2026-09-04T22:10:16.0709062Z 
+2026-09-04T22:10:16.0709985Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0711912Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0714071Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0716271Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0718357Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0720335Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0721926Z       at setProperties (src/lib/use-properties.ts:60:7)
+2026-09-04T22:10:16.0722587Z 
+2026-09-04T22:10:16.0722949Z     console.error
+2026-09-04T22:10:16.0723773Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0724600Z       
+2026-09-04T22:10:16.0725460Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0726584Z       
+2026-09-04T22:10:16.0727093Z       act(() => {
+2026-09-04T22:10:16.0727703Z         /* fire events that update state */
+2026-09-04T22:10:16.0728354Z       });
+2026-09-04T22:10:16.0728942Z       /* assert on the output */
+2026-09-04T22:10:16.0729532Z       
+2026-09-04T22:10:16.0730742Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0731831Z 
+2026-09-04T22:10:16.0732808Z     [0m [90m 59 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:16.0734275Z      [90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:16.0735455Z     [31m[1m>[22m[39m[90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.0736566Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0737517Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0738520Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.0739511Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m[0m
+2026-09-04T22:10:16.0740130Z 
+2026-09-04T22:10:16.0741073Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0742970Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0745074Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0747146Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0748812Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0750392Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0751822Z       at setPage (src/lib/use-properties.ts:61:7)
+2026-09-04T22:10:16.0752348Z 
+2026-09-04T22:10:16.0752675Z     console.error
+2026-09-04T22:10:16.0753450Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0754241Z       
+2026-09-04T22:10:16.0755014Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0756131Z       
+2026-09-04T22:10:16.0756608Z       act(() => {
+2026-09-04T22:10:16.0757171Z         /* fire events that update state */
+2026-09-04T22:10:16.0757776Z       });
+2026-09-04T22:10:16.0758313Z       /* assert on the output */
+2026-09-04T22:10:16.0758883Z       
+2026-09-04T22:10:16.0760070Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0761105Z 
+2026-09-04T22:10:16.0761819Z     [0m [90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:16.0762858Z      [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.0763952Z     [31m[1m>[22m[39m[90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0764901Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0766193Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.0767171Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.0768155Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m[0m
+2026-09-04T22:10:16.0768724Z 
+2026-09-04T22:10:16.0769619Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0771365Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0773399Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0775364Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0777492Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0779352Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0780612Z       at setPageSize (src/lib/use-properties.ts:62:7)
+2026-09-04T22:10:16.0781136Z 
+2026-09-04T22:10:16.0781457Z     console.error
+2026-09-04T22:10:16.0782193Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0782947Z       
+2026-09-04T22:10:16.0783746Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0784669Z       
+2026-09-04T22:10:16.0785127Z       act(() => {
+2026-09-04T22:10:16.0785914Z         /* fire events that update state */
+2026-09-04T22:10:16.0786511Z       });
+2026-09-04T22:10:16.0787040Z       /* assert on the output */
+2026-09-04T22:10:16.0787604Z       
+2026-09-04T22:10:16.0788724Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0789708Z 
+2026-09-04T22:10:16.0790282Z     [0m [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.0791234Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0792260Z     [31m[1m>[22m[39m[90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.0793146Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0793971Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.0795049Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:16.0796023Z      [90m 66 |[39m     } [36mcatch[39m (err) {[0m
+2026-09-04T22:10:16.0796549Z 
+2026-09-04T22:10:16.0797474Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0799193Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0801369Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0803478Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0805433Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0807627Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0808965Z       at setTotal (src/lib/use-properties.ts:63:7)
+2026-09-04T22:10:16.0809528Z 
+2026-09-04T22:10:16.0810063Z     console.error
+2026-09-04T22:10:16.0810888Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0811730Z       
+2026-09-04T22:10:16.0812583Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0813478Z       
+2026-09-04T22:10:16.0813969Z       act(() => {
+2026-09-04T22:10:16.0814681Z         /* fire events that update state */
+2026-09-04T22:10:16.0815352Z       });
+2026-09-04T22:10:16.0816059Z       /* assert on the output */
+2026-09-04T22:10:16.0816652Z       
+2026-09-04T22:10:16.0817873Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0818954Z 
+2026-09-04T22:10:16.0819648Z     [0m [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0820678Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.0821758Z     [31m[1m>[22m[39m[90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.0822710Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0823600Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:16.0824466Z      [90m 66 |[39m     } [36mcatch[39m (err) {
+2026-09-04T22:10:16.0825996Z      [90m 67 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m[0m
+2026-09-04T22:10:16.0827170Z 
+2026-09-04T22:10:16.0828070Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0829850Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0831963Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0834045Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0836181Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0838186Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0839510Z       at setStatus (src/lib/use-properties.ts:64:7)
+2026-09-04T22:10:16.0840288Z 
+2026-09-04T22:10:16.0840635Z     console.error
+2026-09-04T22:10:16.0841428Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0842212Z       
+2026-09-04T22:10:16.0843003Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0843854Z       
+2026-09-04T22:10:16.0844325Z       act(() => {
+2026-09-04T22:10:16.0844942Z         /* fire events that update state */
+2026-09-04T22:10:16.0845787Z       });
+2026-09-04T22:10:16.0846382Z       /* assert on the output */
+2026-09-04T22:10:16.0846961Z       
+2026-09-04T22:10:16.0848184Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0849244Z 
+2026-09-04T22:10:16.0849962Z     [0m [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.0851039Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.0852152Z     [31m[1m>[22m[39m[90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:16.0853198Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0854070Z      [90m 66 |[39m     } [36mcatch[39m (err) {
+2026-09-04T22:10:16.0855341Z      [90m 67 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:16.0857093Z      [90m 68 |[39m       [36mconst[39m message [33m=[39m[0m
+2026-09-04T22:10:16.0857705Z 
+2026-09-04T22:10:16.0858610Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0860368Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0862409Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0864531Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0866752Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0868720Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0870037Z       at setError (src/lib/use-properties.ts:65:7)
+2026-09-04T22:10:16.0870596Z 
+2026-09-04T22:10:16.0870927Z     console.error
+2026-09-04T22:10:16.0871729Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0872558Z       
+2026-09-04T22:10:16.0873565Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0874568Z       
+2026-09-04T22:10:16.0875054Z       act(() => {
+2026-09-04T22:10:16.0875862Z         /* fire events that update state */
+2026-09-04T22:10:16.0876515Z       });
+2026-09-04T22:10:16.0877090Z       /* assert on the output */
+2026-09-04T22:10:16.0877702Z       
+2026-09-04T22:10:16.0878924Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0880007Z 
+2026-09-04T22:10:16.0881537Z     [0m [90m 58 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m getProperties({ page[33m:[39m fetchPage[33m,[39m search[33m:[39m fetchSearch [33m||[39m undefined })[33m;[39m
+2026-09-04T22:10:16.0883502Z      [90m 59 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:16.0885037Z     [31m[1m>[22m[39m[90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:16.0886314Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0887502Z      [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.0888542Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0889591Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m[0m
+2026-09-04T22:10:16.0890196Z 
+2026-09-04T22:10:16.0891117Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0892989Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0895095Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0897504Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0899524Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0901500Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0903095Z       at setProperties (src/lib/use-properties.ts:60:7)
+2026-09-04T22:10:16.0903699Z 
+2026-09-04T22:10:16.0904035Z     console.error
+2026-09-04T22:10:16.0904859Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0905835Z       
+2026-09-04T22:10:16.0906695Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0907590Z       
+2026-09-04T22:10:16.0908087Z       act(() => {
+2026-09-04T22:10:16.0908704Z         /* fire events that update state */
+2026-09-04T22:10:16.0909361Z       });
+2026-09-04T22:10:16.0909925Z       /* assert on the output */
+2026-09-04T22:10:16.0910523Z       
+2026-09-04T22:10:16.0911745Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0912825Z 
+2026-09-04T22:10:16.0913806Z     [0m [90m 59 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:16.0915110Z      [90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:16.0916384Z     [31m[1m>[22m[39m[90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.0917326Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0918278Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0919297Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.0920275Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m[0m
+2026-09-04T22:10:16.0920895Z 
+2026-09-04T22:10:16.0921850Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0923728Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0925955Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0928073Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0930168Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0932223Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0933823Z       at setPage (src/lib/use-properties.ts:61:7)
+2026-09-04T22:10:16.0934385Z 
+2026-09-04T22:10:16.0934755Z     console.error
+2026-09-04T22:10:16.0935748Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0936595Z       
+2026-09-04T22:10:16.0937492Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0938444Z       
+2026-09-04T22:10:16.0938988Z       act(() => {
+2026-09-04T22:10:16.0939635Z         /* fire events that update state */
+2026-09-04T22:10:16.0940330Z       });
+2026-09-04T22:10:16.0940924Z       /* assert on the output */
+2026-09-04T22:10:16.0941546Z       
+2026-09-04T22:10:16.0942786Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0943872Z 
+2026-09-04T22:10:16.0944859Z     [0m [90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:16.0946373Z      [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.0947568Z     [31m[1m>[22m[39m[90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0948588Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0949503Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.0950711Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.0951698Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m[0m
+2026-09-04T22:10:16.0952291Z 
+2026-09-04T22:10:16.0953238Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0955075Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0957345Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0959478Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0961543Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0963635Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0965010Z       at setPageSize (src/lib/use-properties.ts:62:7)
+2026-09-04T22:10:16.0965729Z 
+2026-09-04T22:10:16.0966180Z     console.error
+2026-09-04T22:10:16.0966980Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0967783Z       
+2026-09-04T22:10:16.0968629Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0969522Z       
+2026-09-04T22:10:16.0969998Z       act(() => {
+2026-09-04T22:10:16.0970591Z         /* fire events that update state */
+2026-09-04T22:10:16.0971225Z       });
+2026-09-04T22:10:16.0971776Z       /* assert on the output */
+2026-09-04T22:10:16.0972344Z       
+2026-09-04T22:10:16.0973555Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.0974606Z 
+2026-09-04T22:10:16.0975210Z     [0m [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.0976402Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.0977500Z     [31m[1m>[22m[39m[90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.0978444Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.0979322Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.0980487Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:16.0981344Z      [90m 66 |[39m     } [36mcatch[39m (err) {[0m
+2026-09-04T22:10:16.0981851Z 
+2026-09-04T22:10:16.0982771Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.0984672Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.0986831Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.0988960Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.0991004Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.0993004Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.0994364Z       at setTotal (src/lib/use-properties.ts:63:7)
+2026-09-04T22:10:16.0994917Z 
+2026-09-04T22:10:16.0995236Z     console.error
+2026-09-04T22:10:16.0996466Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.0997345Z       
+2026-09-04T22:10:16.0998204Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.0999161Z       
+2026-09-04T22:10:16.0999649Z       act(() => {
+2026-09-04T22:10:16.1000257Z         /* fire events that update state */
+2026-09-04T22:10:16.1000916Z       });
+2026-09-04T22:10:16.1001460Z       /* assert on the output */
+2026-09-04T22:10:16.1002042Z       
+2026-09-04T22:10:16.1003235Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.1004339Z 
+2026-09-04T22:10:16.1005056Z     [0m [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.1006324Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.1007366Z     [31m[1m>[22m[39m[90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.1008269Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.1009108Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:16.1009961Z      [90m 66 |[39m     } [36mcatch[39m (err) {
+2026-09-04T22:10:16.1011148Z      [90m 67 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m[0m
+2026-09-04T22:10:16.1011972Z 
+2026-09-04T22:10:16.1012872Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.1014711Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.1017084Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.1019198Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.1021221Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.1023159Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.1024447Z       at setStatus (src/lib/use-properties.ts:64:7)
+2026-09-04T22:10:16.1025218Z 
+2026-09-04T22:10:16.1025640Z     console.error
+2026-09-04T22:10:16.1026340Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.1027041Z       
+2026-09-04T22:10:16.1027842Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.1028613Z       
+2026-09-04T22:10:16.1029035Z       act(() => {
+2026-09-04T22:10:16.1029611Z         /* fire events that update state */
+2026-09-04T22:10:16.1030190Z       });
+2026-09-04T22:10:16.1030851Z       /* assert on the output */
+2026-09-04T22:10:16.1031354Z       
+2026-09-04T22:10:16.1032479Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.1033451Z 
+2026-09-04T22:10:16.1034023Z     [0m [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.1034901Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.1036106Z     [31m[1m>[22m[39m[90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:16.1036982Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.1037716Z      [90m 66 |[39m     } [36mcatch[39m (err) {
+2026-09-04T22:10:16.1038845Z      [90m 67 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:16.1040181Z      [90m 68 |[39m       [36mconst[39m message [33m=[39m[0m
+2026-09-04T22:10:16.1040695Z 
+2026-09-04T22:10:16.1041561Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.1043358Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.1045348Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.1047499Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.1049454Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.1051366Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.1052631Z       at setError (src/lib/use-properties.ts:65:7)
+2026-09-04T22:10:16.1053091Z 
+2026-09-04T22:10:16.1053346Z     console.error
+2026-09-04T22:10:16.1054045Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.1054774Z       
+2026-09-04T22:10:16.1055835Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.1056670Z       
+2026-09-04T22:10:16.1057091Z       act(() => {
+2026-09-04T22:10:16.1057608Z         /* fire events that update state */
+2026-09-04T22:10:16.1058185Z       });
+2026-09-04T22:10:16.1058692Z       /* assert on the output */
+2026-09-04T22:10:16.1059194Z       
+2026-09-04T22:10:16.1060386Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.1061428Z 
+2026-09-04T22:10:16.1062849Z     [0m [90m 58 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m getProperties({ page[33m:[39m fetchPage[33m,[39m search[33m:[39m fetchSearch [33m||[39m undefined })[33m;[39m
+2026-09-04T22:10:16.1064655Z      [90m 59 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:16.1066096Z     [31m[1m>[22m[39m[90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:16.1067062Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.1068145Z      [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.1069089Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.1070036Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m[0m
+2026-09-04T22:10:16.1070542Z 
+2026-09-04T22:10:16.1071392Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.1073113Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.1075136Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.1077372Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.1079320Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.1081195Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.1082512Z       at setProperties (src/lib/use-properties.ts:60:7)
+2026-09-04T22:10:16.1083301Z 
+2026-09-04T22:10:16.1083600Z     console.error
+2026-09-04T22:10:16.1084352Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.1085235Z       
+2026-09-04T22:10:16.1086213Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.1087035Z       
+2026-09-04T22:10:16.1087453Z       act(() => {
+2026-09-04T22:10:16.1087992Z         /* fire events that update state */
+2026-09-04T22:10:16.1088576Z       });
+2026-09-04T22:10:16.1089075Z       /* assert on the output */
+2026-09-04T22:10:16.1089603Z       
+2026-09-04T22:10:16.1090778Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.1091763Z 
+2026-09-04T22:10:16.1092649Z     [0m [90m 59 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:16.1093853Z      [90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:16.1094902Z     [31m[1m>[22m[39m[90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.1095924Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.1096798Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.1097716Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.1098620Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m[0m
+2026-09-04T22:10:16.1099142Z 
+2026-09-04T22:10:16.1100004Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.1101783Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.1103770Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.1105878Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.1107792Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.1109725Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.1111324Z       at setPage (src/lib/use-properties.ts:61:7)
+2026-09-04T22:10:16.1111838Z 
+2026-09-04T22:10:16.1112111Z     console.error
+2026-09-04T22:10:16.1112840Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.1113589Z       
+2026-09-04T22:10:16.1114371Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.1115228Z       
+2026-09-04T22:10:16.1115875Z       act(() => {
+2026-09-04T22:10:16.1116432Z         /* fire events that update state */
+2026-09-04T22:10:16.1117014Z       });
+2026-09-04T22:10:16.1117513Z       /* assert on the output */
+2026-09-04T22:10:16.1118048Z       
+2026-09-04T22:10:16.1119208Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.1120221Z 
+2026-09-04T22:10:16.1120912Z     [0m [90m 60 |[39m       setProperties(res[33m.[39mproperties)[33m;[39m
+2026-09-04T22:10:16.1121975Z      [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.1123028Z     [31m[1m>[22m[39m[90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.1123996Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.1124876Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.1126268Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.1127160Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m[0m
+2026-09-04T22:10:16.1127652Z 
+2026-09-04T22:10:16.1128500Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.1130269Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.1132234Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.1134236Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.1136364Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.1138222Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.1139498Z       at setPageSize (src/lib/use-properties.ts:62:7)
+2026-09-04T22:10:16.1139979Z 
+2026-09-04T22:10:16.1140235Z     console.error
+2026-09-04T22:10:16.1140948Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.1141671Z       
+2026-09-04T22:10:16.1142416Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.1143243Z       
+2026-09-04T22:10:16.1143650Z       act(() => {
+2026-09-04T22:10:16.1144174Z         /* fire events that update state */
+2026-09-04T22:10:16.1144736Z       });
+2026-09-04T22:10:16.1145206Z       /* assert on the output */
+2026-09-04T22:10:16.1145876Z       
+2026-09-04T22:10:16.1146990Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.1147970Z 
+2026-09-04T22:10:16.1148516Z     [0m [90m 61 |[39m       setPage(res[33m.[39mpage)[33m;[39m
+2026-09-04T22:10:16.1149450Z      [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.1150544Z     [31m[1m>[22m[39m[90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.1151358Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.1152148Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.1153324Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:16.1154136Z      [90m 66 |[39m     } [36mcatch[39m (err) {[0m
+2026-09-04T22:10:16.1154596Z 
+2026-09-04T22:10:16.1155409Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.1157304Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.1159378Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.1161387Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.1163335Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.1165269Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.1166685Z       at setTotal (src/lib/use-properties.ts:63:7)
+2026-09-04T22:10:16.1167162Z 
+2026-09-04T22:10:16.1167412Z     console.error
+2026-09-04T22:10:16.1168282Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.1169016Z       
+2026-09-04T22:10:16.1169774Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.1170562Z       
+2026-09-04T22:10:16.1170964Z       act(() => {
+2026-09-04T22:10:16.1171490Z         /* fire events that update state */
+2026-09-04T22:10:16.1172063Z       });
+2026-09-04T22:10:16.1172529Z       /* assert on the output */
+2026-09-04T22:10:16.1173040Z       
+2026-09-04T22:10:16.1174155Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.1175114Z 
+2026-09-04T22:10:16.1175825Z     [0m [90m 62 |[39m       setPageSize(res[33m.[39mpageSize)[33m;[39m
+2026-09-04T22:10:16.1176785Z      [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.1177817Z     [31m[1m>[22m[39m[90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.1178722Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.1179502Z      [90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:16.1180289Z      [90m 66 |[39m     } [36mcatch[39m (err) {
+2026-09-04T22:10:16.1181451Z      [90m 67 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m[0m
+2026-09-04T22:10:16.1182222Z 
+2026-09-04T22:10:16.1183080Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.1184797Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.1186823Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.1188694Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.1190550Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.1192355Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.1193606Z       at setStatus (src/lib/use-properties.ts:64:7)
+2026-09-04T22:10:16.1194127Z 
+2026-09-04T22:10:16.1194652Z     console.error
+2026-09-04T22:10:16.1195393Z       An update to TestComponent inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.1196354Z       
+2026-09-04T22:10:16.1197132Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.1197949Z       
+2026-09-04T22:10:16.1198380Z       act(() => {
+2026-09-04T22:10:16.1198943Z         /* fire events that update state */
+2026-09-04T22:10:16.1199519Z       });
+2026-09-04T22:10:16.1200011Z       /* assert on the output */
+2026-09-04T22:10:16.1200527Z       
+2026-09-04T22:10:16.1201640Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.1202688Z 
+2026-09-04T22:10:16.1203296Z     [0m [90m 63 |[39m       setTotal(res[33m.[39mtotal)[33m;[39m
+2026-09-04T22:10:16.1204269Z      [90m 64 |[39m       setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:16.1205314Z     [31m[1m>[22m[39m[90m 65 |[39m       setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:16.1206466Z      [90m    |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:16.1207320Z      [90m 66 |[39m     } [36mcatch[39m (err) {
+2026-09-04T22:10:16.1208423Z      [90m 67 |[39m       [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:16.1209665Z      [90m 68 |[39m       [36mconst[39m message [33m=[39m[0m
+2026-09-04T22:10:16.1210170Z 
+2026-09-04T22:10:16.1211125Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.1212844Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.1214800Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.1217000Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.1218905Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.1220776Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.1221989Z       at setError (src/lib/use-properties.ts:65:7)
+2026-09-04T22:10:16.1222461Z 
+2026-09-04T22:10:16.6497606Z PASS __tests__/properties-table.test.tsx
+2026-09-04T22:10:16.6576499Z   ● Console
+2026-09-04T22:10:16.6595902Z 
+2026-09-04T22:10:16.6616052Z     console.error
+2026-09-04T22:10:16.6617040Z       An update to ForwardRef(LoadableComponent) inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.6636109Z       
+2026-09-04T22:10:16.6656572Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.6690379Z       
+2026-09-04T22:10:16.6691033Z       act(() => {
+2026-09-04T22:10:16.6706219Z         /* fire events that update state */
+2026-09-04T22:10:16.6726200Z       });
+2026-09-04T22:10:16.6726764Z       /* assert on the output */
+2026-09-04T22:10:16.6727254Z       
+2026-09-04T22:10:16.6728342Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.6729320Z 
+2026-09-04T22:10:16.6737022Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.6738831Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.6740807Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.6743405Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.6745332Z       at forceStoreRerender (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:8262:24)
+2026-09-04T22:10:16.6747274Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:8247:11
+2026-09-04T22:10:16.6749349Z       at callback (node_modules/.pnpm/next@16.3.1_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/next/src/shared/lib/loadable.shared-runtime.tsx:235:48)
+2026-09-04T22:10:16.6750824Z           at Set.forEach (<anonymous>)
+2026-09-04T22:10:16.6752557Z       at LoadableSubscription.forEach (node_modules/.pnpm/next@16.3.1_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/next/src/shared/lib/loadable.shared-runtime.tsx:235:21)
+2026-09-04T22:10:16.6755141Z       at _update (node_modules/.pnpm/next@16.3.1_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/next/src/shared/lib/loadable.shared-runtime.tsx:217:14)
+2026-09-04T22:10:16.6756992Z 
+2026-09-04T22:10:16.6757285Z     console.error
+2026-09-04T22:10:16.6758457Z       An update to ForwardRef(MapContainerComponent) inside a test was not wrapped in act(...).
+2026-09-04T22:10:16.6759420Z       
+2026-09-04T22:10:16.6760189Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:16.6761029Z       
+2026-09-04T22:10:16.6761483Z       act(() => {
+2026-09-04T22:10:16.6762034Z         /* fire events that update state */
+2026-09-04T22:10:16.6762600Z       });
+2026-09-04T22:10:16.6763098Z       /* assert on the output */
+2026-09-04T22:10:16.6763598Z       
+2026-09-04T22:10:16.6764718Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:16.6765962Z 
+2026-09-04T22:10:16.6766830Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:16.6768657Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.6770648Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:16.6772691Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:16.6774583Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:16.6776846Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:16.6778866Z       at setContext (node_modules/.pnpm/react-leaflet@5.0.0_leaflet@1.9.4_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/react-leaflet/lib/MapContainer.js:28:13)
+2026-09-04T22:10:16.6780840Z       at commitAttachRef (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:13482:44)
+2026-09-04T22:10:16.6782691Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:16.6784467Z       at safelyAttachRef (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:13500:9)
+2026-09-04T22:10:16.6786666Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:14089:26)
+2026-09-04T22:10:16.6789012Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6791058Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:13949:11)
+2026-09-04T22:10:16.6793092Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6795219Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:13949:11)
+2026-09-04T22:10:16.6797483Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6799549Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:13949:11)
+2026-09-04T22:10:16.6801607Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6803988Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:14065:11)
+2026-09-04T22:10:16.6806253Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6808778Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:14065:11)
+2026-09-04T22:10:16.6811031Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6813222Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:13949:11)
+2026-09-04T22:10:16.6815448Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6817900Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:14065:11)
+2026-09-04T22:10:16.6820008Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6822169Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:14065:11)
+2026-09-04T22:10:16.6824371Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6826825Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:13949:11)
+2026-09-04T22:10:16.6829042Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6831222Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:14065:11)
+2026-09-04T22:10:16.6833367Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6835692Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:14065:11)
+2026-09-04T22:10:16.6838209Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6840434Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:13949:11)
+2026-09-04T22:10:16.6842618Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6844919Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:13949:11)
+2026-09-04T22:10:16.6847340Z       at recursivelyTraverseLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:15159:11)
+2026-09-04T22:10:16.6849553Z       at commitLayoutEffectOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:14031:11)
+2026-09-04T22:10:16.6851589Z       at flushLayoutEffects (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18138:15)
+2026-09-04T22:10:16.6853728Z       at commitRoot (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:17954:9)
+2026-09-04T22:10:16.6855879Z       at commitRootWhenReady (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16824:7)
+2026-09-04T22:10:16.6857886Z       at performWorkOnRoot (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16722:15)
+2026-09-04T22:10:16.6859848Z       at performSyncWorkOnRoot (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18972:7)
+2026-09-04T22:10:16.6861983Z       at flushSyncWorkAcrossRoots_impl (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18814:21)
+2026-09-04T22:10:16.6864180Z       at processRootScheduleInMicrotask (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18853:9)
+2026-09-04T22:10:16.6866370Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18991:13
+2026-09-04T22:10:16.6868157Z       at invokeTheCallbackFunction (node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/living/generated/Function.js:19:26)
+2026-09-04T22:10:16.6869755Z       at node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/browser/Window.js:613:9
+2026-09-04T22:10:16.6870564Z 
+2026-09-04T22:10:16.7856537Z PASS __tests__/api-client.test.ts
+2026-09-04T22:10:16.9881808Z PASS __tests__/active-searches-section.test.tsx
+2026-09-04T22:10:17.1739031Z PASS __tests__/session-message.test.tsx
+2026-09-04T22:10:17.1770209Z   ● Console
+2026-09-04T22:10:17.1770647Z 
+2026-09-04T22:10:17.1771092Z     console.error
+2026-09-04T22:10:17.1772281Z       An update to AuthProvider inside a test was not wrapped in act(...).
+2026-09-04T22:10:17.1773110Z       
+2026-09-04T22:10:17.1773943Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:17.1774886Z       
+2026-09-04T22:10:17.1775387Z       act(() => {
+2026-09-04T22:10:17.1776248Z         /* fire events that update state */
+2026-09-04T22:10:17.1776887Z       });
+2026-09-04T22:10:17.1777454Z       /* assert on the output */
+2026-09-04T22:10:17.1778070Z       
+2026-09-04T22:10:17.1779240Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:17.1780325Z 
+2026-09-04T22:10:17.1781173Z     [0m [90m 199 |[39m       [90m// logout manual que terminó un instante antes).[39m
+2026-09-04T22:10:17.1783315Z      [90m 200 |[39m       [36mif[39m (statusRef[33m.[39mcurrent [33m===[39m [32m"authenticated"[39m) {
+2026-09-04T22:10:17.1784822Z     [31m[1m>[22m[39m[90m 201 |[39m         setSessionMessage([33mSESSION_EXPIRED_MESSAGE[39m)[33m;[39m
+2026-09-04T22:10:17.1786098Z      [90m     |[39m         [31m[1m^[22m[39m
+2026-09-04T22:10:17.1786822Z      [90m 202 |[39m       }
+2026-09-04T22:10:17.1787871Z      [90m 203 |[39m       dispatch({ type[33m:[39m [32m"SESSION_CLEARED"[39m })[33m;[39m
+2026-09-04T22:10:17.1788914Z      [90m 204 |[39m     })[33m;[39m[0m
+2026-09-04T22:10:17.1789443Z 
+2026-09-04T22:10:17.1790389Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:17.1792222Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:17.1794274Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:17.1796425Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:17.1798521Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:17.1800505Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:17.1801847Z       at setSessionMessage (src/lib/auth-context.tsx:201:9)
+2026-09-04T22:10:17.1802662Z       at listener (src/lib/auth-events.ts:26:5)
+2026-09-04T22:10:17.1803420Z       at apiClient (src/lib/api-client.ts:138:23)
+2026-09-04T22:10:17.1804303Z       at Object.<anonymous> (__tests__/session-message.test.tsx:92:5)
+2026-09-04T22:10:17.1804962Z 
+2026-09-04T22:10:17.1805294Z     console.error
+2026-09-04T22:10:17.1806285Z       An update to AuthProvider inside a test was not wrapped in act(...).
+2026-09-04T22:10:17.1807068Z       
+2026-09-04T22:10:17.1807877Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:17.1808711Z       
+2026-09-04T22:10:17.1809211Z       act(() => {
+2026-09-04T22:10:17.1809886Z         /* fire events that update state */
+2026-09-04T22:10:17.1810576Z       });
+2026-09-04T22:10:17.1811168Z       /* assert on the output */
+2026-09-04T22:10:17.1811782Z       
+2026-09-04T22:10:17.1813015Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:17.1814066Z 
+2026-09-04T22:10:17.1814948Z     [0m [90m 201 |[39m         setSessionMessage([33mSESSION_EXPIRED_MESSAGE[39m)[33m;[39m
+2026-09-04T22:10:17.1816201Z      [90m 202 |[39m       }
+2026-09-04T22:10:17.1817348Z     [31m[1m>[22m[39m[90m 203 |[39m       dispatch({ type[33m:[39m [32m"SESSION_CLEARED"[39m })[33m;[39m
+2026-09-04T22:10:17.1818447Z      [90m     |[39m       [31m[1m^[22m[39m
+2026-09-04T22:10:17.1819226Z      [90m 204 |[39m     })[33m;[39m
+2026-09-04T22:10:17.1819996Z      [90m 205 |[39m   }[33m,[39m [])[33m;[39m
+2026-09-04T22:10:17.1820710Z      [90m 206 |[39m[0m
+2026-09-04T22:10:17.1821151Z 
+2026-09-04T22:10:17.1822072Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:17.1823814Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:17.1826028Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:17.1828055Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:17.1830297Z       at dispatchReducerAction (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9117:13)
+2026-09-04T22:10:17.1831650Z       at dispatch (src/lib/auth-context.tsx:203:7)
+2026-09-04T22:10:17.1832446Z       at listener (src/lib/auth-events.ts:26:5)
+2026-09-04T22:10:17.1833252Z       at apiClient (src/lib/api-client.ts:138:23)
+2026-09-04T22:10:17.1834145Z       at Object.<anonymous> (__tests__/session-message.test.tsx:92:5)
+2026-09-04T22:10:17.1834794Z 
+2026-09-04T22:10:17.3817210Z PASS __tests__/mapping-confirm-modal.test.tsx
+2026-09-04T22:10:17.3912184Z   ● Console
+2026-09-04T22:10:17.3912637Z 
+2026-09-04T22:10:17.3913123Z     console.error
+2026-09-04T22:10:17.3914212Z       An update to MappingConfirmModal inside a test was not wrapped in act(...).
+2026-09-04T22:10:17.3915111Z       
+2026-09-04T22:10:17.3916266Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:17.3917167Z       
+2026-09-04T22:10:17.3917639Z       act(() => {
+2026-09-04T22:10:17.3918213Z         /* fire events that update state */
+2026-09-04T22:10:17.3918806Z       });
+2026-09-04T22:10:17.3919322Z       /* assert on the output */
+2026-09-04T22:10:17.3919876Z       
+2026-09-04T22:10:17.3921443Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:17.3922469Z 
+2026-09-04T22:10:17.3923369Z     [0m [90m 46 |[39m         [36mconst[39m res [33m=[39m [36mawait[39m getMappingFields()[33m;[39m
+2026-09-04T22:10:17.3924816Z      [90m 47 |[39m         [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:17.3926310Z     [31m[1m>[22m[39m[90m 48 |[39m         setVersion(res[33m.[39mversion)[33m;[39m
+2026-09-04T22:10:17.3927278Z      [90m    |[39m         [31m[1m^[22m[39m
+2026-09-04T22:10:17.3928171Z      [90m 49 |[39m         setFields(res[33m.[39mfields)[33m;[39m
+2026-09-04T22:10:17.3929171Z      [90m 50 |[39m         setRequired(res[33m.[39mrequired)[33m;[39m
+2026-09-04T22:10:17.3930129Z      [90m 51 |[39m         setStatus([32m"loaded"[39m)[33m;[39m[0m
+2026-09-04T22:10:17.3930733Z 
+2026-09-04T22:10:17.3931650Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:17.3933424Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:17.3935411Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:17.3937718Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:17.3939691Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:17.3941599Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:17.3942960Z       at setVersion (src/lib/use-mapping-fields.ts:48:9)
+2026-09-04T22:10:17.3943491Z 
+2026-09-04T22:10:17.3943821Z     console.error
+2026-09-04T22:10:17.3944618Z       An update to MappingConfirmModal inside a test was not wrapped in act(...).
+2026-09-04T22:10:17.3945456Z       
+2026-09-04T22:10:17.3946506Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:17.3947357Z       
+2026-09-04T22:10:17.3947824Z       act(() => {
+2026-09-04T22:10:17.3948408Z         /* fire events that update state */
+2026-09-04T22:10:17.3949319Z       });
+2026-09-04T22:10:17.3949868Z       /* assert on the output */
+2026-09-04T22:10:17.3950415Z       
+2026-09-04T22:10:17.3951566Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:17.3952587Z 
+2026-09-04T22:10:17.3953505Z     [0m [90m 47 |[39m         [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:17.3954691Z      [90m 48 |[39m         setVersion(res[33m.[39mversion)[33m;[39m
+2026-09-04T22:10:17.3956048Z     [31m[1m>[22m[39m[90m 49 |[39m         setFields(res[33m.[39mfields)[33m;[39m
+2026-09-04T22:10:17.3956998Z      [90m    |[39m         [31m[1m^[22m[39m
+2026-09-04T22:10:17.3957905Z      [90m 50 |[39m         setRequired(res[33m.[39mrequired)[33m;[39m
+2026-09-04T22:10:17.3958884Z      [90m 51 |[39m         setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:17.3959836Z      [90m 52 |[39m         setError([36mnull[39m)[33m;[39m[0m
+2026-09-04T22:10:17.3960371Z 
+2026-09-04T22:10:17.3961231Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:17.3962957Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:17.3965171Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:17.3967451Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:17.3969383Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:17.3971249Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:17.3972551Z       at setFields (src/lib/use-mapping-fields.ts:49:9)
+2026-09-04T22:10:17.3973091Z 
+2026-09-04T22:10:17.3973386Z     console.error
+2026-09-04T22:10:17.3974192Z       An update to MappingConfirmModal inside a test was not wrapped in act(...).
+2026-09-04T22:10:17.3975022Z       
+2026-09-04T22:10:17.3976102Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:17.3976956Z       
+2026-09-04T22:10:17.3977422Z       act(() => {
+2026-09-04T22:10:17.3977997Z         /* fire events that update state */
+2026-09-04T22:10:17.3978623Z       });
+2026-09-04T22:10:17.3979148Z       /* assert on the output */
+2026-09-04T22:10:17.3979703Z       
+2026-09-04T22:10:17.3980838Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:17.3981856Z 
+2026-09-04T22:10:17.3982538Z     [0m [90m 48 |[39m         setVersion(res[33m.[39mversion)[33m;[39m
+2026-09-04T22:10:17.3983547Z      [90m 49 |[39m         setFields(res[33m.[39mfields)[33m;[39m
+2026-09-04T22:10:17.3984588Z     [31m[1m>[22m[39m[90m 50 |[39m         setRequired(res[33m.[39mrequired)[33m;[39m
+2026-09-04T22:10:17.3985763Z      [90m    |[39m         [31m[1m^[22m[39m
+2026-09-04T22:10:17.3986716Z      [90m 51 |[39m         setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:17.3987665Z      [90m 52 |[39m         setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:17.3988555Z      [90m 53 |[39m       } [36mcatch[39m (err) {[0m
+2026-09-04T22:10:17.3989073Z 
+2026-09-04T22:10:17.3989981Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:17.3991801Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:17.3994077Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:17.3996300Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:17.3998281Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:17.4000185Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:17.4001483Z       at setRequired (src/lib/use-mapping-fields.ts:50:9)
+2026-09-04T22:10:17.4002032Z 
+2026-09-04T22:10:17.4002339Z     console.error
+2026-09-04T22:10:17.4003164Z       An update to MappingConfirmModal inside a test was not wrapped in act(...).
+2026-09-04T22:10:17.4004011Z       
+2026-09-04T22:10:17.4004807Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:17.4005816Z       
+2026-09-04T22:10:17.4006275Z       act(() => {
+2026-09-04T22:10:17.4006848Z         /* fire events that update state */
+2026-09-04T22:10:17.4007419Z       });
+2026-09-04T22:10:17.4007926Z       /* assert on the output */
+2026-09-04T22:10:17.4008715Z       
+2026-09-04T22:10:17.4009932Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:17.4010999Z 
+2026-09-04T22:10:17.4011712Z     [0m [90m 49 |[39m         setFields(res[33m.[39mfields)[33m;[39m
+2026-09-04T22:10:17.4012804Z      [90m 50 |[39m         setRequired(res[33m.[39mrequired)[33m;[39m
+2026-09-04T22:10:17.4013955Z     [31m[1m>[22m[39m[90m 51 |[39m         setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:17.4014977Z      [90m    |[39m         [31m[1m^[22m[39m
+2026-09-04T22:10:17.4016112Z      [90m 52 |[39m         setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:17.4017109Z      [90m 53 |[39m       } [36mcatch[39m (err) {
+2026-09-04T22:10:17.4018387Z      [90m 54 |[39m         [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m[0m
+2026-09-04T22:10:17.4019238Z 
+2026-09-04T22:10:17.4020132Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:17.4021959Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:17.4024032Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:17.4026325Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:17.4028380Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:17.4030298Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:17.4031687Z       at setStatus (src/lib/use-mapping-fields.ts:51:9)
+2026-09-04T22:10:17.4032270Z 
+2026-09-04T22:10:17.4032595Z     console.error
+2026-09-04T22:10:17.4033410Z       An update to MappingConfirmModal inside a test was not wrapped in act(...).
+2026-09-04T22:10:17.4034290Z       
+2026-09-04T22:10:17.4035117Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:17.4036348Z       
+2026-09-04T22:10:17.4036854Z       act(() => {
+2026-09-04T22:10:17.4037458Z         /* fire events that update state */
+2026-09-04T22:10:17.4038355Z       });
+2026-09-04T22:10:17.4038917Z       /* assert on the output */
+2026-09-04T22:10:17.4039491Z       
+2026-09-04T22:10:17.4040752Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:17.4041829Z 
+2026-09-04T22:10:17.4042533Z     [0m [90m 50 |[39m         setRequired(res[33m.[39mrequired)[33m;[39m
+2026-09-04T22:10:17.4043597Z      [90m 51 |[39m         setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:17.4044677Z     [31m[1m>[22m[39m[90m 52 |[39m         setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:17.4045814Z      [90m    |[39m         [31m[1m^[22m[39m
+2026-09-04T22:10:17.4046681Z      [90m 53 |[39m       } [36mcatch[39m (err) {
+2026-09-04T22:10:17.4047873Z      [90m 54 |[39m         [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:17.4049103Z      [90m 55 |[39m         [36mconst[39m message [33m=[39m[0m
+2026-09-04T22:10:17.4049716Z 
+2026-09-04T22:10:17.4050618Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:17.4052462Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:17.4054783Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:17.4057261Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:17.4059315Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:17.4061261Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:17.4062623Z       at setError (src/lib/use-mapping-fields.ts:52:9)
+2026-09-04T22:10:17.4063149Z 
+2026-09-04T22:10:17.4063462Z     console.error
+2026-09-04T22:10:17.4064289Z       An update to MappingConfirmModal inside a test was not wrapped in act(...).
+2026-09-04T22:10:17.4065122Z       
+2026-09-04T22:10:17.4066284Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:17.4067151Z       
+2026-09-04T22:10:17.4067621Z       act(() => {
+2026-09-04T22:10:17.4068206Z         /* fire events that update state */
+2026-09-04T22:10:17.4068823Z       });
+2026-09-04T22:10:17.4069373Z       /* assert on the output */
+2026-09-04T22:10:17.4069938Z       
+2026-09-04T22:10:17.4071131Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:17.4072185Z 
+2026-09-04T22:10:17.4073089Z     [0m [90m 46 |[39m         [36mconst[39m res [33m=[39m [36mawait[39m getMappingFields()[33m;[39m
+2026-09-04T22:10:17.4074545Z      [90m 47 |[39m         [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:17.4076090Z     [31m[1m>[22m[39m[90m 48 |[39m         setVersion(res[33m.[39mversion)[33m;[39m
+2026-09-04T22:10:17.4077126Z      [90m    |[39m         [31m[1m^[22m[39m
+2026-09-04T22:10:17.4078042Z      [90m 49 |[39m         setFields(res[33m.[39mfields)[33m;[39m
+2026-09-04T22:10:17.4079528Z      [90m 50 |[39m         setRequired(res[33m.[39mrequired)[33m;[39m
+2026-09-04T22:10:17.4080575Z      [90m 51 |[39m         setStatus([32m"loaded"[39m)[33m;[39m[0m
+2026-09-04T22:10:17.4081198Z 
+2026-09-04T22:10:17.4082095Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:17.4083930Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:17.4086495Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:17.4088654Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:17.4090715Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:17.4092696Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:17.4094044Z       at setVersion (src/lib/use-mapping-fields.ts:48:9)
+2026-09-04T22:10:17.4094633Z 
+2026-09-04T22:10:17.4094951Z     console.error
+2026-09-04T22:10:17.4096011Z       An update to MappingConfirmModal inside a test was not wrapped in act(...).
+2026-09-04T22:10:17.4096899Z       
+2026-09-04T22:10:17.4097735Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:17.4098616Z       
+2026-09-04T22:10:17.4099079Z       act(() => {
+2026-09-04T22:10:17.4099691Z         /* fire events that update state */
+2026-09-04T22:10:17.4100325Z       });
+2026-09-04T22:10:17.4101107Z       /* assert on the output */
+2026-09-04T22:10:17.4101687Z       
+2026-09-04T22:10:17.4102865Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:17.4103947Z 
+2026-09-04T22:10:17.4104889Z     [0m [90m 47 |[39m         [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:17.4106422Z      [90m 48 |[39m         setVersion(res[33m.[39mversion)[33m;[39m
+2026-09-04T22:10:17.4107579Z     [31m[1m>[22m[39m[90m 49 |[39m         setFields(res[33m.[39mfields)[33m;[39m
+2026-09-04T22:10:17.4108557Z      [90m    |[39m         [31m[1m^[22m[39m
+2026-09-04T22:10:17.4109523Z      [90m 50 |[39m         setRequired(res[33m.[39mrequired)[33m;[39m
+2026-09-04T22:10:17.4110491Z      [90m 51 |[39m         setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:17.4111450Z      [90m 52 |[39m         setError([36mnull[39m)[33m;[39m[0m
+2026-09-04T22:10:17.4112028Z 
+2026-09-04T22:10:17.4112941Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:17.4114736Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:17.4117186Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:17.4119411Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:17.4121478Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:17.4123545Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:17.4124960Z       at setFields (src/lib/use-mapping-fields.ts:49:9)
+2026-09-04T22:10:17.4125738Z 
+2026-09-04T22:10:17.4126086Z     console.error
+2026-09-04T22:10:17.4126933Z       An update to MappingConfirmModal inside a test was not wrapped in act(...).
+2026-09-04T22:10:17.4127791Z       
+2026-09-04T22:10:17.4128637Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:17.4129524Z       
+2026-09-04T22:10:17.4130001Z       act(() => {
+2026-09-04T22:10:17.4130845Z         /* fire events that update state */
+2026-09-04T22:10:17.4131484Z       });
+2026-09-04T22:10:17.4132032Z       /* assert on the output */
+2026-09-04T22:10:17.4132614Z       
+2026-09-04T22:10:17.4133844Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:17.4134894Z 
+2026-09-04T22:10:17.4135939Z     [0m [90m 48 |[39m         setVersion(res[33m.[39mversion)[33m;[39m
+2026-09-04T22:10:17.4137061Z      [90m 49 |[39m         setFields(res[33m.[39mfields)[33m;[39m
+2026-09-04T22:10:17.4138271Z     [31m[1m>[22m[39m[90m 50 |[39m         setRequired(res[33m.[39mrequired)[33m;[39m
+2026-09-04T22:10:17.4139273Z      [90m    |[39m         [31m[1m^[22m[39m
+2026-09-04T22:10:17.4140166Z      [90m 51 |[39m         setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:17.4141095Z      [90m 52 |[39m         setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:17.4141987Z      [90m 53 |[39m       } [36mcatch[39m (err) {[0m
+2026-09-04T22:10:17.4142509Z 
+2026-09-04T22:10:17.4143417Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:17.4145201Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:17.4147748Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:17.4149905Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:17.4151948Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:17.4153974Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:17.4155381Z       at setRequired (src/lib/use-mapping-fields.ts:50:9)
+2026-09-04T22:10:17.4156295Z 
+2026-09-04T22:10:17.4156637Z     console.error
+2026-09-04T22:10:17.4157479Z       An update to MappingConfirmModal inside a test was not wrapped in act(...).
+2026-09-04T22:10:17.4158358Z       
+2026-09-04T22:10:17.4159228Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:17.4160121Z       
+2026-09-04T22:10:17.4160600Z       act(() => {
+2026-09-04T22:10:17.4161198Z         /* fire events that update state */
+2026-09-04T22:10:17.4161827Z       });
+2026-09-04T22:10:17.4162390Z       /* assert on the output */
+2026-09-04T22:10:17.4162982Z       
+2026-09-04T22:10:17.4164183Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:17.4165265Z 
+2026-09-04T22:10:17.4166189Z     [0m [90m 49 |[39m         setFields(res[33m.[39mfields)[33m;[39m
+2026-09-04T22:10:17.4167353Z      [90m 50 |[39m         setRequired(res[33m.[39mrequired)[33m;[39m
+2026-09-04T22:10:17.4168457Z     [31m[1m>[22m[39m[90m 51 |[39m         setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:17.4169487Z      [90m    |[39m         [31m[1m^[22m[39m
+2026-09-04T22:10:17.4170401Z      [90m 52 |[39m         setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:17.4171300Z      [90m 53 |[39m       } [36mcatch[39m (err) {
+2026-09-04T22:10:17.4172643Z      [90m 54 |[39m         [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m[0m
+2026-09-04T22:10:17.4173476Z 
+2026-09-04T22:10:17.4174384Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:17.4176391Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:17.4178729Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:17.4180820Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:17.4182856Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:17.4184766Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:17.4186329Z       at setStatus (src/lib/use-mapping-fields.ts:51:9)
+2026-09-04T22:10:17.4186911Z 
+2026-09-04T22:10:17.4187224Z     console.error
+2026-09-04T22:10:17.4188084Z       An update to MappingConfirmModal inside a test was not wrapped in act(...).
+2026-09-04T22:10:17.4188947Z       
+2026-09-04T22:10:17.4189766Z       When testing, code that causes React state updates should be wrapped into act(...):
+2026-09-04T22:10:17.4190680Z       
+2026-09-04T22:10:17.4191170Z       act(() => {
+2026-09-04T22:10:17.4191776Z         /* fire events that update state */
+2026-09-04T22:10:17.4192388Z       });
+2026-09-04T22:10:17.4193158Z       /* assert on the output */
+2026-09-04T22:10:17.4193762Z       
+2026-09-04T22:10:17.4194950Z       This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+2026-09-04T22:10:17.4196205Z 
+2026-09-04T22:10:17.4196931Z     [0m [90m 50 |[39m         setRequired(res[33m.[39mrequired)[33m;[39m
+2026-09-04T22:10:17.4198033Z      [90m 51 |[39m         setStatus([32m"loaded"[39m)[33m;[39m
+2026-09-04T22:10:17.4199152Z     [31m[1m>[22m[39m[90m 52 |[39m         setError([36mnull[39m)[33m;[39m
+2026-09-04T22:10:17.4200164Z      [90m    |[39m         [31m[1m^[22m[39m
+2026-09-04T22:10:17.4201018Z      [90m 53 |[39m       } [36mcatch[39m (err) {
+2026-09-04T22:10:17.4202231Z      [90m 54 |[39m         [36mif[39m ([33m![39misMountedRef[33m.[39mcurrent) [36mreturn[39m[33m;[39m
+2026-09-04T22:10:17.4203500Z      [90m 55 |[39m         [36mconst[39m message [33m=[39m[0m
+2026-09-04T22:10:17.4204114Z 
+2026-09-04T22:10:17.4205043Z       at node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+2026-09-04T22:10:17.4207130Z       at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+2026-09-04T22:10:17.4209260Z       at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+2026-09-04T22:10:17.4211415Z       at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+2026-09-04T22:10:17.4213484Z       at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+2026-09-04T22:10:17.4215814Z       at dispatchSetState (node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+2026-09-04T22:10:17.4217222Z       at setError (src/lib/use-mapping-fields.ts:52:9)
+2026-09-04T22:10:17.4217820Z 
+2026-09-04T22:10:17.6293108Z PASS __tests__/coordinates-modal.test.tsx
+2026-09-04T22:10:17.7842662Z PASS __tests__/new-search-form.test.tsx
+2026-09-04T22:10:17.8935355Z PASS __tests__/use-upload.test.ts
+2026-09-04T22:10:18.0722615Z PASS __tests__/login-form.test.tsx
+2026-09-04T22:10:18.1821504Z PASS __tests__/use-upload-confirm-mapping.test.ts
+2026-09-04T22:10:18.2789904Z PASS __tests__/push-notifications.test.ts
+2026-09-04T22:10:18.6330367Z PASS __tests__/topbar.test.tsx
+2026-09-04T22:10:18.7792776Z PASS __tests__/push-notification-button.test.tsx
+2026-09-04T22:10:18.9105790Z PASS __tests__/invite-collaborator-form.test.tsx
+2026-09-04T22:10:19.2106739Z PASS __tests__/use-active-searches.test.ts
+2026-09-04T22:10:19.5691066Z PASS __tests__/use-team.test.ts
+2026-09-04T22:10:19.6670612Z PASS __tests__/upload-progress.test.ts
+2026-09-04T22:10:19.7551458Z PASS __tests__/dashboard-metrics.test.ts
+2026-09-04T22:10:20.0157034Z PASS __tests__/sidebar.test.tsx
+2026-09-04T22:10:20.1216839Z PASS __tests__/ios-onboarding.test.ts
+2026-09-04T22:10:20.2817601Z PASS __tests__/admin-login-form.test.tsx
+2026-09-04T22:10:20.3765019Z PASS __tests__/next-config.rewrites.test.ts
+2026-09-04T22:10:20.4718263Z PASS __tests__/theme.test.ts
+2026-09-04T22:10:20.7146707Z PASS __tests__/use-incoming-matches.test.ts
+2026-09-04T22:10:20.8123411Z PASS __tests__/realtime-matches.test.ts
+2026-09-04T22:10:20.9022590Z PASS __tests__/auth-checklist.test.ts
+2026-09-04T22:10:21.0166249Z PASS __tests__/ios-install-banner.test.tsx
+2026-09-04T22:10:21.1069029Z PASS __tests__/user-activity.test.ts
+2026-09-04T22:10:21.2992429Z PASS __tests__/use-mapping-fields.test.ts
+2026-09-04T22:10:21.3881265Z PASS __tests__/properties-api.test.ts
+2026-09-04T22:10:21.4882370Z PASS __tests__/zone-badge.test.tsx
+2026-09-04T22:10:21.5717044Z PASS __tests__/register-service-worker.test.ts
+2026-09-04T22:10:21.6808894Z PASS __tests__/theme-context.test.tsx
+2026-09-04T22:10:21.7719676Z PASS __tests__/coordinates-api.test.ts
+2026-09-04T22:10:21.9093466Z PASS __tests__/leaflet-map.test.tsx
+2026-09-04T22:10:22.0197787Z PASS __tests__/no-translate.test.tsx
+2026-09-04T22:10:22.1050319Z PASS __tests__/active-search-summary.test.ts
+2026-09-04T22:10:22.2134098Z PASS __tests__/upload-progress-bar.test.tsx
+2026-09-04T22:10:22.2984566Z PASS __tests__/admin-api-client.test.ts
+2026-09-04T22:10:22.3820716Z PASS __tests__/match-zone-tooltip.test.ts
+2026-09-04T22:10:22.4740847Z PASS __tests__/auth-events.test.ts
+2026-09-04T22:10:22.5594018Z PASS __tests__/parse-highlight-param.test.ts
+2026-09-04T22:10:22.6467239Z PASS __tests__/search-text-validation.test.ts
+2026-09-04T22:10:22.6468072Z 
+2026-09-04T22:10:22.6483782Z Test Suites: 57 passed, 57 total
+2026-09-04T22:10:22.6484333Z Tests:       394 passed, 394 total
+2026-09-04T22:10:22.6484795Z Snapshots:   0 total
+2026-09-04T22:10:22.6485165Z Time:        19.87 s
+2026-09-04T22:10:22.6485749Z Ran all test suites.
+2026-09-04T22:10:23.6497253Z Jest did not exit one second after the test run has completed.
+2026-09-04T22:10:23.6497977Z 
+2026-09-04T22:10:23.6499476Z 'This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue.
+2026-09-05T04:09:32.2768914Z ##[error]The operation was canceled.
+2026-09-05T04:09:32.2856895Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-05T04:09:32.2858085Z Post job cleanup.
+2026-09-05T04:09:33.3165416Z Pruning is unnecessary.
+2026-09-05T04:09:33.3243156Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-05T04:09:33.3244330Z Post job cleanup.
+2026-09-05T04:09:33.7303405Z [command]/usr/bin/git version
+2026-09-05T04:09:33.7304005Z git version 2.55.0
+2026-09-05T04:09:33.7309826Z Temporarily overriding HOME='/home/runner/work/_temp/00fdbba5-8250-4e53-a72a-4a9b6387f04a' before making global git config changes
+2026-09-05T04:09:33.7310866Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-05T04:09:33.7313732Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/brokaza-frontend/brokaza-frontend
+2026-09-05T04:09:33.7315094Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-05T04:09:33.7317325Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-05T04:09:33.7319026Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-05T04:09:33.7319778Z http.https://github.com/.extraheader
+2026-09-05T04:09:33.7321106Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-09-05T04:09:33.7323115Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-05T04:09:33.7324957Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-05T04:09:33.7326596Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-05T04:09:33.7394010Z Cleaning up orphan processes
+2026-09-05T04:09:33.7580350Z Terminate orphan process: pid (2203) (node)
+2026-09-05T04:09:33.7621665Z Terminate orphan process: pid (2220) (sh)
+2026-09-05T04:09:33.7661934Z Terminate orphan process: pid (2221) (node)
+2026-09-05T04:09:33.7704362Z Terminate orphan process: pid (2256) (sh)
+2026-09-05T04:09:33.7745183Z Terminate orphan process: pid (2257) (npm exec next dev -p 36813)
+2026-09-05T04:09:33.7793179Z Terminate orphan process: pid (2269) (sh)
+2026-09-05T04:09:33.7842182Z Terminate orphan process: pid (2270) (node)
+2026-09-05T04:09:33.7919171Z Terminate orphan process: pid (2287) (next-server (v16.3.1))
+2026-09-05T04:09:33.7979317Z Terminate orphan process: pid (2313) (node)
+2026-09-05T04:09:33.8148700Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, pnpm/action-setup@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

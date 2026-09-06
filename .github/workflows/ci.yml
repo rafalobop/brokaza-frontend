@@ -9,6 +9,7 @@ on:
 jobs:
   lint-format-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -28,6 +29,9 @@ jobs:
 
       - name: Format check
         run: pnpm run format:check
+
+      - name: Test
+        run: pnpm run test
 
       - name: Build (incluye type-check)
         run: pnpm run build

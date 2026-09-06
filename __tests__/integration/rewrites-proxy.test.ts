@@ -150,6 +150,7 @@ describe("proxy same-origin de Next.js hacia Express (KAN-150)", () => {
       },
       stdio: "pipe",
       shell: true,
+      detached: process.platform !== "win32",
     });
 
     nextProcess.stdout?.on("data", (d) => process.stdout.write(`[next] ${d}`));

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_Lao_Looped, Nunito_Sans } from "next/font/google";
+import { ConnectionStatusBanner } from "@/components/ConnectionStatusBanner";
 import { AuthProvider } from "@/lib/auth-context";
 import { ProfileProvider } from "@/lib/profile-context";
 import { ThemeProvider } from "@/lib/theme-context";
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: buildThemeInitScript() }} />
       </head>
       <body className="flex min-h-full flex-col">
+        <ConnectionStatusBanner />
         <ThemeProvider>
           <AuthProvider>
             <ProfileProvider>{children}</ProfileProvider>

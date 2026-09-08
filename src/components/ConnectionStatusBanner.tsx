@@ -85,7 +85,7 @@ export function ConnectionStatusBanner({
       className="pointer-events-none fixed inset-x-0 top-2 z-50 flex justify-center px-4"
     >
       <div
-        className={`pointer-events-auto rounded-radius-sm border px-4 py-2 text-sm font-medium shadow-sm ${
+        className={`rounded-radius-sm pointer-events-auto border px-4 py-2 text-sm font-medium shadow-sm ${
           isOffline
             ? "bg-error-bg text-error border-error-border"
             : "bg-success-bg text-success border-success-border"

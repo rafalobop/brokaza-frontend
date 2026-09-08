@@ -24,6 +24,7 @@
  * evento con nombre ante cualquier 401 — no le importa quién escucha.
  */
 
+import * as Sentry from "@sentry/nextjs";
 import { emitUnauthorized } from "./auth-events";
 
 export type ApiErrorKind = "validation" | "network" | "timeout" | "http";
@@ -77,10 +78,14 @@ export async function apiClient<T = unknown>(
   const { timeoutMs = DEFAULT_TIMEOUT_MS, logTag = "[API]", headers, ...init } = options;
 
   if (typeof path !== "string" || !path.startsWith("/")) {
-    throw new ApiError(
+    // Bug de uso del cliente (nunca debería pasar en runtime con código correcto) — se reporta
+    // siempre, a diferencia de los demás `kind` de abajo que se filtran por criterio de impacto.
+    const validationError = new ApiError(
       `apiClient: "path" debe ser una ruta same-origin que empiece con "/" (recibido: ${JSON.stringify(path)})`,
       "validation",
     );
+    Sentry.captureException(validationError, { tags: { apiErrorKind: "validation" } });
+    throw validationError;
   }
 
   // FormData (ej. subida de archivos) necesita que el browser fije su propio
@@ -112,6 +117,12 @@ export async function apiClient<T = unknown>(
       (error as { name: unknown }).name === "AbortError"
     ) {
       console.error(`${logTag} Timeout de ${timeoutMs}ms esperando respuesta de ${path}`);
+      // Se reporta: un timeout sostenido en producción es señal de que el backend (o su red)
+      // está degradado, algo que impacta directamente la experiencia de los beta testers.
+      Sentry.captureMessage(`API timeout: ${path}`, {
+        level: "warning",
+        tags: { apiErrorKind: "timeout", apiPath: path },
+      });
       throw new ApiError(
         "El servidor no respondió a tiempo. Probá de nuevo en unos segundos.",
         "timeout",
@@ -119,6 +130,8 @@ export async function apiClient<T = unknown>(
     }
     const err = error as Error;
     console.error(`${logTag} Error de red al conectar con ${path}:`, err.name, err.message);
+    // Se reporta: DNS/offline/CORS caído en producción es tan crítico como un 5xx del backend.
+    Sentry.captureException(err, { tags: { apiErrorKind: "network", apiPath: path } });
     throw new ApiError(err.message || "Error de red", "network");
   } finally {
     clearTimeout(timer);
@@ -138,6 +151,15 @@ export async function apiClient<T = unknown>(
       emitUnauthorized();
     }
     const message = hasStringErrorField(body) ? body.error : `Error ${response.status}`;
+    // Criterio: solo se reportan 5xx. Un 4xx (400 validación, 401 sesión vencida, 404, etc.) es
+    // una respuesta esperada del contrato de la API que el caller ya maneja explícitamente — no
+    // es un fallo de la app. Un 5xx sí es un bug real del backend, y por eso vale la pena que
+    // impacte la cuota de eventos del proyecto.
+    if (response.status >= 500) {
+      Sentry.captureException(new Error(message), {
+        tags: { apiErrorKind: "http", apiPath: path, apiStatus: response.status },
+      });
+    }
     throw new ApiError(message, "http", { status: response.status, body });
   }
 

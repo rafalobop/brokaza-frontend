@@ -3,9 +3,10 @@
 import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
 
-// KAN-322: boundary de errores de todo el árbol bajo el root layout (dashboard + admin).
-// `global-error.tsx` cubre el caso — mucho más raro — de que el root layout mismo falle.
-export default function Error({
+// KAN-323: boundary scoped al segmento `(dashboard)` — a diferencia del `error.tsx` raíz
+// (KAN-322), este solo reemplaza el contenido de la página; `DashboardShell` (sidebar/topbar)
+// sigue montado porque vive en `(dashboard)/layout.tsx`, por encima de este boundary.
+export default function DashboardError({
   error,
   retry,
 }: {
@@ -13,7 +14,7 @@ export default function Error({
   retry: () => void;
 }) {
   useEffect(() => {
-    Sentry.captureException(error, { tags: { errorBoundary: "root" } });
+    Sentry.captureException(error, { tags: { errorBoundary: "dashboard" } });
   }, [error]);
 
   return (

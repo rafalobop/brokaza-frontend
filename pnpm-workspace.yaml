@@ -1,5 +1,8 @@
 allowBuilds:
-  "@sentry/cli": set this to true or false
+  # KAN-322: postinstall descarga el binario oficial de sentry-cli (github.com/getsentry/sentry-cli)
+  # desde los release servers de Sentry — lo necesita `withSentryConfig` (next.config.ts) para subir
+  # source maps en el build de producción cuando `SENTRY_AUTH_TOKEN` está seteado.
+  "@sentry/cli": true
   sharp: false
   unrs-resolver: false
 

@@ -14,7 +14,8 @@
 
 export const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
 
-export const SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT ?? process.env.NODE_ENV ?? "development";
+export const SENTRY_ENVIRONMENT =
+  process.env.SENTRY_ENVIRONMENT ?? process.env.NODE_ENV ?? "development";
 
 /** Solo se reporta en producción — ver header del archivo. */
 export const SENTRY_ENABLED = Boolean(SENTRY_DSN) && SENTRY_ENVIRONMENT === "production";

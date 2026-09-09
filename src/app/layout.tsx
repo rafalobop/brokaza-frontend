@@ -51,7 +51,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             fuerza la traducción igual (este meta solo evita que el navegador la *sugiera*). */}
         <meta name="google" content="notranslate" />
         {/* Corre antes de que el navegador pinte el <body> — evita el flash del tema
-            equivocado (FOUC) que un `useEffect` no puede evitar porque llega tarde. */}
+            equivocado (FOUC) que un `useEffect` no puede evitar porque llega tarde.
+
+            KAN-332: único uso de `dangerouslySetInnerHTML` en el repo, evaluado sin riesgo de
+            XSS — `buildThemeInitScript()` (`src/lib/theme.ts`) devuelve un string 100% estático,
+            construido únicamente a partir de `THEME_STORAGE_KEY` (constante en tiempo de
+            compilación, no request/query/prop/dato de usuario). No hay ninguna interpolación de
+            entrada externa hacia el HTML inyectado. Protocolo de revisión para cambios futuros
+            en `buildThemeInitScript()` (o cualquier `dangerouslySetInnerHTML` nuevo) en
+            `docs/dangerously-set-inner-html-protocol.md`. */}
         <script dangerouslySetInnerHTML={{ __html: buildThemeInitScript() }} />
       </head>
       <body className="flex min-h-full flex-col">

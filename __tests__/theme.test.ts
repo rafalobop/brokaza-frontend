@@ -14,6 +14,10 @@ describe("theme (KAN-256)", () => {
     document.documentElement.removeAttribute("data-theme");
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe("getStoredTheme", () => {
     it("devuelve 'light' por default sin nada guardado", () => {
       expect(getStoredTheme()).toBe("light");
@@ -62,6 +66,25 @@ describe("theme (KAN-256)", () => {
       spy.mockRestore();
       expect(document.cookie).toContain(`${THEME_STORAGE_KEY}=dark`);
     });
+
+    it("no agrega Secure a la cookie en HTTP (KAN-329) — jsdom corre en http://localhost por default", () => {
+      const storageSpy = jest
+        .spyOn(window.localStorage.__proto__, "setItem")
+        .mockImplementation(() => {
+          throw new Error("QuotaExceededError");
+        });
+      const cookieSetSpy = jest.spyOn(document, "cookie", "set");
+
+      storeTheme("dark");
+
+      expect(cookieSetSpy).toHaveBeenCalledWith(expect.not.stringContaining("secure"));
+      storageSpy.mockRestore();
+      cookieSetSpy.mockRestore();
+    });
+
+    // Caso HTTPS (KAN-329) en __tests__/theme-https.test.ts — `location.protocol` no es
+    // mockeable en este archivo (jsdom corre sobre http://localhost por default y su accessor
+    // no es configurable), así que ese archivo fuerza la URL vía docblock de Jest.
   });
 
   describe("applyTheme / getAppliedTheme", () => {

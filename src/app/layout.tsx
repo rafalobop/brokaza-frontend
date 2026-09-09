@@ -34,7 +34,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="en"
+      // KAN-328: era "en" a pesar de que toda la interfaz está en español (Tucumán, Argentina) —
+      // un lector de pantalla usaba la fonética/pronunciación en inglés sobre texto en español.
+      // "es" (no "es-AR") por consistencia con `global-error.tsx`, que ya lo usa así desde KAN-322.
+      lang="es"
       // El script sin-FOUC de abajo pisa `data-theme` antes del primer paint — React nunca
       // vio ese valor en su árbol renderizado, así que sin esto tira warning de hidratación
       // por un mismatch que en realidad es intencional (KAN-256).

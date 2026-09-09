@@ -111,10 +111,11 @@ Workflow: `.github/workflows/ci.yml`. Se dispara en:
 Pasos, en orden (cualquiera que falle corta el pipeline):
 
 1. `pnpm install --frozen-lockfile` — falla si `pnpm-lock.yaml` está desactualizado respecto a `package.json`, en vez de resolver versiones nuevas silenciosamente en CI.
-2. `pnpm lint`
-3. `pnpm format:check`
-4. `pnpm test` — suite de Jest (356 tests). Antes de esto (hasta 2026-08-31) el CI no corría tests en absoluto, solo lint/format/build — un PR podía mergearse con la suite en rojo sin que nadie lo notara.
-5. `pnpm build` — incluye el type-check completo (ver nota de `pnpm typecheck` arriba).
+2. `pnpm run check:dependency-limit` — falla si `dependencies` (excluyendo `next`/`react`/`react-dom`) supera las 6 librerías sin que el PR haya subido el límite a mano en `scripts/check-dependency-limit.mjs` con su justificación (KAN-333, ver `docs/dependency-management-guideline.md`).
+3. `pnpm lint`
+4. `pnpm format:check`
+5. `pnpm test` — suite de Jest (356 tests). Antes de esto (hasta 2026-08-31) el CI no corría tests en absoluto, solo lint/format/build — un PR podía mergearse con la suite en rojo sin que nadie lo notara.
+6. `pnpm build` — incluye el type-check completo (ver nota de `pnpm typecheck` arriba).
 
 ### Plan de contingencia de CI
 

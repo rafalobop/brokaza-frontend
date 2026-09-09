@@ -12,6 +12,7 @@
     "format:check": "prettier --check .",
     "test": "jest",
     "test:watch": "jest --watch",
+    "check:dependency-limit": "node scripts/check-dependency-limit.mjs",
     "prepare": "husky"
   },
   "dependencies": {

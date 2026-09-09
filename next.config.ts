@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs/config";
 
 // Fase 0 (KAN-150): Next.js hace de proxy same-origin hacia el Express legacy.
 // El navegador solo habla con el origen de Next.js -> nunca hay CORS ni cookies
@@ -32,4 +33,12 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// KAN-322: sube source maps a Sentry en el build para que los stack traces reportados
+// muestren código fuente en vez de bundle minificado. Sin `SENTRY_AUTH_TOKEN` (no seteado en
+// dev/CI sin credenciales) el plugin se desactiva solo y el build sigue igual que antes.
+export default withSentryConfig(nextConfig, {
+  silent: true,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+});

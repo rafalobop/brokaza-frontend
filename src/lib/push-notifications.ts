@@ -13,6 +13,7 @@
  * únicamente por ahora (no hay endpoint de backend para telemetría de push todavía).
  */
 
+import * as Sentry from "@sentry/nextjs";
 import { apiClient } from "./api-client";
 
 export type PushSubscriptionErrorCategory =
@@ -92,10 +93,26 @@ export async function sendSubscriptionToBackend(subscription: PushSubscription):
 }
 
 /**
+ * Categorías que no representan un fallo de la app: `unsupported` es el browser/dispositivo del
+ * agente (ej. iOS fuera de una PWA instalada), `permission_denied` es una elección del usuario.
+ * Reportarlas a Sentry sería ruido no accionable — el resto sí bloquea el piloto de push y vale
+ * la pena que lo vea el responsable designado (KAN-322, ver AC).
+ */
+const NON_REPORTABLE_PUSH_CATEGORIES: ReadonlySet<PushSubscriptionErrorCategory> = new Set([
+  "unsupported",
+  "permission_denied",
+]);
+
+/**
  * Log estructurado de un problema de push, categorizado (ver header del archivo). Único punto de
  * salida para que QA/ops puedan filtrar por `[PUSH]` + categoría en la consola/logs del navegador
- * durante el piloto, sin depender de un endpoint de backend que todavía no existe.
+ * durante el piloto, sin depender de un endpoint de backend que todavía no existe. También manda
+ * las categorías accionables (KAN-322) a Sentry, taggeadas por categoría para poder filtrar.
  */
 export function logPushIssue(category: PushSubscriptionErrorCategory, error?: unknown): void {
   console.error(`[PUSH] category=${category}`, error);
+  if (NON_REPORTABLE_PUSH_CATEGORIES.has(category)) return;
+  Sentry.captureException(error instanceof Error ? error : new Error(`[PUSH] ${category}`), {
+    tags: { pushErrorCategory: category },
+  });
 }

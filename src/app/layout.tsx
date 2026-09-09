@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_Lao_Looped, Nunito_Sans } from "next/font/google";
+import { ConnectionStatusBanner } from "@/components/ConnectionStatusBanner";
 import { AuthProvider } from "@/lib/auth-context";
 import { ProfileProvider } from "@/lib/profile-context";
 import { ThemeProvider } from "@/lib/theme-context";
@@ -33,7 +34,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="en"
+      // KAN-328: era "en" a pesar de que toda la interfaz está en español (Tucumán, Argentina) —
+      // un lector de pantalla usaba la fonética/pronunciación en inglés sobre texto en español.
+      // "es" (no "es-AR") por consistencia con `global-error.tsx`, que ya lo usa así desde KAN-322.
+      lang="es"
       // El script sin-FOUC de abajo pisa `data-theme` antes del primer paint — React nunca
       // vio ese valor en su árbol renderizado, así que sin esto tira warning de hidratación
       // por un mismatch que en realidad es intencional (KAN-256).
@@ -47,10 +51,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             fuerza la traducción igual (este meta solo evita que el navegador la *sugiera*). */}
         <meta name="google" content="notranslate" />
         {/* Corre antes de que el navegador pinte el <body> — evita el flash del tema
-            equivocado (FOUC) que un `useEffect` no puede evitar porque llega tarde. */}
+            equivocado (FOUC) que un `useEffect` no puede evitar porque llega tarde.
+
+            KAN-332: único uso de `dangerouslySetInnerHTML` en el repo, evaluado sin riesgo de
+            XSS — `buildThemeInitScript()` (`src/lib/theme.ts`) devuelve un string 100% estático,
+            construido únicamente a partir de `THEME_STORAGE_KEY` (constante en tiempo de
+            compilación, no request/query/prop/dato de usuario). No hay ninguna interpolación de
+            entrada externa hacia el HTML inyectado. Protocolo de revisión para cambios futuros
+            en `buildThemeInitScript()` (o cualquier `dangerouslySetInnerHTML` nuevo) en
+            `docs/dangerously-set-inner-html-protocol.md`. */}
         <script dangerouslySetInnerHTML={{ __html: buildThemeInitScript() }} />
       </head>
       <body className="flex min-h-full flex-col">
+        <ConnectionStatusBanner />
         <ThemeProvider>
           <AuthProvider>
             <ProfileProvider>{children}</ProfileProvider>

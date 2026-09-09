@@ -75,7 +75,7 @@ function profileReducer(state: ProfileState, action: ProfileAction): ProfileStat
     case "LOADING":
       return { status: "loading", profile: null, error: null };
     case "RESOLVED": {
-      // KAN-306 (fix QA): `license_validation_status` tiene DEFAULT 'pending' en la base — TODO
+      // KAN-306 (fix QA): `license_validation_status` tiene DEFAULT 'pending' en la base — todo
       // perfil recién creado (antes de tocar el formulario, `license_number` todavía null) ya
       // trae 'pending', no solo el caso real de AC5 (formulario enviado, padrón desactualizado).
       // Sin el chequeo de `license_number !== null` acá, cualquier cuenta nueva caía directo en

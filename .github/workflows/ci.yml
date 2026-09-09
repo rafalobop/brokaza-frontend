@@ -24,6 +24,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Dependency limit (KAN-333)
+        run: pnpm run check:dependency-limit
+
       - name: Lint
         run: pnpm run lint
 

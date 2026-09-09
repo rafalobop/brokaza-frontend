@@ -21,7 +21,12 @@ function readCookie(name: string): string | null {
 function writeCookie(name: string, value: string): void {
   if (typeof document === "undefined") return;
   // 1 año — misma duración larga que amerita una preferencia de UI, no una sesión.
-  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${365 * 24 * 60 * 60}; samesite=lax`;
+  // Secure solo si la conexión es HTTPS (KAN-329) — en HTTP, el atributo Secure hace que el
+  // navegador descarte la cookie por completo, así que agregarlo incondicionalmente rompería
+  // el fallback en entornos legacy/dev servidos por HTTP.
+  const secure =
+    typeof location !== "undefined" && location.protocol === "https:" ? "; secure" : "";
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${365 * 24 * 60 * 60}; samesite=lax${secure}`;
 }
 
 function isTheme(value: string | null): value is Theme {

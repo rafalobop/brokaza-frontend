@@ -1,5 +1,41 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { UploadDropzone } from "@/components/upload/UploadDropzone";
+
+/** Mismo mock mínimo que `use-upload-progress.test.ts` (KAN-187/338). */
+class MockWebSocket {
+  static OPEN = 1;
+  static CONNECTING = 0;
+  static CLOSED = 3;
+
+  readyState = MockWebSocket.CONNECTING;
+  url: string;
+  listeners: Record<string, Array<(event: unknown) => void>> = {};
+  closed = false;
+
+  constructor(url: string) {
+    this.url = url;
+    mockSockets.push(this);
+  }
+
+  addEventListener(type: string, listener: (event: unknown) => void) {
+    (this.listeners[type] ??= []).push(listener);
+  }
+
+  removeEventListener(type: string, listener: (event: unknown) => void) {
+    this.listeners[type] = (this.listeners[type] ?? []).filter((l) => l !== listener);
+  }
+
+  close() {
+    this.readyState = MockWebSocket.CLOSED;
+    this.closed = true;
+  }
+
+  emit(type: string, event: unknown) {
+    (this.listeners[type] ?? []).forEach((listener) => listener(event));
+  }
+}
+
+let mockSockets: MockWebSocket[] = [];
 
 function mockResponse(init: { ok: boolean; status: number; body?: unknown }): Response {
   return {
@@ -15,11 +51,31 @@ function excelFile(name = "cartera.xlsx"): File {
   });
 }
 
-describe("UploadDropzone (KAN-216)", () => {
+// KAN-338: el resultado final de la subida ya no viaja en la respuesta HTTP — llega por el
+// último socket WS abierto, en la etapa 'done'. Helper para no repetir el JSON.stringify en
+// cada test que espera el mensaje de éxito.
+async function emitLatestSocketDone(doneResult: Record<string, unknown>) {
+  const socket = mockSockets[mockSockets.length - 1];
+  await act(async () => {
+    socket.emit("message", {
+      data: JSON.stringify({ type: "upload_status", stage: "done", ...doneResult }),
+    });
+  });
+}
+
+describe("UploadDropzone (KAN-216/338)", () => {
   const originalFetch = global.fetch;
+  const originalWebSocket = global.WebSocket;
+
+  beforeEach(() => {
+    mockSockets = [];
+    // @ts-expect-error -- mock deliberado del WebSocket global, mismo criterio que KAN-187
+    global.WebSocket = MockWebSocket;
+  });
 
   afterEach(() => {
     global.fetch = originalFetch;
+    global.WebSocket = originalWebSocket;
   });
 
   it("muestra el texto inicial de la zona de drag&drop", () => {
@@ -39,12 +95,12 @@ describe("UploadDropzone (KAN-216)", () => {
     expect(clickSpy).toHaveBeenCalledTimes(1);
   });
 
-  it("soltar un .xlsx en la zona sube el archivo y muestra el mensaje de éxito", async () => {
+  it("soltar un .xlsx en la zona sube el archivo y muestra el mensaje de éxito cuando llega 'done' por WS (KAN-338)", async () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 7, priceParseErrors: [], loaded: [], failed: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
 
@@ -53,6 +109,8 @@ describe("UploadDropzone (KAN-216)", () => {
     const file = excelFile();
 
     fireEvent.drop(dropzone, { dataTransfer: { files: [file] } });
+
+    await emitLatestSocketDone({ count: 7, priceParseErrors: [], loaded: [], failed: [] });
 
     expect(await screen.findByText("¡Listo! Se cargaron 7 propiedades.")).toBeInTheDocument();
     const [url, init] = (global.fetch as jest.Mock).mock.calls[0];
@@ -64,28 +122,29 @@ describe("UploadDropzone (KAN-216)", () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
-        status: 200,
-        body: {
-          success: true,
-          count: 10,
-          priceParseErrors: [
-            { sheetName: "Ventas", address: "Calle Falsa 123", rawValue: "a convenir" },
-          ],
-          loaded: [],
-          failed: [
-            {
-              sheetName: "Ventas",
-              address: "Calle Falsa 123",
-              reason: 'Precio no reconocido ("a convenir"), se cargó sin precio.',
-            },
-          ],
-        },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
 
     render(<UploadDropzone />);
     fireEvent.drop(screen.getByTestId("upload-dropzone"), {
       dataTransfer: { files: [excelFile()] },
+    });
+
+    await emitLatestSocketDone({
+      count: 10,
+      priceParseErrors: [
+        { sheetName: "Ventas", address: "Calle Falsa 123", rawValue: "a convenir" },
+      ],
+      loaded: [],
+      failed: [
+        {
+          sheetName: "Ventas",
+          address: "Calle Falsa 123",
+          reason: 'Precio no reconocido ("a convenir"), se cargó sin precio.',
+        },
+      ],
     });
 
     expect(
@@ -102,8 +161,8 @@ describe("UploadDropzone (KAN-216)", () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 3, priceParseErrors: [], loaded: [], failed: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
 
@@ -111,6 +170,7 @@ describe("UploadDropzone (KAN-216)", () => {
     const input = screen.getByTestId("upload-file-input") as HTMLInputElement;
 
     fireEvent.change(input, { target: { files: [excelFile()] } });
+    await emitLatestSocketDone({ count: 3, priceParseErrors: [], loaded: [], failed: [] });
 
     expect(await screen.findByText("¡Listo! Se cargaron 3 propiedades.")).toBeInTheDocument();
   });
@@ -181,8 +241,8 @@ describe("UploadDropzone (KAN-216)", () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 1, priceParseErrors: [], loaded: [], failed: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
 
@@ -190,6 +250,7 @@ describe("UploadDropzone (KAN-216)", () => {
     fireEvent.change(screen.getByTestId("upload-file-input"), {
       target: { files: [excelFile()] },
     });
+    await emitLatestSocketDone({ count: 1, priceParseErrors: [], loaded: [], failed: [] });
 
     fireEvent.click(await screen.findByRole("button", { name: "Subir otro archivo" }));
 
@@ -277,11 +338,12 @@ describe("UploadDropzone (KAN-216)", () => {
       fetchMock.mockResolvedValueOnce(
         mockResponse({
           ok: true,
-          status: 200,
-          body: { success: true, count: 4, priceParseErrors: [], loaded: [], failed: [] },
+          status: 202,
+          body: { accepted: true, message: "Tu cartera se está sincronizando." },
         }),
       );
       fireEvent.click(screen.getByRole("button", { name: "Confirmar y cargar" }));
+      await emitLatestSocketDone({ count: 4, priceParseErrors: [], loaded: [], failed: [] });
 
       expect(await screen.findByText("¡Listo! Se cargaron 4 propiedades.")).toBeInTheDocument();
       expect(screen.queryByText("Confirmar mapeo de columnas")).not.toBeInTheDocument();

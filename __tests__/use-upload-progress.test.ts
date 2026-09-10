@@ -66,12 +66,12 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     global.WebSocket = originalWebSocket;
   });
 
-  it("abre un socket a /ws al empezar a subir y lo cierra al terminar", async () => {
+  it("abre un socket a /ws al empezar a subir y lo cierra cuando llega 'done' (KAN-338)", async () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 1, priceParseErrors: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
 
@@ -88,6 +88,23 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
 
     await act(async () => {
       await uploadPromise;
+    });
+
+    // La respuesta HTTP ya volvió (aceptada), pero el socket sigue abierto: el resultado real
+    // todavía no llegó.
+    expect(mockSockets[0].closed).toBe(false);
+
+    act(() => {
+      mockSockets[0].emit("message", {
+        data: JSON.stringify({
+          type: "upload_status",
+          stage: "done",
+          count: 1,
+          priceParseErrors: [],
+          loaded: [],
+          failed: [],
+        }),
+      });
     });
 
     expect(mockSockets[0].closed).toBe(true);
@@ -132,10 +149,25 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     resolveFetch(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 1, priceParseErrors: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
+    await act(async () => {
+      await Promise.resolve();
+    });
+    act(() => {
+      socket.emit("message", {
+        data: JSON.stringify({
+          type: "upload_status",
+          stage: "done",
+          count: 1,
+          priceParseErrors: [],
+          loaded: [],
+          failed: [],
+        }),
+      });
+    });
     await waitFor(() => expect(result.current.status).toBe("success"));
   });
 
@@ -176,10 +208,25 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     resolveFetch(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 1, priceParseErrors: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
+    await act(async () => {
+      await Promise.resolve();
+    });
+    act(() => {
+      socket.emit("message", {
+        data: JSON.stringify({
+          type: "upload_status",
+          stage: "done",
+          count: 1,
+          priceParseErrors: [],
+          loaded: [],
+          failed: [],
+        }),
+      });
+    });
     await waitFor(() => expect(result.current.status).toBe("success"));
   });
 
@@ -187,8 +234,8 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 1, priceParseErrors: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
 
@@ -210,8 +257,8 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 1, priceParseErrors: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
 
@@ -221,7 +268,16 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     });
     const socket = mockSockets[0];
     act(() => {
-      socket.emit("message", { data: JSON.stringify({ type: "upload_status", stage: "done" }) });
+      socket.emit("message", {
+        data: JSON.stringify({
+          type: "upload_status",
+          stage: "done",
+          count: 1,
+          priceParseErrors: [],
+          loaded: [],
+          failed: [],
+        }),
+      });
       jest.advanceTimersByTime(150);
     });
     await waitFor(() => expect(result.current.status).toBe("success"));

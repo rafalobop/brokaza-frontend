@@ -44,6 +44,19 @@ export interface UploadSuccessResponse {
   failed: UploadFailureDetail[];
 }
 
+/**
+ * KAN-338: la respuesta HTTP de `POST /api/upload`/`confirm-mapping` ya no trae el resultado
+ * final — el backend responde en cuanto termina de parsear el archivo y validar el límite del
+ * plan, ANTES del geocoding real (secuencial, ~1 req/seg contra Nominatim, puede tardar más que
+ * el timeout del cliente en una cartera grande sin coordenadas cacheadas). El resultado real
+ * (mismo shape que `UploadSuccessResponse`, menos `success`) llega por el WS en la etapa `'done'`
+ * — ver `upload-progress.ts#UploadDoneResult` y `use-upload.ts`.
+ */
+export interface UploadAcceptedResponse {
+  accepted: true;
+  message: string;
+}
+
 export interface PendingMappingFieldCandidate {
   header: string;
   confidence: number;
@@ -72,7 +85,7 @@ export interface UploadNeedsMappingResponse {
   sheets: PendingMappingSheet[];
 }
 
-export type UploadResponse = UploadSuccessResponse | UploadNeedsMappingResponse;
+export type UploadResponse = UploadAcceptedResponse | UploadNeedsMappingResponse;
 
 // El default de `apiClient` (15s) alcanza para la mayoría de los endpoints, pero un Excel
 // cerca del límite de tamaño (10MB default en el backend, `uploadMaxFileSizeBytes`) puede
@@ -107,11 +120,11 @@ export type SheetMappingSelections = Record<
 export function confirmColumnMapping(
   file: File,
   mappings: SheetMappingSelections,
-): Promise<UploadSuccessResponse> {
+): Promise<UploadAcceptedResponse> {
   const formData = new FormData();
   formData.append("excelFile", file);
   formData.append("mappings", JSON.stringify(mappings));
-  return apiClient<UploadSuccessResponse>("/api/upload/confirm-mapping", {
+  return apiClient<UploadAcceptedResponse>("/api/upload/confirm-mapping", {
     method: "POST",
     body: formData,
     timeoutMs: UPLOAD_TIMEOUT_MS,

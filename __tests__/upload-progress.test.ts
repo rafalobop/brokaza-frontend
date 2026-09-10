@@ -1,5 +1,6 @@
 import {
   debounce,
+  parseUploadStatusEvent,
   parseUploadStatusMessage,
   uploadStageProgressPercent,
   UPLOAD_STAGE_LABELS,
@@ -41,6 +42,71 @@ describe("upload-progress (KAN-218)", () => {
 
     it("devuelve null si falta 'stage'", () => {
       expect(parseUploadStatusMessage(JSON.stringify({ type: "upload_status" }))).toBeNull();
+    });
+  });
+
+  describe("parseUploadStatusEvent (KAN-338)", () => {
+    it("etapas que no son 'done' devuelven doneResult: null", () => {
+      expect(
+        parseUploadStatusEvent(
+          JSON.stringify({ type: "upload_status", stage: "syncing_database" }),
+        ),
+      ).toEqual({ stage: "syncing_database", doneResult: null });
+    });
+
+    it("'done' con el resultado esperado lo extrae en doneResult", () => {
+      const payload = {
+        type: "upload_status",
+        stage: "done",
+        count: 3,
+        priceParseErrors: [],
+        loaded: [
+          {
+            sheetName: "Ventas",
+            address: "Calle Falsa 123",
+            operation: "venta",
+            price: 100,
+            currency: "USD",
+          },
+        ],
+        failed: [],
+      };
+
+      expect(parseUploadStatusEvent(JSON.stringify(payload))).toEqual({
+        stage: "done",
+        doneResult: {
+          count: 3,
+          priceParseErrors: [],
+          loaded: payload.loaded,
+          failed: [],
+        },
+      });
+    });
+
+    it("'done' sin el shape esperado (payload malformado) degrada a doneResult: null en vez de lanzar", () => {
+      expect(
+        parseUploadStatusEvent(JSON.stringify({ type: "upload_status", stage: "done" })),
+      ).toEqual({ stage: "done", doneResult: null });
+    });
+
+    it("'error' nunca lleva doneResult, aunque el payload tenga esos campos de más", () => {
+      expect(
+        parseUploadStatusEvent(
+          JSON.stringify({
+            type: "upload_status",
+            stage: "error",
+            count: 1,
+            priceParseErrors: [],
+            loaded: [],
+            failed: [],
+          }),
+        ),
+      ).toEqual({ stage: "error", doneResult: null });
+    });
+
+    it("devuelve null ante JSON inválido o de otro tipo (mismo criterio que parseUploadStatusMessage)", () => {
+      expect(parseUploadStatusEvent("no-es-json")).toBeNull();
+      expect(parseUploadStatusEvent(JSON.stringify({ type: "match_count_changed" }))).toBeNull();
     });
   });
 

@@ -68,7 +68,7 @@ export function TeamSection({
 
   return (
     <div className="flex flex-col gap-6">
-      <InviteCollaboratorForm onInvited={onInvited} />
+      <InviteCollaboratorForm onInvited={onInvited} onReactivate={onReactivate} />
 
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-2">

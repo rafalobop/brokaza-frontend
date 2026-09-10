@@ -10,6 +10,13 @@
  * No usa `useTeam()` directamente: llama a `inviteCollaborator` (API) por su cuenta y solo avisa
  * con `onInvited()` para que el padre refetchee la lista — mismo criterio que `NewSearchForm`
  * con `submitSearch`/`onSubmitted` (`docs/matches-ui-design.md` §4).
+ *
+ * KAN-340: si el email ya está vinculado a la agencia pero con el acceso revocado, el backend
+ * responde 409 con `code: 'ALREADY_LINKED_REVOKED'` + `collaboratorId` (en vez del 409 genérico
+ * "ya es colaborador") — antes ese caso dejaba al dueño con un error sin salida clara, sin
+ * mencionar que existe la pestaña "Revocados" con el botón "Reactivar" que resuelve justo esto.
+ * Ahora se ofrece un botón de reactivación directo acá mismo, reusando el mismo `onReactivate`
+ * que ya usa `CollaboratorRow` — no hace falta que el dueño cambie de pestaña.
  */
 
 import { useState } from "react";
@@ -20,12 +27,28 @@ import { Button } from "@/components/ui/Button";
 
 export interface InviteCollaboratorFormProps {
   onInvited: () => void;
+  onReactivate: (collaboratorId: string) => Promise<void>;
 }
 
-export function InviteCollaboratorForm({ onInvited }: InviteCollaboratorFormProps) {
+function hasAlreadyLinkedRevokedCode(
+  body: unknown,
+): body is { code: string; collaboratorId: string } {
+  return (
+    typeof body === "object" &&
+    body !== null &&
+    (body as { code?: unknown }).code === "ALREADY_LINKED_REVOKED" &&
+    typeof (body as { collaboratorId?: unknown }).collaboratorId === "string"
+  );
+}
+
+export function InviteCollaboratorForm({ onInvited, onReactivate }: InviteCollaboratorFormProps) {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  // KAN-340: solo se llena cuando el 409 trae `code: 'ALREADY_LINKED_REVOKED'` — habilita el
+  // botón de reactivación directa junto al mensaje de error.
+  const [revokedCollaboratorId, setRevokedCollaboratorId] = useState<string | null>(null);
+  const [reactivating, setReactivating] = useState(false);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -34,6 +57,7 @@ export function InviteCollaboratorForm({ onInvited }: InviteCollaboratorFormProp
 
     setSubmitting(true);
     setStatus(null);
+    setRevokedCollaboratorId(null);
     try {
       await inviteCollaborator(trimmed);
       setStatus({ message: `Acceso otorgado a ${trimmed}.`, type: "success" });
@@ -42,8 +66,29 @@ export function InviteCollaboratorForm({ onInvited }: InviteCollaboratorFormProp
     } catch (err) {
       const message = err instanceof ApiError ? err.message : "No se pudo otorgar el acceso.";
       setStatus({ message, type: "error" });
+      if (err instanceof ApiError && hasAlreadyLinkedRevokedCode(err.body)) {
+        setRevokedCollaboratorId(err.body.collaboratorId);
+      }
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleReactivate() {
+    if (!revokedCollaboratorId) return;
+    setReactivating(true);
+    try {
+      await onReactivate(revokedCollaboratorId);
+      setStatus({ message: "Acceso reactivado.", type: "success" });
+      setRevokedCollaboratorId(null);
+      setEmail("");
+    } catch (err) {
+      setStatus({
+        message: err instanceof ApiError ? err.message : "No se pudo reactivar el acceso.",
+        type: "error",
+      });
+    } finally {
+      setReactivating(false);
     }
   }
 
@@ -73,9 +118,22 @@ export function InviteCollaboratorForm({ onInvited }: InviteCollaboratorFormProp
       </form>
 
       {status ? (
-        <p className={`text-sm ${status.type === "error" ? "text-error" : "text-success"}`}>
-          {status.message}
-        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className={`text-sm ${status.type === "error" ? "text-error" : "text-success"}`}>
+            {status.message}
+          </p>
+          {revokedCollaboratorId ? (
+            <Button
+              type="button"
+              variant="success"
+              size="sm"
+              onClick={() => void handleReactivate()}
+              disabled={reactivating}
+            >
+              {reactivating ? "Reactivando..." : "Reactivar acceso"}
+            </Button>
+          ) : null}
+        </div>
       ) : null}
     </Card>
   );

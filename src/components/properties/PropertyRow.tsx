@@ -69,7 +69,21 @@ export function PropertyRow({
   // acá antes de armar el PATCH porque el backend ya no los acepta como campo editable (whitelist
   // de UPDATE_FIELDS en properties.ts). Mandarlos igual (aunque sin cambios) daría 400.
   async function handleSave(input: CreatePropertyInput) {
-    const { latitude: _latitude, longitude: _longitude, ...editableFields } = input;
+    const editableFields: Omit<UpdatePropertyInput, "expectedUpdatedAt"> = {
+      address: input.address,
+      floor: input.floor,
+      unit: input.unit,
+      block: input.block,
+      lot: input.lot,
+      price: input.price,
+      currency: input.currency,
+      maintenance_fees: input.maintenance_fees,
+      bedrooms: input.bedrooms,
+      features: input.features,
+      contact_info: input.contact_info,
+      operation: input.operation,
+      property_type: input.property_type,
+    };
     setSaving(true);
     setRowError(null);
     setConflictNotice(null);

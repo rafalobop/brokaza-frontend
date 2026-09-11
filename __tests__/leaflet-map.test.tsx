@@ -52,9 +52,7 @@ describe("LeafletMap (KAN-241, spike)", () => {
   });
 
   it("readOnly sin onChange no tira (uso real de PropertyForm en modo edición)", () => {
-    const { container } = render(
-      <LeafletMap latitude={-26.8241} longitude={-65.2226} readOnly />,
-    );
+    const { container } = render(<LeafletMap latitude={-26.8241} longitude={-65.2226} readOnly />);
 
     expect(container.querySelector(".leaflet-container")).toBeInTheDocument();
   });

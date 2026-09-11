@@ -1,5 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { useUpload } from "@/lib/use-upload";
+import { RealtimeSocketProvider } from "@/lib/realtime-socket-context";
 
 /** Mismo mock mínimo que `use-realtime-matches.test.tsx` (KAN-187) — sin conexión real. */
 class MockWebSocket {
@@ -35,6 +37,16 @@ class MockWebSocket {
 
 let mockSockets: MockWebSocket[] = [];
 
+// KAN-343: `useUpload` se suscribe al socket compartido de `RealtimeSocketProvider` en vez de
+// abrir el suyo — mismo wrapper que `use-upload.test.ts`.
+function withRealtimeSocket({ children }: { children: ReactNode }) {
+  return <RealtimeSocketProvider enabled={true}>{children}</RealtimeSocketProvider>;
+}
+
+function renderUseUpload() {
+  return renderHook(() => useUpload(), { wrapper: withRealtimeSocket });
+}
+
 function mockResponse(init: { ok: boolean; status: number; body?: unknown }): Response {
   return {
     ok: init.ok,
@@ -66,7 +78,7 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     global.WebSocket = originalWebSocket;
   });
 
-  it("abre un socket a /ws al empezar a subir y lo cierra cuando llega 'done' (KAN-338)", async () => {
+  it("usa el socket compartido a /ws (ya abierto por RealtimeSocketProvider) y sigue vivo tras 'done' (KAN-338/343)", async () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
@@ -75,23 +87,26 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
+
+    // KAN-343: el socket ya está abierto por el provider al montar, no lo abre `upload()`.
+    expect(mockSockets).toHaveLength(1);
+    expect(mockSockets[0].url).toBe("ws://localhost/ws");
+    expect(mockSockets[0].closed).toBe(false);
 
     let uploadPromise!: Promise<void>;
     act(() => {
       uploadPromise = result.current.upload(excelFile());
     });
 
+    // Sigue siendo el mismo socket — `upload()` no abre uno nuevo.
     expect(mockSockets).toHaveLength(1);
-    expect(mockSockets[0].url).toBe("ws://localhost/ws");
-    expect(mockSockets[0].closed).toBe(false);
 
     await act(async () => {
       await uploadPromise;
     });
 
-    // La respuesta HTTP ya volvió (aceptada), pero el socket sigue abierto: el resultado real
-    // todavía no llegó.
+    // La respuesta HTTP ya volvió (aceptada), pero el resultado real todavía no llegó.
     expect(mockSockets[0].closed).toBe(false);
 
     act(() => {
@@ -107,7 +122,10 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
       });
     });
 
-    expect(mockSockets[0].closed).toBe(true);
+    // El socket es compartido con el resto del dashboard (useRealtimeMatches) — `useUpload` deja
+    // de escucharlo, pero nunca lo cierra.
+    expect(mockSockets[0].closed).toBe(false);
+    expect(mockSockets).toHaveLength(1);
   });
 
   it("actualiza `stage` (debounced) a medida que llegan eventos upload_status", async () => {
@@ -118,7 +136,7 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
 
     act(() => {
       void result.current.upload(excelFile());
@@ -179,7 +197,7 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
     act(() => {
       void result.current.upload(excelFile());
     });
@@ -239,7 +257,7 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
     act(() => {
       void result.current.upload(excelFile());
     });
@@ -262,7 +280,7 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
     act(() => {
       void result.current.upload(excelFile());
     });

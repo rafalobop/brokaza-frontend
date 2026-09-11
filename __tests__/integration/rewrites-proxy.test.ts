@@ -135,44 +135,71 @@ describe("proxy same-origin de Next.js hacia Express (KAN-150)", () => {
   // `next dev` reescribe tsconfig.json in-place la primera vez que corre en
   // una máquina (agrega entradas de `include` para sus tipos generados) —
   // efecto colateral del framework, no de este test. Se restaura en
-  // afterAll para que correr el test no ensucie el árbol de trabajo.
+  // afterAll (con try/finally) para que correr el test no ensucie el árbol
+  // de trabajo, y también en `process.on("exit"/"SIGINT"/"SIGTERM")` como
+  // red de seguridad por si el proceso muere antes de llegar a afterAll
+  // (ej. lo matan externamente a mitad de beforeAll).
   const originalTsconfig = fs.readFileSync(TSCONFIG_PATH, "utf8");
+  let tsconfigRestored = false;
+  const restoreTsconfig = (): void => {
+    if (tsconfigRestored) return;
+    tsconfigRestored = true;
+    try {
+      fs.writeFileSync(TSCONFIG_PATH, originalTsconfig);
+    } catch {
+      // best-effort en el shutdown handler
+    }
+  };
+  process.once("exit", restoreTsconfig);
+  process.once("SIGINT", restoreTsconfig);
+  process.once("SIGTERM", restoreTsconfig);
 
   beforeAll(async () => {
-    backend = await startMockBackend();
-    nextPort = await getFreePort();
+    try {
+      backend = await startMockBackend();
+      nextPort = await getFreePort();
 
-    nextProcess = spawn("npx", ["--no-install", "next", "dev", "-p", String(nextPort)], {
-      cwd: PROJECT_ROOT,
-      env: {
-        ...process.env,
-        BACKEND_ORIGIN: `http://127.0.0.1:${backend.port}`,
-      },
-      stdio: "pipe",
-      shell: true,
-      detached: process.platform !== "win32",
-    });
+      nextProcess = spawn("npx", ["--no-install", "next", "dev", "-p", String(nextPort)], {
+        cwd: PROJECT_ROOT,
+        env: {
+          ...process.env,
+          BACKEND_ORIGIN: `http://127.0.0.1:${backend.port}`,
+        },
+        stdio: "pipe",
+        shell: true,
+        detached: process.platform !== "win32",
+      });
 
-    nextProcess.stdout?.on("data", (d) => process.stdout.write(`[next] ${d}`));
-    nextProcess.stderr?.on("data", (d) => process.stderr.write(`[next] ${d}`));
+      nextProcess.stdout?.on("data", (d) => process.stdout.write(`[next] ${d}`));
+      nextProcess.stderr?.on("data", (d) => process.stderr.write(`[next] ${d}`));
 
-    await waitForServer(`http://127.0.0.1:${nextPort}/`, 90_000);
+      await waitForServer(`http://127.0.0.1:${nextPort}/`, 90_000);
 
-    // Precalienta las rutas antes de que corran los `it`, para que el costo
-    // de la primera compilación de Turbopack no cuente contra el timeout de
-    // cada test individual.
-    await httpGet(`http://127.0.0.1:${nextPort}/health`);
-    await httpGet(`http://127.0.0.1:${nextPort}/api/ping`);
-    await httpGet(`http://127.0.0.1:${nextPort}/internal/echo`);
-    await httpGet(`http://127.0.0.1:${nextPort}/esta-ruta-no-existe`);
+      // Precalienta las rutas antes de que corran los `it`, para que el costo
+      // de la primera compilación de Turbopack no cuente contra el timeout de
+      // cada test individual.
+      await httpGet(`http://127.0.0.1:${nextPort}/health`);
+      await httpGet(`http://127.0.0.1:${nextPort}/api/ping`);
+      await httpGet(`http://127.0.0.1:${nextPort}/internal/echo`);
+      await httpGet(`http://127.0.0.1:${nextPort}/esta-ruta-no-existe`);
+    } catch (err) {
+      if (nextProcess?.pid) {
+        killProcessTree(nextProcess.pid);
+      }
+      restoreTsconfig();
+      throw err;
+    }
   });
 
   afterAll(async () => {
-    await new Promise<void>((resolve) => backend.server.close(() => resolve()));
-    if (nextProcess?.pid) {
-      killProcessTree(nextProcess.pid);
+    try {
+      await new Promise<void>((resolve) => backend.server.close(() => resolve()));
+      if (nextProcess?.pid) {
+        killProcessTree(nextProcess.pid);
+      }
+    } finally {
+      restoreTsconfig();
     }
-    fs.writeFileSync(TSCONFIG_PATH, originalTsconfig);
   });
 
   it("proxea /health hacia Express manteniendo same-origin", async () => {

@@ -40,9 +40,13 @@ export function Combobox({
   const [query, setQuery] = useState(value);
   const [open, setOpen] = useState(false);
   const [lastSyncedValue, setLastSyncedValue] = useState(value);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [lastFilteredOptions, setLastFilteredOptions] = useState<string[]>(options);
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const optionRefs = useRef<Array<HTMLLIElement | null>>([]);
   const listboxId = useId();
+  const getOptionId = (index: number) => `${listboxId}-option-${index}`;
 
   // El valor puede cambiar desde afuera (ej. reset del form) sin pasar por handleInputChange —
   // patrón "ajustar estado durante el render" en vez de un useEffect, para no disparar un
@@ -82,6 +86,19 @@ export function Combobox({
     return options.filter((option) => option.toLowerCase().includes(needle));
   }, [options, query]);
 
+  // El índice activo se resetea cada vez que cambia el set filtrado (nueva tecleada) para no
+  // dejar resaltada una opción que ya no está en la lista — ajuste durante el render, como
+  // lastSyncedValue arriba, en vez de un efecto que dispararía un segundo render en cascada.
+  if (lastFilteredOptions !== filteredOptions) {
+    setLastFilteredOptions(filteredOptions);
+    setActiveIndex(filteredOptions.length > 0 ? 0 : -1);
+  }
+
+  useEffect(() => {
+    if (!open || activeIndex < 0) return;
+    optionRefs.current[activeIndex]?.scrollIntoView({ block: "nearest" });
+  }, [open, activeIndex]);
+
   function handleFocus() {
     if (disabled) return;
     setOpen(true);
@@ -104,6 +121,58 @@ export function Combobox({
     setOpen(false);
   }
 
+  function handleInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (disabled) return;
+    switch (event.key) {
+      case "ArrowDown":
+        event.preventDefault();
+        if (!open) {
+          setOpen(true);
+          return;
+        }
+        if (filteredOptions.length > 0) {
+          setActiveIndex((prev) => Math.min(prev + 1, filteredOptions.length - 1));
+        }
+        break;
+      case "ArrowUp":
+        event.preventDefault();
+        if (!open) {
+          setOpen(true);
+          return;
+        }
+        if (filteredOptions.length > 0) {
+          setActiveIndex((prev) => Math.max(prev - 1, 0));
+        }
+        break;
+      case "Home":
+        if (open && filteredOptions.length > 0) {
+          event.preventDefault();
+          setActiveIndex(0);
+        }
+        break;
+      case "End":
+        if (open && filteredOptions.length > 0) {
+          event.preventDefault();
+          setActiveIndex(filteredOptions.length - 1);
+        }
+        break;
+      case "Enter":
+        if (open && activeIndex >= 0 && filteredOptions[activeIndex]) {
+          event.preventDefault();
+          selectOption(filteredOptions[activeIndex]);
+        }
+        break;
+      case "Escape":
+        if (open) {
+          event.preventDefault();
+          setOpen(false);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
   return (
     <div ref={rootRef} className="relative">
       <div
@@ -116,10 +185,12 @@ export function Combobox({
           aria-expanded={open}
           aria-controls={listboxId}
           aria-autocomplete="list"
+          aria-activedescendant={open && activeIndex >= 0 ? getOptionId(activeIndex) : undefined}
           aria-label={ariaLabel}
           value={inputValue}
           onChange={handleInputChange}
           onFocus={handleFocus}
+          onKeyDown={handleInputKeyDown}
           disabled={disabled}
           placeholder={placeholder}
           autoComplete="off"
@@ -142,14 +213,24 @@ export function Combobox({
               Sin coincidencias — podés usar &quot;{inputValue.trim() || "..."}&quot; igual.
             </li>
           ) : (
-            filteredOptions.map((option) => (
-              <li key={option} role="option" aria-selected={option === value}>
+            filteredOptions.map((option, index) => (
+              <li
+                key={option}
+                id={getOptionId(index)}
+                ref={(node) => {
+                  optionRefs.current[index] = node;
+                }}
+                role="option"
+                aria-selected={option === value}
+              >
                 <button
                   type="button"
+                  tabIndex={-1}
+                  onMouseEnter={() => setActiveIndex(index)}
                   onClick={() => selectOption(option)}
-                  className={`hover:bg-accent-glow flex w-full items-center px-3 py-1.5 text-left text-sm whitespace-nowrap ${
-                    option === value ? "text-accent font-semibold" : "text-foreground"
-                  }`}
+                  className={`flex w-full items-center px-3 py-1.5 text-left text-sm whitespace-nowrap ${
+                    index === activeIndex ? "bg-accent-glow" : ""
+                  } ${option === value ? "text-accent font-semibold" : "text-foreground"}`}
                 >
                   {option}
                 </button>

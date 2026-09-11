@@ -1,5 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { useUpload } from "@/lib/use-upload";
+import { RealtimeSocketProvider } from "@/lib/realtime-socket-context";
 
 /** Mismo mock mínimo que `use-upload-progress.test.ts`/`use-realtime-matches.test.tsx` (KAN-187). */
 class MockWebSocket {
@@ -36,6 +38,17 @@ class MockWebSocket {
 }
 
 let mockSockets: MockWebSocket[] = [];
+
+// KAN-343: `useUpload` ya no abre su propio WebSocket — se suscribe al socket compartido de
+// `RealtimeSocketProvider` (el mismo que sostiene `useRealtimeMatches` en toda la app real, ver
+// `MatchesProvider`). Este wrapper reproduce ese árbol para los tests del hook en aislamiento.
+function withRealtimeSocket({ children }: { children: ReactNode }) {
+  return <RealtimeSocketProvider enabled={true}>{children}</RealtimeSocketProvider>;
+}
+
+function renderUseUpload() {
+  return renderHook(() => useUpload(), { wrapper: withRealtimeSocket });
+}
 
 function mockResponse(init: { ok: boolean; status: number; body?: unknown }): Response {
   return {
@@ -76,7 +89,7 @@ describe("useUpload (KAN-216/338)", () => {
 
   it("rechaza un archivo sin extensión .xlsx sin llamar a fetch", async () => {
     global.fetch = jest.fn();
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
 
     await act(async () => {
       await result.current.upload(new File(["x"], "cartera.csv"));
@@ -96,7 +109,10 @@ describe("useUpload (KAN-216/338)", () => {
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
+    // KAN-343: el socket compartido ya está abierto por `RealtimeSocketProvider` al montar, antes
+    // de que arranque cualquier subida — no lo abre `useUpload`.
+    expect(mockSockets).toHaveLength(1);
 
     let uploadPromise!: Promise<void>;
     act(() => {
@@ -107,8 +123,10 @@ describe("useUpload (KAN-216/338)", () => {
       await uploadPromise;
     });
 
-    // La respuesta HTTP ya volvió, pero el resultado final todavía no llegó por WS.
+    // La respuesta HTTP ya volvió, pero el resultado final todavía no llegó por WS. No se abrió
+    // un segundo socket, y el compartido sigue vivo (no lo cierra `useUpload`).
     expect(result.current.status).toBe("uploading");
+    expect(mockSockets).toHaveLength(1);
     expect(mockSockets[0].closed).toBe(false);
 
     act(() => {
@@ -123,7 +141,8 @@ describe("useUpload (KAN-216/338)", () => {
       loaded: [],
       failed: [],
     });
-    expect(mockSockets[0].closed).toBe(true);
+    // El socket compartido sigue vivo tras 'done' — solo `useUpload` deja de escucharlo.
+    expect(mockSockets[0].closed).toBe(false);
 
     const [url, init] = (global.fetch as jest.Mock).mock.calls[0];
     expect(url).toBe("/api/upload");
@@ -133,7 +152,7 @@ describe("useUpload (KAN-216/338)", () => {
     expect(init.headers["Content-Type"]).toBeUndefined();
   });
 
-  it("si el socket se cae antes de recibir 'done'/'error', pasa a status=error en vez de quedar esperando para siempre (KAN-338)", async () => {
+  it("si el socket compartido se cae antes de recibir 'done'/'error', pasa a status=error en vez de quedar esperando para siempre (KAN-338/343)", async () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
@@ -142,7 +161,7 @@ describe("useUpload (KAN-216/338)", () => {
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
 
     let uploadPromise!: Promise<void>;
     act(() => {
@@ -181,7 +200,7 @@ describe("useUpload (KAN-216/338)", () => {
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
 
     await act(async () => {
       await result.current.upload(excelFile());
@@ -200,7 +219,7 @@ describe("useUpload (KAN-216/338)", () => {
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
 
     await act(async () => {
       await result.current.upload(excelFile());
@@ -213,7 +232,7 @@ describe("useUpload (KAN-216/338)", () => {
   it("reset() vuelve a status=idle y limpia error/result/pendingSheets", async () => {
     global.fetch = jest.fn().mockResolvedValue(mockResponse({ ok: false, status: 500, body: {} }));
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
 
     await act(async () => {
       await result.current.upload(excelFile());

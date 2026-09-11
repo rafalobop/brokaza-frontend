@@ -1,5 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { useUpload } from "@/lib/use-upload";
+import { RealtimeSocketProvider } from "@/lib/realtime-socket-context";
 
 /** Mismo mock mínimo que `use-upload-progress.test.ts` (KAN-187/338). */
 class MockWebSocket {
@@ -37,6 +39,16 @@ class MockWebSocket {
 
 let mockSockets: MockWebSocket[] = [];
 
+// KAN-343: `useUpload` se suscribe al socket compartido de `RealtimeSocketProvider` en vez de
+// abrir el suyo — mismo wrapper que `use-upload.test.ts`.
+function withRealtimeSocket({ children }: { children: ReactNode }) {
+  return <RealtimeSocketProvider enabled={true}>{children}</RealtimeSocketProvider>;
+}
+
+function renderUseUpload() {
+  return renderHook(() => useUpload(), { wrapper: withRealtimeSocket });
+}
+
 function mockResponse(init: { ok: boolean; status: number; body?: unknown }): Response {
   return {
     ok: init.ok,
@@ -69,7 +81,7 @@ async function uploadIntoNeedsMapping(fetchMock: jest.Mock) {
       body: { requiresMappingConfirmation: true, sheets: [PENDING_SHEET] },
     }),
   );
-  const { result } = renderHook(() => useUpload());
+  const { result } = renderUseUpload();
   await act(async () => {
     await result.current.upload(excelFile());
   });
@@ -117,7 +129,9 @@ describe("useUpload#confirmMapping (KAN-217/338)", () => {
 
     // La respuesta HTTP ya volvió (aceptada), pero seguimos "confirming" hasta el 'done' del WS.
     expect(result.current.confirming).toBe(true);
-    const socket = mockSockets[mockSockets.length - 1];
+    // KAN-343: un único socket compartido para todo el ciclo (upload → needs-mapping → confirm).
+    expect(mockSockets).toHaveLength(1);
+    const socket = mockSockets[0];
 
     act(() => {
       socket.emit("message", {

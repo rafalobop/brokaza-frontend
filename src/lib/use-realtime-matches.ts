@@ -6,10 +6,13 @@
  *
  * La lógica pura (URL del WS, decisión de refetch, backoff, jitter) vive en
  * `realtime-matches.ts` y las métricas en `dashboard-metrics.ts` — ambos
- * ports 1:1 del legacy, sin cambios de comportamiento. Este hook es el único
- * componente nuevo: reemplaza las variables globales y los `setInterval`
- * sueltos de `app.js` por un `useEffect` con cleanup, y el
- * `fetchWithTimeout` legacy por `apiClient` (KAN-155).
+ * ports 1:1 del legacy, sin cambios de comportamiento.
+ *
+ * La conexión/reconexión del socket ya no la posee este hook: vive en
+ * `RealtimeSocketProvider` (`realtime-socket-context.tsx`), compartida con
+ * `useUpload` (KAN-338) para no abrir dos WebSockets contra `/ws` en
+ * simultáneo. Este hook solo se suscribe a los mensajes del socket
+ * compartido y filtra los que le interesan (`match_count_changed`).
  *
  * Diferencia deliberada con el legacy: `app.js` corría 4 intervalos de
  * polling independientes, uno por recurso (`loadMatches`, `loadCatalogInfo`,
@@ -26,30 +29,24 @@
 import { useEffect, useRef } from "react";
 import { apiClient } from "./api-client";
 import {
-  buildMatchCountSocketUrl,
-  DEFAULT_INITIAL_DELAY_MS,
   FALLBACK_POLL_MAX_MS,
   FALLBACK_POLL_MIN_MS,
-  nextReconnectDelayMs,
   randomIntervalMs,
   shouldRefetchOnMessage,
 } from "./realtime-matches";
 import {
   buildSnapshot,
-  createState,
   recordPollTick,
-  recordReconnectAttempt,
   recordRefetchDuration,
-  recordSocketClose,
-  recordSocketOpen,
   resetWindow,
 } from "./dashboard-metrics";
 import { createActivityTracker } from "./user-activity";
+import { useRealtimeSocket } from "./realtime-socket-context";
 
 const METRICS_REPORT_INTERVAL_MS = 60000;
 
 export interface UseRealtimeMatchesOptions {
-  /** Gate: el socket y el polling solo corren mientras `true` (ej. sesión autenticada). */
+  /** Gate: el polling de respaldo y el reporte de métricas solo corren mientras `true` (ej. sesión autenticada). */
   enabled: boolean;
   /**
    * Se invoca ante cada tick del polling de respaldo y ante cada push del WS
@@ -67,93 +64,23 @@ export function useRealtimeMatches({ enabled, onRefetch }: UseRealtimeMatchesOpt
     onRefetchRef.current = onRefetch;
   }, [onRefetch]);
 
+  const { subscribeMessage, isConnected, getMetricsState } = useRealtimeSocket();
+
   useEffect(() => {
     if (!enabled || typeof window === "undefined") return;
 
-    const metricsState = createState();
+    // `getMetricsState()` lee un ref — se llama acá (dentro del efecto), nunca en el render.
+    const metricsState = getMetricsState();
     const activityTracker = createActivityTracker();
-    let socket: WebSocket | null = null;
-    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
-    let reconnectDelayMs = DEFAULT_INITIAL_DELAY_MS;
-    let shouldReconnect = false;
 
-    function isSocketOpen(): boolean {
-      return !!socket && socket.readyState === WebSocket.OPEN;
-    }
+    const unsubscribeMessage = subscribeMessage((event) => {
+      if (!shouldRefetchOnMessage(event.data)) return;
 
-    function connect(): void {
-      if (
-        socket &&
-        (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)
-      ) {
-        return;
-      }
-
-      shouldReconnect = true;
-
-      const ws = new WebSocket(buildMatchCountSocketUrl(window.location));
-      socket = ws;
-
-      ws.addEventListener("open", () => {
-        reconnectDelayMs = DEFAULT_INITIAL_DELAY_MS; // reset del backoff tras una conexión exitosa
-        recordSocketOpen(metricsState);
+      const startedAt = performance.now();
+      Promise.resolve(onRefetchRef.current()).finally(() => {
+        recordRefetchDuration(metricsState, performance.now() - startedAt);
       });
-
-      ws.addEventListener("message", (event) => {
-        if (!shouldRefetchOnMessage(event.data)) return;
-
-        const startedAt = performance.now();
-        Promise.resolve(onRefetchRef.current()).finally(() => {
-          recordRefetchDuration(metricsState, performance.now() - startedAt);
-        });
-      });
-
-      ws.addEventListener("close", () => {
-        if (socket === ws) socket = null;
-        recordSocketClose(metricsState);
-        scheduleReconnect();
-      });
-
-      ws.addEventListener("error", (error) => {
-        // `disconnect()` pone `shouldReconnect = false` *antes* de cerrar el socket — si ya
-        // estamos en medio de un cierre intencional (cleanup del efecto, ej. el doble
-        // mount/unmount de React Strict Mode en dev, o `enabled` pasando a `false`), cerrar un
-        // socket todavía en CONNECTING dispara un `error` del navegador por spec aunque no haya
-        // ningún problema real de conectividad — no vale la pena loguearlo como si lo fuera.
-        if (!shouldReconnect) return;
-        console.error("[REALTIME] Error en el socket del contador de matches:", error);
-      });
-    }
-
-    function scheduleReconnect(): void {
-      if (!shouldReconnect || reconnectTimer) return;
-
-      reconnectTimer = setTimeout(() => {
-        reconnectTimer = null;
-        if (shouldReconnect) {
-          recordReconnectAttempt(metricsState);
-          connect();
-        }
-      }, reconnectDelayMs);
-
-      reconnectDelayMs = nextReconnectDelayMs(reconnectDelayMs);
-    }
-
-    function disconnect(): void {
-      shouldReconnect = false;
-
-      if (reconnectTimer) {
-        clearTimeout(reconnectTimer);
-        reconnectTimer = null;
-      }
-
-      reconnectDelayMs = DEFAULT_INITIAL_DELAY_MS;
-
-      if (socket) {
-        socket.close();
-        socket = null;
-      }
-    }
+    });
 
     async function reportMetrics(): Promise<void> {
       // Pestaña inactiva (backgrounded o sin interacción reciente): no se envía nada este
@@ -181,20 +108,18 @@ export function useRealtimeMatches({ enabled, onRefetch }: UseRealtimeMatchesOpt
 
     const pollInterval = setInterval(
       () => {
-        recordPollTick(metricsState, isSocketOpen());
+        recordPollTick(metricsState, isConnected());
         void onRefetchRef.current();
       },
       randomIntervalMs(FALLBACK_POLL_MIN_MS, FALLBACK_POLL_MAX_MS),
     );
     const metricsInterval = setInterval(reportMetrics, METRICS_REPORT_INTERVAL_MS);
 
-    connect();
-
     return () => {
       clearInterval(pollInterval);
       clearInterval(metricsInterval);
       activityTracker.destroy();
-      disconnect();
+      unsubscribeMessage();
     };
-  }, [enabled]);
+  }, [enabled, subscribeMessage, isConnected, getMetricsState]);
 }

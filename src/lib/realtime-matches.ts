@@ -10,6 +10,11 @@
 export const DEFAULT_INITIAL_DELAY_MS = 1000;
 export const DEFAULT_MAX_DELAY_MS = 15000;
 
+// Tope de intentos de reconexión consecutivos antes de desistir. El polling de respaldo
+// (FALLBACK_POLL_MIN_MS/MAX_MS) ya cubre la función del WS si el servidor está caído por un
+// rato largo — insistir para siempre no aporta nada y solo genera ruido/conexiones colgadas.
+export const MAX_RECONNECT_ATTEMPTS = 5;
+
 // El polling ya no es el mecanismo primario de actualización (eso lo hace el push por WS) — es la
 // red de seguridad para pestañas sin WS o con el socket caído. Ver metrics.js/dashboard-metrics.ts
 // para el registro de cuándo dispara con el socket arriba vs. abajo.

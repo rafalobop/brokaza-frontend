@@ -70,6 +70,8 @@ export async function consumeAuthCallbackHash(
  * canjea llamando a `exchange-token`, que hace `supabase.auth.verifyOtp` server-side — Supabase
  * nunca redirige a ningún lado en este flujo, así que no hace falta que la URL de destino esté en
  * el allow-list de "Redirect URLs" de su dashboard (el problema real que forzó este cambio).
+ * Trade-off de seguridad de este cambio (query string vs. fragment, exposición en logs/Referer,
+ * por qué se acepta) documentado en `docs/magic-link-flow-design.md#7-variante-admin-kan-342`.
  */
 export async function consumeAuthCallbackQuery(
   exchangeToken: (params: { token_hash: string; type: string }) => Promise<unknown>,

@@ -7,9 +7,12 @@
  * propia cookie/allowlist del lado del backend (`matchouse/src/adminRoutes.ts`,
  * `ADMIN_SESSION_COOKIE`). Ver docs/admin-auth-design.md §3.3.
  *
- * El parsing del callback de magic-link (`consumeAuthCallbackHash`, `auth-callback.ts`) se reusa
- * tal cual del tenant — el mecanismo de Supabase es idéntico, solo cambia a qué endpoint se manda
- * el token (acá, `adminApiClient` en vez de `apiClient`).
+ * KAN-342: a diferencia del tenant (que sigue con `consumeAuthCallbackHash`, el redirect hosteado
+ * de Supabase con el token en el fragment `#access_token=...`), el admin usa
+ * `consumeAuthCallbackQuery` — un link propio (`?token_hash=...&type=magiclink`, armado por
+ * `matchouse/src/adminRoutes.ts`) que se canjea llamando a `exchange-token`, sin pasar por el
+ * redirect de Supabase en ningún momento (evita depender del allow-list de "Redirect URLs" de su
+ * dashboard, que es lo que rompía el login de admin antes de este cambio).
  */
 
 import {
@@ -25,7 +28,7 @@ import {
 } from "react";
 import { adminApiClient } from "./admin-api-client";
 import { ApiError } from "./api-client";
-import { consumeAuthCallbackHash } from "./auth-callback";
+import { consumeAuthCallbackQuery } from "./auth-callback";
 import { onUnauthorized } from "./auth-events";
 
 const LOGOUT_SUCCESS_MESSAGE = "Cerraste sesión correctamente.";
@@ -140,11 +143,11 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     void (async () => {
-      const callbackResult = await consumeAuthCallbackHash(
-        (accessToken) =>
+      const callbackResult = await consumeAuthCallbackQuery(
+        ({ token_hash, type }) =>
           adminApiClient("/api/auth/exchange-token", {
             method: "POST",
-            body: JSON.stringify({ access_token: accessToken }),
+            body: JSON.stringify({ token_hash, type }),
           }),
         "[ADMIN AUTH]",
       );

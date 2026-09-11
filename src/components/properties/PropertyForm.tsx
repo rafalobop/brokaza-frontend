@@ -8,6 +8,7 @@
  */
 
 import { useState } from "react";
+import { ApiError } from "@/lib/api-client";
 import {
   CURRENCIES,
   OPERATIONS,
@@ -70,6 +71,13 @@ export interface PropertyFormProps {
   submitting: boolean;
   onSubmit: (input: CreatePropertyInput) => Promise<void>;
   onCancel: () => void;
+  /** KAN-305: si se pasa, la propiedad ya existe y el mapa queda en modo solo lectura — el
+   * tenant no puede pisar el geocoding curado arrastrando el pin, solo puede pedir que un admin
+   * lo revise. Ausente = alta nueva (`AddPropertyModal`), mapa editable como siempre. */
+  coordinateReview?: {
+    needsReview: boolean;
+    onRequestCorrection: () => Promise<void>;
+  };
 }
 
 function toCreateInput(values: PropertyFormValues): CreatePropertyInput | null {
@@ -107,12 +115,30 @@ export function PropertyForm({
   submitting,
   onSubmit,
   onCancel,
+  coordinateReview,
 }: PropertyFormProps) {
   const [values, setValues] = useState<PropertyFormValues>(initialValues);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [requestingCorrection, setRequestingCorrection] = useState(false);
+  const [correctionError, setCorrectionError] = useState<string | null>(null);
 
   function update<K extends keyof PropertyFormValues>(key: K, value: PropertyFormValues[K]) {
     setValues((prev) => ({ ...prev, [key]: value }));
+  }
+
+  async function handleRequestCorrection() {
+    if (!coordinateReview) return;
+    setRequestingCorrection(true);
+    setCorrectionError(null);
+    try {
+      await coordinateReview.onRequestCorrection();
+    } catch (err) {
+      setCorrectionError(
+        err instanceof ApiError ? err.message : "No se pudo enviar la solicitud de corrección.",
+      );
+    } finally {
+      setRequestingCorrection(false);
+    }
   }
 
   async function handleSubmit(event: React.FormEvent) {
@@ -288,17 +314,51 @@ export function PropertyForm({
 
       <div className="flex flex-col gap-2">
         <span className={LABEL_CLASS}>Ubicación en el mapa</span>
-        <LeafletMapDynamic
-          latitude={values.latitude ?? TUCUMAN_DEFAULT[0]}
-          longitude={values.longitude ?? TUCUMAN_DEFAULT[1]}
-          onChange={(lat, lng) => {
-            update("latitude", lat);
-            update("longitude", lng);
-          }}
-        />
-        <p className="text-text-secondary text-xs">
-          Arrastrá el marcador o hacé click en el mapa para ajustar la ubicación exacta.
-        </p>
+        {coordinateReview ? (
+          <>
+            <LeafletMapDynamic
+              latitude={values.latitude ?? TUCUMAN_DEFAULT[0]}
+              longitude={values.longitude ?? TUCUMAN_DEFAULT[1]}
+              readOnly
+            />
+            {coordinateReview.needsReview ? (
+              <p className="text-warning text-xs">
+                Ya solicitaste una corrección de esta ubicación — un administrador la va a revisar.
+              </p>
+            ) : (
+              <>
+                <p className="text-text-secondary text-xs">
+                  La ubicación la corrige un administrador. Si está mal ubicada, solicitá una
+                  corrección.
+                </p>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => void handleRequestCorrection()}
+                  disabled={requestingCorrection}
+                >
+                  {requestingCorrection ? "Enviando..." : "Marcar para corrección"}
+                </Button>
+              </>
+            )}
+            {correctionError ? <p className="text-error text-xs">{correctionError}</p> : null}
+          </>
+        ) : (
+          <>
+            <LeafletMapDynamic
+              latitude={values.latitude ?? TUCUMAN_DEFAULT[0]}
+              longitude={values.longitude ?? TUCUMAN_DEFAULT[1]}
+              onChange={(lat, lng) => {
+                update("latitude", lat);
+                update("longitude", lng);
+              }}
+            />
+            <p className="text-text-secondary text-xs">
+              Arrastrá el marcador o hacé click en el mapa para ajustar la ubicación exacta.
+            </p>
+          </>
+        )}
       </div>
 
       {validationError ? <p className="text-error text-sm">{validationError}</p> : null}

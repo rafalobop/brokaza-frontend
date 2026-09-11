@@ -14,6 +14,7 @@ import {
   createTenantProperty,
   deleteTenantProperty,
   getTenantProperties,
+  requestCoordinateCorrection as requestCoordinateCorrectionApi,
   updateTenantProperty,
   type CreatePropertyInput,
   type PropertyOperation,
@@ -63,6 +64,9 @@ export interface UseTenantPropertiesResult {
     input: UpdatePropertyInput,
   ) => Promise<{ conflict: TenantProperty } | { conflict: null }>;
   deleteProperty: (id: string) => Promise<void>;
+  /** KAN-305: pide revisión de coordenadas — actualiza la fila local con el `needs_coordinate_review`
+   * que devuelve el backend, mismo patrón que `updateProperty`. */
+  requestCoordinateCorrection: (id: string) => Promise<void>;
 }
 
 export function useTenantProperties(): UseTenantPropertiesResult {
@@ -286,6 +290,12 @@ export function useTenantProperties(): UseTenantPropertiesResult {
     }
   }, []);
 
+  const requestCoordinateCorrection = useCallback(async (id: string) => {
+    const { property } = await requestCoordinateCorrectionApi(id);
+    if (!isMountedRef.current) return;
+    setProperties((prev) => prev.map((p) => (p.id === id ? property : p)));
+  }, []);
+
   const deleteProperty = useCallback(async (id: string) => {
     await deleteTenantProperty(id);
     if (!isMountedRef.current) return;
@@ -313,5 +323,6 @@ export function useTenantProperties(): UseTenantPropertiesResult {
     createProperty,
     updateProperty,
     deleteProperty,
+    requestCoordinateCorrection,
   };
 }

@@ -29,10 +29,14 @@ import "./leaflet-icon-fix";
 export interface LeafletMapProps {
   latitude: number;
   longitude: number;
-  onChange: (latitude: number, longitude: number) => void;
+  onChange?: (latitude: number, longitude: number) => void;
+  /** KAN-305: el tenant ya no puede editar coordenadas de una propiedad existente (el backend
+   * las sacó de los campos editables por PATCH) — el marcador queda fijo (sin drag) y los clicks
+   * en el mapa no reposicionan nada. `onChange` puede omitirse en este modo. */
+  readOnly?: boolean;
 }
 
-function ClickHandler({ onChange }: { onChange: LeafletMapProps["onChange"] }) {
+function ClickHandler({ onChange }: { onChange: NonNullable<LeafletMapProps["onChange"]> }) {
   useMapEvents({
     click(event) {
       onChange(event.latlng.lat, event.latlng.lng);
@@ -41,7 +45,7 @@ function ClickHandler({ onChange }: { onChange: LeafletMapProps["onChange"] }) {
   return null;
 }
 
-export function LeafletMap({ latitude, longitude, onChange }: LeafletMapProps) {
+export function LeafletMap({ latitude, longitude, onChange, readOnly = false }: LeafletMapProps) {
   const position: [number, number] = [latitude, longitude];
 
   return (
@@ -52,16 +56,20 @@ export function LeafletMap({ latitude, longitude, onChange }: LeafletMapProps) {
       />
       <Marker
         position={position}
-        draggable
-        eventHandlers={{
-          dragend: (event) => {
-            const marker = event.target as L.Marker;
-            const pos = marker.getLatLng();
-            onChange(pos.lat, pos.lng);
-          },
-        }}
+        draggable={!readOnly}
+        eventHandlers={
+          readOnly || !onChange
+            ? {}
+            : {
+                dragend: (event) => {
+                  const marker = event.target as L.Marker;
+                  const pos = marker.getLatLng();
+                  onChange(pos.lat, pos.lng);
+                },
+              }
+        }
       />
-      <ClickHandler onChange={onChange} />
+      {!readOnly && onChange ? <ClickHandler onChange={onChange} /> : null}
       <RecenterOnPropsChange latitude={latitude} longitude={longitude} />
     </MapContainer>
   );

@@ -68,6 +68,7 @@ export function PropertiesTable({ refreshToken }: PropertiesTableProps = {}) {
     createProperty,
     updateProperty,
     deleteProperty,
+    requestCoordinateCorrection,
   } = useTenantProperties();
 
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -176,6 +177,7 @@ export function PropertiesTable({ refreshToken }: PropertiesTableProps = {}) {
               property={property}
               onUpdate={updateProperty}
               onDelete={deleteProperty}
+              onRequestCoordinateCorrection={requestCoordinateCorrection}
             />
           ))}
         </div>

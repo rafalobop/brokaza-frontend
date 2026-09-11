@@ -39,10 +39,7 @@ describe("useAdminMetrics (KAN-342)", () => {
 
     await waitFor(() => expect(result.current.status).toBe("loaded"));
     expect(result.current.metrics).toEqual(SAMPLE_METRICS);
-    expect(global.fetch).toHaveBeenCalledWith(
-      "/admin/api/metrics",
-      expect.objectContaining({}),
-    );
+    expect(global.fetch).toHaveBeenCalledWith("/admin/api/metrics", expect.objectContaining({}));
   });
 
   it("pasa a status=error si GET /admin/api/metrics falla", async () => {

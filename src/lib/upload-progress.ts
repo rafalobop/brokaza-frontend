@@ -60,6 +60,90 @@ export function parseUploadStatusMessage(rawData: unknown): UploadStage | null {
   return stage;
 }
 
+/** Detalle de una propiedad cargada sin problemas — mismo shape que `UploadLoadedProperty` (`upload-api.ts`). */
+export interface UploadDoneLoadedProperty {
+  sheetName: string;
+  address: string;
+  operation: "venta" | "alquiler";
+  price: number;
+  currency: "USD" | "ARS";
+}
+
+/** Detalle de una fila/hoja que no se cargó completa — mismo shape que `UploadFailureDetail`. */
+export interface UploadDoneFailureDetail {
+  sheetName: string;
+  address: string | null;
+  reason: string;
+}
+
+/** Precio no reconocido — mismo shape que `UploadPriceParseError`. */
+export interface UploadDonePriceParseError {
+  sheetName: string;
+  address: string;
+  rawValue: string;
+}
+
+/**
+ * Resultado final de la subida (KAN-338): antes viajaba en el body de la respuesta HTTP de
+ * `POST /api/upload`/`confirm-mapping`; ahora esa respuesta solo confirma que se aceptó para
+ * procesar (`{accepted:true}`) — el backend no espera a que termine el geocoding real (~1
+ * req/seg contra Nominatim, puede superar el timeout del cliente en una cartera grande sin
+ * coordenadas cacheadas) para responder. El resultado real llega en la etapa `'done'` de este
+ * mismo canal WS, con el mismo shape que antes.
+ */
+export interface UploadDoneResult {
+  count: number;
+  priceParseErrors: UploadDonePriceParseError[];
+  loaded: UploadDoneLoadedProperty[];
+  failed: UploadDoneFailureDetail[];
+}
+
+export interface UploadStatusEvent {
+  stage: UploadStage;
+  /** Solo presente (y solo válido) cuando `stage === 'done'`. */
+  doneResult: UploadDoneResult | null;
+}
+
+function isUploadDoneResult(value: unknown): value is UploadDoneResult {
+  if (!value || typeof value !== "object") return false;
+  const v = value as Record<string, unknown>;
+  return (
+    typeof v.count === "number" &&
+    Array.isArray(v.priceParseErrors) &&
+    Array.isArray(v.loaded) &&
+    Array.isArray(v.failed)
+  );
+}
+
+/**
+ * Igual que `parseUploadStatusMessage`, pero además extrae el resultado final cuando la etapa es
+ * `'done'` (KAN-338) — el backend lo manda en el mismo mensaje (`count`/`priceParseErrors`/
+ * `loaded`/`failed` junto a `type`/`stage`). Si el payload de `'done'` no tiene la forma esperada,
+ * se degrada a `doneResult: null` en vez de lanzar (mismo criterio defensivo del resto del
+ * archivo) — el llamador decide cómo tratar un 'done' sin resultado utilizable.
+ */
+export function parseUploadStatusEvent(rawData: unknown): UploadStatusEvent | null {
+  if (typeof rawData !== "string") return null;
+  let payload: unknown;
+  try {
+    payload = JSON.parse(rawData);
+  } catch {
+    return null;
+  }
+  if (!payload || typeof payload !== "object") return null;
+  const { type, stage, ...rest } = payload as {
+    type?: unknown;
+    stage?: unknown;
+    [key: string]: unknown;
+  };
+  if (type !== "upload_status" || typeof stage !== "string" || !isUploadStage(stage)) return null;
+
+  return {
+    stage,
+    doneResult: stage === "done" && isUploadDoneResult(rest) ? rest : null,
+  };
+}
+
 /** Porcentaje de avance para la barra — "error" se muestra llena (en rojo, a cargo del componente). */
 export function uploadStageProgressPercent(stage: UploadStage): number {
   if (stage === "error") return 100;

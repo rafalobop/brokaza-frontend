@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Hook `useUpload` (KAN-216/217/218) — estado de la subida de un Excel de
+ * Hook `useUpload` (KAN-216/217/218/338) — estado de la subida de un Excel de
  * cartera: `idle` -> `uploading` -> `success` | `error` | `needs-mapping`.
  *
  * Validación de extensión client-side (mismo criterio que el legacy,
@@ -15,26 +15,35 @@
  * dispara el modal de confirmación de mapeo (KAN-217, `MappingConfirmModal`).
  * `confirmMapping()` reenvía el mismo `File` (guardado en `pendingFile` al
  * entrar a `needs-mapping`) junto con la selección del agente a
- * `POST /api/upload/confirm-mapping`; a diferencia de `upload()`, un error acá
- * NO saca al usuario de `needs-mapping` — se queda en el modal con
- * `confirmError` seteado, para que pueda corregir la selección sin perder el
- * archivo ni tener que volver a elegirlo.
+ * `POST /api/upload/confirm-mapping`; a diferencia de `upload()`, un error de
+ * REQUEST (400/500 antes de que el backend acepte el archivo) NO saca al
+ * usuario de `needs-mapping` — se queda en el modal con `confirmError`
+ * seteado, para que pueda corregir la selección sin perder el archivo ni
+ * tener que volver a elegirlo.
  *
- * `stage` (KAN-218) es puramente decorativo: mientras `upload()`/`confirmMapping()`
- * están en curso, abre una conexión WS a `/ws` (mismo endpoint que
- * `useRealtimeMatches`, KAN-187/KAN-88 — se reusa `buildMatchCountSocketUrl`,
- * que no tiene nada específico de matches pese al nombre, solo arma la URL)
- * y escucha los eventos `upload_status` que emite el backend
- * (`broadcastUploadStatus`, KAN-137) durante el pipeline real de
- * `POST /api/upload`/`confirm-mapping`. El resultado final (éxito/error/
- * needs-mapping) sigue viniendo 100% de la respuesta HTTP, nunca del WS — si
- * el socket no conecta o se cae, la subida igual termina normalmente, solo
- * sin barra de progreso intermedia.
+ * KAN-338: el resultado final YA NO viene de la respuesta HTTP. El backend
+ * responde `{accepted:true}` en cuanto termina de parsear el archivo y
+ * validar el plan — ANTES del geocoding real (secuencial, ~1 req/seg contra
+ * Nominatim por su política de uso, no paralelizable; puede superar el
+ * timeout del cliente en una cartera grande sin coordenadas cacheadas). El
+ * resultado real (éxito con el resumen, o error) llega en la etapa
+ * `'done'`/`'error'` de `upload_status` (`broadcastUploadStatus`,
+ * KAN-137/KAN-338).
+ *
+ * Consolidación de socket: este hook ya NO abre su propio `WebSocket` — se
+ * suscribe al socket compartido de `RealtimeSocketProvider`
+ * (`realtime-socket-context.tsx`, montado en `MatchesProvider`), el mismo
+ * que ya sostiene `useRealtimeMatches` para el contador de matches en todo
+ * el dashboard. Antes de esto, una subida en curso abría una SEGUNDA
+ * conexión idéntica a `/ws` en paralelo a la que ya mantenía el dashboard,
+ * duplicando handshake/reconexión sin necesidad. Por eso el socket ya no es
+ * puramente decorativo: si el socket compartido se cae mientras se espera el
+ * resultado (sin haber llegado a 'done'/'error'), degrada a `status:
+ * 'error'` en vez de dejar al agente esperando para siempre.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "./api-client";
-import { buildMatchCountSocketUrl } from "./realtime-matches";
 import {
   confirmColumnMapping,
   uploadExcelFile,
@@ -44,11 +53,12 @@ import {
 } from "./upload-api";
 import {
   debounce,
-  parseUploadStatusMessage,
+  parseUploadStatusEvent,
   UPLOAD_STAGE_DEBOUNCE_MS,
   type Debounced,
   type UploadStage,
 } from "./upload-progress";
+import { useRealtimeSocket } from "./realtime-socket-context";
 
 const ALLOWED_EXTENSION = ".xlsx";
 
@@ -94,23 +104,23 @@ export function useUpload(options: UseUploadOptions = {}): UseUploadResult {
   const [confirmError, setConfirmError] = useState<string | null>(null);
   const [stage, setStage] = useState<UploadStage | null>(null);
 
-  const socketRef = useRef<WebSocket | null>(null);
-  const messageHandlerRef = useRef<((event: MessageEvent) => void) | null>(null);
+  const { subscribeMessage, subscribeClose } = useRealtimeSocket();
+
+  const unsubscribeMessageRef = useRef<(() => void) | null>(null);
+  const unsubscribeCloseRef = useRef<(() => void) | null>(null);
   const debouncedSetStageRef = useRef<Debounced<(stage: UploadStage) => void> | null>(null);
 
-  const closeStatusSocket = useCallback(() => {
+  const stopListeningForStatus = useCallback(() => {
     debouncedSetStageRef.current?.cancel();
     debouncedSetStageRef.current = null;
-    if (socketRef.current && messageHandlerRef.current) {
-      socketRef.current.removeEventListener("message", messageHandlerRef.current);
-    }
-    messageHandlerRef.current = null;
-    socketRef.current?.close();
-    socketRef.current = null;
+    unsubscribeMessageRef.current?.();
+    unsubscribeMessageRef.current = null;
+    unsubscribeCloseRef.current?.();
+    unsubscribeCloseRef.current = null;
   }, []);
 
-  const openStatusSocket = useCallback(() => {
-    if (typeof window === "undefined") return;
+  const listenForStatus = useCallback(() => {
+    stopListeningForStatus();
 
     const debouncedSetStage = debounce(
       (nextStage: UploadStage) => setStage(nextStage),
@@ -118,22 +128,61 @@ export function useUpload(options: UseUploadOptions = {}): UseUploadResult {
     );
     debouncedSetStageRef.current = debouncedSetStage;
 
-    const socket = new WebSocket(buildMatchCountSocketUrl(window.location));
-    const handleMessage = (event: MessageEvent) => {
-      const nextStage = parseUploadStatusMessage(event.data);
-      if (nextStage) debouncedSetStage(nextStage);
-    };
-    socket.addEventListener("message", handleMessage);
-    messageHandlerRef.current = handleMessage;
-    socketRef.current = socket;
-  }, []);
+    unsubscribeMessageRef.current = subscribeMessage((event) => {
+      const parsed = parseUploadStatusEvent(event.data);
+      if (!parsed) return;
+
+      if (parsed.stage === "done") {
+        setConfirming(false);
+        setPendingSheets([]);
+        setPendingFile(null);
+        setStatus("success");
+        setResult(
+          parsed.doneResult
+            ? { success: true, ...parsed.doneResult }
+            : // Defensivo: un 'done' sin el resultado esperado no debería pasar con el backend
+              // real, pero no hay forma de recuperar el detalle si pasa — al menos no se deja al
+              // agente esperando para siempre.
+              { success: true, count: 0, priceParseErrors: [], loaded: [], failed: [] },
+        );
+        stopListeningForStatus();
+        onSuccess?.();
+        return;
+      }
+
+      if (parsed.stage === "error") {
+        setConfirming(false);
+        setStatus("error");
+        setError(
+          "Ocurrió un error al procesar tu cartera. Revisá tu cartera en unos segundos o probá de nuevo.",
+        );
+        stopListeningForStatus();
+        return;
+      }
+
+      debouncedSetStage(parsed.stage);
+    });
+
+    unsubscribeCloseRef.current = subscribeClose(() => {
+      // El socket compartido se cayó (red, reconexión del navegador, etc.) sin que llegáramos a
+      // 'done'/'error' — a diferencia de antes (KAN-218, cuando el WS era solo decorativo para la
+      // barra de progreso), ahora es la ÚNICA vía del resultado final. No podemos dejar al agente
+      // esperando para siempre sin saber si su cartera se cargó.
+      setConfirming(false);
+      setStatus("error");
+      setError(
+        "Se perdió la conexión en tiempo real mientras se procesaba tu cartera. Revisá tu cartera en unos segundos para confirmar si se cargó.",
+      );
+      stopListeningForStatus();
+    });
+  }, [subscribeMessage, subscribeClose, stopListeningForStatus, onSuccess]);
 
   // Cierre de red de seguridad si el componente se desmonta con una subida en curso.
   useEffect(() => {
     return () => {
-      closeStatusSocket();
+      stopListeningForStatus();
     };
-  }, [closeStatusSocket]);
+  }, [stopListeningForStatus]);
 
   const upload = useCallback(
     async (file: File) => {
@@ -154,7 +203,7 @@ export function useUpload(options: UseUploadOptions = {}): UseUploadResult {
       setPendingFile(null);
       setConfirmError(null);
       setStage(null);
-      openStatusSocket();
+      listenForStatus();
 
       try {
         const res = await uploadExcelFile(file);
@@ -162,20 +211,21 @@ export function useUpload(options: UseUploadOptions = {}): UseUploadResult {
           setStatus("needs-mapping");
           setPendingSheets(res.sheets);
           setPendingFile(file);
+          stopListeningForStatus();
           return;
         }
-        setStatus("success");
-        setResult(res);
-        onSuccess?.();
+        // KAN-338: `res.accepted === true` — el backend todavía está sincronizando la cartera
+        // (geocoding real en curso). Seguimos en "uploading" y seguimos escuchando el socket
+        // compartido: el resultado final (éxito o error) llega por la etapa 'done'/'error' de
+        // `upload_status` (ver `listenForStatus`), no acá.
       } catch (err) {
         const message = err instanceof ApiError ? err.message : "Error al subir el archivo.";
         setStatus("error");
         setError(message);
-      } finally {
-        closeStatusSocket();
+        stopListeningForStatus();
       }
     },
-    [openStatusSocket, closeStatusSocket, onSuccess],
+    [listenForStatus, stopListeningForStatus],
   );
 
   const confirmMapping = useCallback(
@@ -185,29 +235,26 @@ export function useUpload(options: UseUploadOptions = {}): UseUploadResult {
       setConfirming(true);
       setConfirmError(null);
       setStage(null);
-      openStatusSocket();
+      listenForStatus();
 
       try {
-        const res = await confirmColumnMapping(pendingFile, mappings);
-        setStatus("success");
-        setResult(res);
-        setPendingSheets([]);
-        setPendingFile(null);
-        onSuccess?.();
+        await confirmColumnMapping(pendingFile, mappings);
+        // KAN-338: igual que en `upload()` — la respuesta solo confirma que se aceptó
+        // (`{accepted:true}`). Seguimos "confirming" hasta que llegue 'done'/'error' por WS
+        // (`listenForStatus` limpia `confirming` ahí).
       } catch (err) {
         const message =
           err instanceof ApiError ? err.message : "No se pudo confirmar el mapeo de columnas.";
         setConfirmError(message);
-      } finally {
         setConfirming(false);
-        closeStatusSocket();
+        stopListeningForStatus();
       }
     },
-    [pendingFile, openStatusSocket, closeStatusSocket, onSuccess],
+    [pendingFile, listenForStatus, stopListeningForStatus],
   );
 
   const reset = useCallback(() => {
-    closeStatusSocket();
+    stopListeningForStatus();
     setStatus("idle");
     setError(null);
     setResult(null);
@@ -216,7 +263,7 @@ export function useUpload(options: UseUploadOptions = {}): UseUploadResult {
     setConfirming(false);
     setConfirmError(null);
     setStage(null);
-  }, [closeStatusSocket]);
+  }, [stopListeningForStatus]);
 
   return {
     status,

@@ -76,3 +76,38 @@ jsdom), no con un magic-link real, hasta que se resuelva esto.
   `error=otp_expired` limpia el hash y expone el mensaje de "vencido";
   sin hash, comportamiento sin cambios (regresión de los tests ya
   existentes).
+
+## 7. Variante admin (KAN-342): token por query string en vez de fragment
+
+El flujo de tenant de arriba (§3) depende del fragment (`#access_token=...`) del redirect
+hosteado de Supabase — el fragment nunca sale del browser, no llega al servidor ni a ningún log.
+El admin (`consumeAuthCallbackQuery`, `auth-callback.ts:74-96`) rompe ese patrón a propósito: el
+`token_hash` viaja en el **query string** (`?token_hash=...&type=magiclink`) de un link armado por
+el propio backend (`matchouse/src/adminRoutes.ts#request-magic-link`), no por el redirect hosteado
+de Supabase — ver el comentario ahí (línea ~114-124) para el trade-off que motivó el cambio
+(evitar depender del allow-list de "Redirect URLs" del dashboard de Supabase, que causó el bug
+real de KAN-342).
+
+Ese trade-off no es gratis: a diferencia del fragment, un query param sí puede terminar en logs de
+acceso del servidor/CDN y en el header `Referer` de cualquier request saliente que dispare la
+página post-login (ej. si `/admin` carga un recurso de un origen distinto antes de que
+`window.history.replaceState` limpie la URL). Dos motivos por los que se acepta igual:
+
+- **El token es de un solo uso.** `token_hash` se canjea con `supabase.auth.verifyOtp` server-side
+  (`adminRoutes.ts#exchange-token`, línea ~194) — es una operación de login de Supabase: la
+  primera llamada exitosa invalida el `token_hash` (Supabase responde "Token has expired or is
+  invalid" en cualquier intento posterior). Que el token quede en un log no habilita una sesión
+  nueva una vez que el admin real ya lo canjeó; solo hay ventana de abuso si alguien con acceso al
+  log lo usa _antes_ que el destinatario legítimo abra el email.
+- **`window.history.replaceState` limpia la URL apenas se lee el query param** (mismo patrón que
+  el tenant con el hash), así que el token no persiste en el historial del browser ni en
+  bookmarks, aunque sí puede haber quedado ya en un log de acceso antes de esa limpieza (la
+  request al servidor con el query param completo ya ocurrió).
+
+Riesgo aceptado, no mitigado del todo: cualquier proceso con acceso a logs de acceso/CDN entre el
+envío del email y el momento en que el admin lo abre podría canjear el token primero (carrera). Se
+acepta porque el panel admin es de bajo volumen (allowlist chica, KAN-239) y el link expira rápido
+(TTL default de Supabase); no se prioriza sobre el fix del bug real de KAN-342. Seguimiento
+posible si esto se vuelve un problema: mover el `token_hash` al fragment también en el flujo admin
+una vez que el link se sirva desde una página estática propia (hoy no es viable sin volver a
+depender del `action_link` hosteado de Supabase, que es justamente lo que KAN-342 evitó).

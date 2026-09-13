@@ -1,5 +1,7 @@
 import { renderHook } from "@testing-library/react";
-import { useRealtimeMatches } from "@/lib/use-realtime-matches";
+import type { ReactNode } from "react";
+import { useRealtimeMatches, type UseRealtimeMatchesOptions } from "@/lib/use-realtime-matches";
+import { RealtimeSocketProvider } from "@/lib/realtime-socket-context";
 
 /**
  * Mock mínimo de WebSocket: alcanza para ejercitar open/message/close sin
@@ -38,6 +40,19 @@ class MockWebSocket {
 
 let mockSockets: MockWebSocket[] = [];
 
+// El socket compartido ahora vive en `RealtimeSocketProvider` (KAN-343: multiplexado por `type`
+// entre `useRealtimeMatches` y `useUpload`, ver `realtime-socket-context.tsx`) — estos tests
+// montan el hook detrás de ese provider, mismo criterio que usa `MatchesProvider` en la app real.
+function renderUseRealtimeMatches(
+  options: UseRealtimeMatchesOptions,
+  socketEnabled = options.enabled,
+) {
+  function wrapper({ children }: { children: ReactNode }) {
+    return <RealtimeSocketProvider enabled={socketEnabled}>{children}</RealtimeSocketProvider>;
+  }
+  return renderHook(() => useRealtimeMatches(options), { wrapper });
+}
+
 describe("useRealtimeMatches (KAN-187)", () => {
   const originalWebSocket = global.WebSocket;
   const originalFetch = global.fetch;
@@ -61,21 +76,21 @@ describe("useRealtimeMatches (KAN-187)", () => {
   });
 
   it("abre el socket al montar cuando enabled=true", () => {
-    renderHook(() => useRealtimeMatches({ enabled: true, onRefetch: jest.fn() }));
+    renderUseRealtimeMatches({ enabled: true, onRefetch: jest.fn() });
 
     expect(mockSockets).toHaveLength(1);
     expect(mockSockets[0].url).toBe("ws://localhost/ws");
   });
 
   it("no abre el socket cuando enabled=false", () => {
-    renderHook(() => useRealtimeMatches({ enabled: false, onRefetch: jest.fn() }));
+    renderUseRealtimeMatches({ enabled: false, onRefetch: jest.fn() });
 
     expect(mockSockets).toHaveLength(0);
   });
 
   it("llama a onRefetch cuando llega un mensaje match_count_changed", () => {
     const onRefetch = jest.fn().mockResolvedValue(undefined);
-    renderHook(() => useRealtimeMatches({ enabled: true, onRefetch }));
+    renderUseRealtimeMatches({ enabled: true, onRefetch });
 
     const socket = mockSockets[0];
     socket.readyState = MockWebSocket.OPEN;
@@ -87,7 +102,7 @@ describe("useRealtimeMatches (KAN-187)", () => {
 
   it("ignora mensajes que no son match_count_changed", () => {
     const onRefetch = jest.fn();
-    renderHook(() => useRealtimeMatches({ enabled: true, onRefetch }));
+    renderUseRealtimeMatches({ enabled: true, onRefetch });
 
     mockSockets[0].emit("message", { data: JSON.stringify({ type: "other" }) });
 
@@ -95,7 +110,7 @@ describe("useRealtimeMatches (KAN-187)", () => {
   });
 
   it("reconecta con backoff exponencial tras un close", () => {
-    renderHook(() => useRealtimeMatches({ enabled: true, onRefetch: jest.fn() }));
+    renderUseRealtimeMatches({ enabled: true, onRefetch: jest.fn() });
 
     expect(mockSockets).toHaveLength(1);
     mockSockets[0].emit("close", {});
@@ -108,9 +123,7 @@ describe("useRealtimeMatches (KAN-187)", () => {
   });
 
   it("deja de reconectar tras el unmount (cleanup)", () => {
-    const { unmount } = renderHook(() =>
-      useRealtimeMatches({ enabled: true, onRefetch: jest.fn() }),
-    );
+    const { unmount } = renderUseRealtimeMatches({ enabled: true, onRefetch: jest.fn() });
 
     unmount();
     jest.advanceTimersByTime(30000);
@@ -125,9 +138,7 @@ describe("useRealtimeMatches (KAN-187)", () => {
     // navegador dispara un `error` real ahí (spec de WebSocket), pero no hay ningún problema de
     // conectividad real, así que no debe ensuciar la consola.
     const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
-    const { unmount } = renderHook(() =>
-      useRealtimeMatches({ enabled: true, onRefetch: jest.fn() }),
-    );
+    const { unmount } = renderUseRealtimeMatches({ enabled: true, onRefetch: jest.fn() });
 
     const socket = mockSockets[0];
     unmount();
@@ -139,12 +150,12 @@ describe("useRealtimeMatches (KAN-187)", () => {
 
   it("sigue logueando un error de socket real durante una sesión activa", () => {
     const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
-    renderHook(() => useRealtimeMatches({ enabled: true, onRefetch: jest.fn() }));
+    renderUseRealtimeMatches({ enabled: true, onRefetch: jest.fn() });
 
     mockSockets[0].emit("error", {});
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "[REALTIME] Error en el socket del contador de matches:",
+      "[REALTIME] Error en el socket compartido del dashboard:",
       {},
     );
     consoleErrorSpy.mockRestore();
@@ -152,7 +163,7 @@ describe("useRealtimeMatches (KAN-187)", () => {
 
   it("llama a onRefetch en cada tick del polling de respaldo", () => {
     const onRefetch = jest.fn();
-    renderHook(() => useRealtimeMatches({ enabled: true, onRefetch }));
+    renderUseRealtimeMatches({ enabled: true, onRefetch });
 
     // El intervalo de polling cae en [15s, 30s) — 30s cubre el peor caso.
     jest.advanceTimersByTime(30000);
@@ -161,7 +172,7 @@ describe("useRealtimeMatches (KAN-187)", () => {
   });
 
   it("reporta métricas a /api/dashboard-metrics cada 60s", async () => {
-    renderHook(() => useRealtimeMatches({ enabled: true, onRefetch: jest.fn() }));
+    renderUseRealtimeMatches({ enabled: true, onRefetch: jest.fn() });
 
     await jest.advanceTimersByTimeAsync(60000);
 
@@ -174,7 +185,7 @@ describe("useRealtimeMatches (KAN-187)", () => {
   it("no reporta métricas si el usuario está inactivo (KAN-256)", async () => {
     const isActive = jest.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
 
-    renderHook(() => useRealtimeMatches({ enabled: true, onRefetch: jest.fn() }));
+    renderUseRealtimeMatches({ enabled: true, onRefetch: jest.fn() });
 
     await jest.advanceTimersByTimeAsync(60000);
 
@@ -186,7 +197,7 @@ describe("useRealtimeMatches (KAN-187)", () => {
   it("vuelve a reportar métricas (acumuladas) cuando el usuario vuelve a estar activo", async () => {
     const visibility = jest.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
 
-    renderHook(() => useRealtimeMatches({ enabled: true, onRefetch: jest.fn() }));
+    renderUseRealtimeMatches({ enabled: true, onRefetch: jest.fn() });
 
     await jest.advanceTimersByTimeAsync(60000);
     expect(global.fetch).not.toHaveBeenCalledWith("/api/dashboard-metrics", expect.anything());

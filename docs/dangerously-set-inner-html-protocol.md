@@ -30,8 +30,9 @@ de lo siguiente:
 1. **¿De dónde sale el string interpolado?** Si incluye cualquier valor que no sea una constante
    fijada en el código (props, query params, respuesta de API, `localStorage`/cookie leídos en
    runtime, texto de usuario, etc.), **no** es seguro pasarlo directo — hay que sanitizar
-   explícitamente (ver `src/admin-dashboard/htmlSanitize.js` en `matchouse` como referencia de
-   sanitización ya usada en este proyecto) antes de interpolarlo.
+   explícitamente antes de interpolarlo (o, si es JSX normal, dejar que React escape por defecto —
+   ver `ZoneBadge`/`escapeHtml` de KAN-136, portados a JSX en `src/components/admin/ZoneBadge.tsx`,
+   ya no dependen del sanitizador manual del legacy retirado en KAN-342).
 2. **¿Es realmente necesario `dangerouslySetInnerHTML`?** Si el contenido es texto plano o HTML
    controlado que React puede renderizar como JSX normal, usar JSX — `dangerouslySetInnerHTML`
    solo se justifica cuando hace falta HTML/script crudo que React no puede expresar de otra

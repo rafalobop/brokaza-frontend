@@ -61,3 +61,38 @@ export async function consumeAuthCallbackHash(
     return { exchanged: false, error: message };
   }
 }
+
+/**
+ * Callback del magic link de admin (KAN-342). A diferencia de `consumeAuthCallbackHash` de
+ * arriba, este NO depende del redirect hosteado de Supabase (`action_link`) — el backend
+ * (`matchouse/src/adminRoutes.ts#request-magic-link`) arma su propio link con `?token_hash=...
+ * &type=magiclink` (un query param, no un fragment `#...`) y lo manda directo por email. Se
+ * canjea llamando a `exchange-token`, que hace `supabase.auth.verifyOtp` server-side — Supabase
+ * nunca redirige a ningún lado en este flujo, así que no hace falta que la URL de destino esté en
+ * el allow-list de "Redirect URLs" de su dashboard (el problema real que forzó este cambio).
+ * Trade-off de seguridad de este cambio (query string vs. fragment, exposición en logs/Referer,
+ * por qué se acepta) documentado en `docs/magic-link-flow-design.md#7-variante-admin-kan-342`.
+ */
+export async function consumeAuthCallbackQuery(
+  exchangeToken: (params: { token_hash: string; type: string }) => Promise<unknown>,
+  logTag = "[AUTH]",
+): Promise<{ exchanged: boolean; error: string | null }> {
+  if (typeof window === "undefined") return { exchanged: false, error: null };
+
+  const params = new URLSearchParams(window.location.search);
+  const tokenHash = params.get("token_hash");
+  const type = params.get("type");
+  if (!tokenHash || !type) return { exchanged: false, error: null };
+
+  window.history.replaceState(null, "", window.location.pathname);
+  console.log(`${logTag} Magic link callback detectado (token_hash), intercambiando token...`);
+  try {
+    await exchangeToken({ token_hash: tokenHash, type });
+    console.log(`${logTag} Token intercambiado correctamente, sesión iniciada.`);
+    return { exchanged: true, error: null };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Error al intercambiar el token.";
+    console.error(`${logTag} Fallo al intercambiar token:`, message);
+    return { exchanged: false, error: message };
+  }
+}

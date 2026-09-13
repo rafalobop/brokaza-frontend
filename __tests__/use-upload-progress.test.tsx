@@ -1,5 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { useUpload } from "@/lib/use-upload";
+import { RealtimeSocketProvider } from "@/lib/realtime-socket-context";
 
 /** Mismo mock mínimo que `use-realtime-matches.test.tsx` (KAN-187) — sin conexión real. */
 class MockWebSocket {
@@ -35,6 +37,16 @@ class MockWebSocket {
 
 let mockSockets: MockWebSocket[] = [];
 
+// KAN-343: `useUpload` se suscribe al socket compartido de `RealtimeSocketProvider` en vez de
+// abrir el suyo — mismo wrapper que `use-upload.test.ts`.
+function withRealtimeSocket({ children }: { children: ReactNode }) {
+  return <RealtimeSocketProvider enabled={true}>{children}</RealtimeSocketProvider>;
+}
+
+function renderUseUpload() {
+  return renderHook(() => useUpload(), { wrapper: withRealtimeSocket });
+}
+
 function mockResponse(init: { ok: boolean; status: number; body?: unknown }): Response {
   return {
     ok: init.ok,
@@ -66,31 +78,54 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     global.WebSocket = originalWebSocket;
   });
 
-  it("abre un socket a /ws al empezar a subir y lo cierra al terminar", async () => {
+  it("usa el socket compartido a /ws (ya abierto por RealtimeSocketProvider) y sigue vivo tras 'done' (KAN-338/343)", async () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 1, priceParseErrors: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
+
+    // KAN-343: el socket ya está abierto por el provider al montar, no lo abre `upload()`.
+    expect(mockSockets).toHaveLength(1);
+    expect(mockSockets[0].url).toBe("ws://localhost/ws");
+    expect(mockSockets[0].closed).toBe(false);
 
     let uploadPromise!: Promise<void>;
     act(() => {
       uploadPromise = result.current.upload(excelFile());
     });
 
+    // Sigue siendo el mismo socket — `upload()` no abre uno nuevo.
     expect(mockSockets).toHaveLength(1);
-    expect(mockSockets[0].url).toBe("ws://localhost/ws");
-    expect(mockSockets[0].closed).toBe(false);
 
     await act(async () => {
       await uploadPromise;
     });
 
-    expect(mockSockets[0].closed).toBe(true);
+    // La respuesta HTTP ya volvió (aceptada), pero el resultado real todavía no llegó.
+    expect(mockSockets[0].closed).toBe(false);
+
+    act(() => {
+      mockSockets[0].emit("message", {
+        data: JSON.stringify({
+          type: "upload_status",
+          stage: "done",
+          count: 1,
+          priceParseErrors: [],
+          loaded: [],
+          failed: [],
+        }),
+      });
+    });
+
+    // El socket es compartido con el resto del dashboard (useRealtimeMatches) — `useUpload` deja
+    // de escucharlo, pero nunca lo cierra.
+    expect(mockSockets[0].closed).toBe(false);
+    expect(mockSockets).toHaveLength(1);
   });
 
   it("actualiza `stage` (debounced) a medida que llegan eventos upload_status", async () => {
@@ -101,7 +136,7 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
 
     act(() => {
       void result.current.upload(excelFile());
@@ -132,10 +167,25 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     resolveFetch(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 1, priceParseErrors: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
+    await act(async () => {
+      await Promise.resolve();
+    });
+    act(() => {
+      socket.emit("message", {
+        data: JSON.stringify({
+          type: "upload_status",
+          stage: "done",
+          count: 1,
+          priceParseErrors: [],
+          loaded: [],
+          failed: [],
+        }),
+      });
+    });
     await waitFor(() => expect(result.current.status).toBe("success"));
   });
 
@@ -147,7 +197,7 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
     act(() => {
       void result.current.upload(excelFile());
     });
@@ -176,10 +226,25 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     resolveFetch(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 1, priceParseErrors: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
+    await act(async () => {
+      await Promise.resolve();
+    });
+    act(() => {
+      socket.emit("message", {
+        data: JSON.stringify({
+          type: "upload_status",
+          stage: "done",
+          count: 1,
+          priceParseErrors: [],
+          loaded: [],
+          failed: [],
+        }),
+      });
+    });
     await waitFor(() => expect(result.current.status).toBe("success"));
   });
 
@@ -187,12 +252,12 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 1, priceParseErrors: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
     act(() => {
       void result.current.upload(excelFile());
     });
@@ -210,18 +275,27 @@ describe("useUpload — barra de progreso vía WS (KAN-218)", () => {
     global.fetch = jest.fn().mockResolvedValue(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 1, priceParseErrors: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
 
-    const { result } = renderHook(() => useUpload());
+    const { result } = renderUseUpload();
     act(() => {
       void result.current.upload(excelFile());
     });
     const socket = mockSockets[0];
     act(() => {
-      socket.emit("message", { data: JSON.stringify({ type: "upload_status", stage: "done" }) });
+      socket.emit("message", {
+        data: JSON.stringify({
+          type: "upload_status",
+          stage: "done",
+          count: 1,
+          priceParseErrors: [],
+          loaded: [],
+          failed: [],
+        }),
+      });
       jest.advanceTimersByTime(150);
     });
     await waitFor(() => expect(result.current.status).toBe("success"));

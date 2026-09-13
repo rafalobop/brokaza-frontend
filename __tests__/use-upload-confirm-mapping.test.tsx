@@ -1,5 +1,53 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { useUpload } from "@/lib/use-upload";
+import { RealtimeSocketProvider } from "@/lib/realtime-socket-context";
+
+/** Mismo mock mínimo que `use-upload-progress.test.ts` (KAN-187/338). */
+class MockWebSocket {
+  static OPEN = 1;
+  static CONNECTING = 0;
+  static CLOSED = 3;
+
+  readyState = MockWebSocket.CONNECTING;
+  url: string;
+  listeners: Record<string, Array<(event: unknown) => void>> = {};
+  closed = false;
+
+  constructor(url: string) {
+    this.url = url;
+    mockSockets.push(this);
+  }
+
+  addEventListener(type: string, listener: (event: unknown) => void) {
+    (this.listeners[type] ??= []).push(listener);
+  }
+
+  removeEventListener(type: string, listener: (event: unknown) => void) {
+    this.listeners[type] = (this.listeners[type] ?? []).filter((l) => l !== listener);
+  }
+
+  close() {
+    this.readyState = MockWebSocket.CLOSED;
+    this.closed = true;
+  }
+
+  emit(type: string, event: unknown) {
+    (this.listeners[type] ?? []).forEach((listener) => listener(event));
+  }
+}
+
+let mockSockets: MockWebSocket[] = [];
+
+// KAN-343: `useUpload` se suscribe al socket compartido de `RealtimeSocketProvider` en vez de
+// abrir el suyo — mismo wrapper que `use-upload.test.ts`.
+function withRealtimeSocket({ children }: { children: ReactNode }) {
+  return <RealtimeSocketProvider enabled={true}>{children}</RealtimeSocketProvider>;
+}
+
+function renderUseUpload() {
+  return renderHook(() => useUpload(), { wrapper: withRealtimeSocket });
+}
 
 function mockResponse(init: { ok: boolean; status: number; body?: unknown }): Response {
   return {
@@ -33,7 +81,7 @@ async function uploadIntoNeedsMapping(fetchMock: jest.Mock) {
       body: { requiresMappingConfirmation: true, sheets: [PENDING_SHEET] },
     }),
   );
-  const { result } = renderHook(() => useUpload());
+  const { result } = renderUseUpload();
   await act(async () => {
     await result.current.upload(excelFile());
   });
@@ -41,14 +89,22 @@ async function uploadIntoNeedsMapping(fetchMock: jest.Mock) {
   return result;
 }
 
-describe("useUpload#confirmMapping (KAN-217)", () => {
+describe("useUpload#confirmMapping (KAN-217/338)", () => {
   const originalFetch = global.fetch;
+  const originalWebSocket = global.WebSocket;
+
+  beforeEach(() => {
+    mockSockets = [];
+    // @ts-expect-error -- mock deliberado del WebSocket global, mismo criterio que KAN-187
+    global.WebSocket = MockWebSocket;
+  });
 
   afterEach(() => {
     global.fetch = originalFetch;
+    global.WebSocket = originalWebSocket;
   });
 
-  it("confirma el mapeo con POST /api/upload/confirm-mapping (mismo archivo + mappings) y pasa a success", async () => {
+  it("confirma el mapeo con POST /api/upload/confirm-mapping (mismo archivo + mappings) y pasa a success cuando llega 'done' por WS (KAN-338)", async () => {
     const fetchMock = jest.fn();
     global.fetch = fetchMock;
     const result = await uploadIntoNeedsMapping(fetchMock);
@@ -56,17 +112,49 @@ describe("useUpload#confirmMapping (KAN-217)", () => {
     fetchMock.mockResolvedValueOnce(
       mockResponse({
         ok: true,
-        status: 200,
-        body: { success: true, count: 5, priceParseErrors: [] },
+        status: 202,
+        body: { accepted: true, message: "Tu cartera se está sincronizando." },
       }),
     );
 
+    let confirmPromise!: Promise<void>;
+    act(() => {
+      confirmPromise = result.current.confirmMapping({
+        Hoja1: { domicilio: "Dirección", precio: "Costo" },
+      });
+    });
     await act(async () => {
-      await result.current.confirmMapping({ Hoja1: { domicilio: "Dirección", precio: "Costo" } });
+      await confirmPromise;
+    });
+
+    // La respuesta HTTP ya volvió (aceptada), pero seguimos "confirming" hasta el 'done' del WS.
+    expect(result.current.confirming).toBe(true);
+    // KAN-343: un único socket compartido para todo el ciclo (upload → needs-mapping → confirm).
+    expect(mockSockets).toHaveLength(1);
+    const socket = mockSockets[0];
+
+    act(() => {
+      socket.emit("message", {
+        data: JSON.stringify({
+          type: "upload_status",
+          stage: "done",
+          count: 5,
+          priceParseErrors: [],
+          loaded: [],
+          failed: [],
+        }),
+      });
     });
 
     await waitFor(() => expect(result.current.status).toBe("success"));
-    expect(result.current.result).toEqual({ success: true, count: 5, priceParseErrors: [] });
+    expect(result.current.confirming).toBe(false);
+    expect(result.current.result).toEqual({
+      success: true,
+      count: 5,
+      priceParseErrors: [],
+      loaded: [],
+      failed: [],
+    });
     expect(result.current.pendingSheets).toEqual([]);
 
     const [url, init] = fetchMock.mock.calls[1];

@@ -13,6 +13,7 @@ import { ApiError } from "@/lib/api-client";
 import {
   OPERATION_LABELS,
   PROPERTY_TYPE_LABELS,
+  type CreatePropertyInput,
   type TenantProperty,
   type UpdatePropertyInput,
 } from "@/lib/tenant-properties-api";
@@ -42,13 +43,20 @@ export interface PropertyRowProps {
     input: UpdatePropertyInput,
   ) => Promise<{ conflict: TenantProperty | null }>;
   onDelete: (id: string) => Promise<void>;
+  /** KAN-305: pedido de revisión de coordenadas — solo prende `needs_coordinate_review`. */
+  onRequestCoordinateCorrection: (id: string) => Promise<void>;
 }
 
 function formatPrice(property: TenantProperty): string {
   return `${property.currency} ${property.price.toLocaleString("es-AR")}`;
 }
 
-export function PropertyRow({ property, onUpdate, onDelete }: PropertyRowProps) {
+export function PropertyRow({
+  property,
+  onUpdate,
+  onDelete,
+  onRequestCoordinateCorrection,
+}: PropertyRowProps) {
   const [expanded, setExpanded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -56,13 +64,32 @@ export function PropertyRow({ property, onUpdate, onDelete }: PropertyRowProps) 
   const [rowError, setRowError] = useState<string | null>(null);
   const [conflictNotice, setConflictNotice] = useState<string | null>(null);
 
-  async function handleSave(input: Omit<UpdatePropertyInput, "expectedUpdatedAt">) {
+  // KAN-305: PropertyForm entrega siempre un CreatePropertyInput completo (incluye
+  // latitude/longitude, que en modo edición el mapa de solo lectura nunca modifica) — se descartan
+  // acá antes de armar el PATCH porque el backend ya no los acepta como campo editable (whitelist
+  // de UPDATE_FIELDS en properties.ts). Mandarlos igual (aunque sin cambios) daría 400.
+  async function handleSave(input: CreatePropertyInput) {
+    const editableFields: Omit<UpdatePropertyInput, "expectedUpdatedAt"> = {
+      address: input.address,
+      floor: input.floor,
+      unit: input.unit,
+      block: input.block,
+      lot: input.lot,
+      price: input.price,
+      currency: input.currency,
+      maintenance_fees: input.maintenance_fees,
+      bedrooms: input.bedrooms,
+      features: input.features,
+      contact_info: input.contact_info,
+      operation: input.operation,
+      property_type: input.property_type,
+    };
     setSaving(true);
     setRowError(null);
     setConflictNotice(null);
     try {
       const { conflict } = await onUpdate(property.id, {
-        ...input,
+        ...editableFields,
         expectedUpdatedAt: property.updated_at,
       });
       if (conflict) {
@@ -77,6 +104,10 @@ export function PropertyRow({ property, onUpdate, onDelete }: PropertyRowProps) 
     } finally {
       setSaving(false);
     }
+  }
+
+  async function handleRequestCorrection() {
+    await onRequestCoordinateCorrection(property.id);
   }
 
   async function handleDelete() {
@@ -102,6 +133,11 @@ export function PropertyRow({ property, onUpdate, onDelete }: PropertyRowProps) 
               {OPERATION_LABELS[property.operation]}
             </Badge>
             <Badge variant="info">{PROPERTY_TYPE_LABELS[property.property_type]}</Badge>
+            {/* KAN-305: estado visible de la solicitud de corrección sin tener que expandir la
+             * fila — el AC pide que quede claro que hay un pedido pendiente. */}
+            {property.needs_coordinate_review ? (
+              <Badge variant="warning">Ubicación en revisión</Badge>
+            ) : null}
             <span className="text-text-secondary text-xs">{formatPrice(property)}</span>
             {PROPERTY_TYPES_WITH_BEDROOMS.has(property.property_type) ? (
               <span className="text-text-secondary text-xs">
@@ -159,6 +195,10 @@ export function PropertyRow({ property, onUpdate, onDelete }: PropertyRowProps) 
             submitting={saving}
             onSubmit={handleSave}
             onCancel={() => setExpanded(false)}
+            coordinateReview={{
+              needsReview: property.needs_coordinate_review,
+              onRequestCorrection: handleRequestCorrection,
+            }}
           />
         </div>
       ) : null}

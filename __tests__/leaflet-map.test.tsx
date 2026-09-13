@@ -36,4 +36,24 @@ describe("LeafletMap (KAN-241, spike)", () => {
     expect(typeof lat).toBe("number");
     expect(typeof lng).toBe("number");
   });
+
+  // KAN-305: readOnly es el modo que usa PropertyForm para la vista del tenant — el marcador no
+  // debe poder arrastrarse ni reposicionarse con un click.
+  it("readOnly: un click en el mapa no llama a onChange", () => {
+    const onChange = jest.fn();
+    const { container } = render(
+      <LeafletMap latitude={-26.8241} longitude={-65.2226} onChange={onChange} readOnly />,
+    );
+
+    const mapPane = container.querySelector(".leaflet-container") as HTMLElement;
+    fireEvent.click(mapPane, { clientX: 50, clientY: 50 });
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("readOnly sin onChange no tira (uso real de PropertyForm en modo edición)", () => {
+    const { container } = render(<LeafletMap latitude={-26.8241} longitude={-65.2226} readOnly />);
+
+    expect(container.querySelector(".leaflet-container")).toBeInTheDocument();
+  });
 });

@@ -17,6 +17,7 @@ import { useMemo, useState } from "react";
 import type { TeamStatus } from "@/lib/use-team";
 import type { Collaborator } from "@/lib/team-api";
 import { Card } from "@/components/ui/Card";
+import { Tabs } from "@/components/ui/Tabs";
 import { InviteCollaboratorForm } from "./InviteCollaboratorForm";
 import { CollaboratorRow } from "./CollaboratorRow";
 
@@ -68,25 +69,17 @@ export function TeamSection({
 
   return (
     <div className="flex flex-col gap-6">
-      <InviteCollaboratorForm onInvited={onInvited} />
+      <InviteCollaboratorForm onInvited={onInvited} onReactivate={onReactivate} />
 
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-foreground text-lg font-semibold">Colaboradores</h2>
-          <div className="border-card-border flex gap-1 rounded-full border p-1 text-sm">
-            {TABS.map(({ key, label }) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setTab(key)}
-                className={`rounded-full px-3 py-1 font-medium transition-colors ${
-                  tab === key ? "bg-accent text-white" : "text-text-secondary hover:bg-white/10"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          <Tabs
+            tabs={TABS}
+            value={tab}
+            onChange={setTab}
+            className="border-card-border rounded-full border p-1"
+          />
         </div>
 
         {status === "loading" ? (

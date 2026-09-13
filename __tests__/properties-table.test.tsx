@@ -28,6 +28,7 @@ const SAMPLE_PROPERTY: TenantProperty = {
   sheet_name: "Alta manual",
   latitude: null,
   longitude: null,
+  needs_coordinate_review: false,
   zone: null,
   created_at: "2026-08-01T00:00:00.000Z",
   updated_at: "2026-08-01T00:00:00.000Z",
@@ -166,5 +167,107 @@ describe("PropertiesTable (KAN-273)", () => {
     const body = JSON.parse(postInit.body as string);
     expect(body.address).toBe("Av. Siempreviva 742");
     expect(body.price).toBe(1500);
+  });
+
+  // KAN-305: el tenant ya no puede editar coordenadas de una propiedad existente — solo pedir
+  // revisión. Estos tests cubren el badge de estado, el flujo de "marcar para corrección" y que el
+  // PATCH de edición ya no manda latitude/longitude.
+
+  it("muestra el badge 'Ubicación en revisión' cuando needs_coordinate_review es true", async () => {
+    const property = { ...SAMPLE_PROPERTY, needs_coordinate_review: true };
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue(
+        mockResponse({ ok: true, status: 200, body: { properties: [property], total: 1 } }),
+      );
+
+    render(<PropertiesTable />);
+    await screen.findByText("Calle Falsa 123");
+
+    expect(screen.getByText("Ubicación en revisión")).toBeInTheDocument();
+  });
+
+  it("no muestra el badge de revisión cuando needs_coordinate_review es false", async () => {
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue(
+        mockResponse({ ok: true, status: 200, body: { properties: [SAMPLE_PROPERTY], total: 1 } }),
+      );
+
+    render(<PropertiesTable />);
+    await screen.findByText("Calle Falsa 123");
+
+    expect(screen.queryByText("Ubicación en revisión")).not.toBeInTheDocument();
+  });
+
+  it("expandir una fila muestra el mapa en modo solo lectura y el botón 'Marcar para corrección'; al confirmarlo hace POST a request_correction y actualiza el estado", async () => {
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce(
+        mockResponse({ ok: true, status: 200, body: { properties: [SAMPLE_PROPERTY], total: 1 } }),
+      )
+      .mockResolvedValueOnce(
+        mockResponse({
+          ok: true,
+          status: 200,
+          body: { property: { ...SAMPLE_PROPERTY, needs_coordinate_review: true } },
+        }),
+      );
+    global.fetch = fetchMock;
+
+    render(<PropertiesTable />);
+    await screen.findByText("Calle Falsa 123");
+
+    fireEvent.click(screen.getByRole("button", { name: "Editar" }));
+    expect(
+      screen.getByText(
+        "La ubicación la corrige un administrador. Si está mal ubicada, solicitá una corrección.",
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Marcar para corrección" }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    const [url, init] = fetchMock.mock.calls[1];
+    expect(url).toBe("/api/catalog/properties/p1/request_correction");
+    expect(init.method).toBe("POST");
+
+    expect(
+      await screen.findByText(
+        "Ya solicitaste una corrección de esta ubicación — un administrador la va a revisar.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Ubicación en revisión")).toBeInTheDocument();
+  });
+
+  it("guardar cambios de una fila existente NO manda latitude/longitude en el PATCH", async () => {
+    const propertyWithCoords = { ...SAMPLE_PROPERTY, latitude: -26.8, longitude: -65.2 };
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce(
+        mockResponse({
+          ok: true,
+          status: 200,
+          body: { properties: [propertyWithCoords], total: 1 },
+        }),
+      )
+      .mockResolvedValueOnce(
+        mockResponse({ ok: true, status: 200, body: { property: propertyWithCoords } }),
+      );
+    global.fetch = fetchMock;
+
+    render(<PropertiesTable />);
+    await screen.findByText("Calle Falsa 123");
+
+    fireEvent.click(screen.getByRole("button", { name: "Editar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    const [patchUrl, patchInit] = fetchMock.mock.calls[1];
+    expect(patchUrl).toBe("/api/catalog/properties/p1");
+    expect(patchInit.method).toBe("PATCH");
+    const body = JSON.parse(patchInit.body as string);
+    expect(body).not.toHaveProperty("latitude");
+    expect(body).not.toHaveProperty("longitude");
   });
 });

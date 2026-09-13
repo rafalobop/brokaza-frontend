@@ -139,7 +139,7 @@ describe("AdminAuthProvider / useAdminAuth (KAN-239)", () => {
   });
 });
 
-describe("AdminAuthProvider — callback de magic-link reusa consumeAuthCallbackHash (KAN-239)", () => {
+describe("AdminAuthProvider — callback de magic-link vía consumeAuthCallbackQuery (KAN-342)", () => {
   const originalFetch = global.fetch;
 
   beforeEach(() => {
@@ -150,12 +150,12 @@ describe("AdminAuthProvider — callback de magic-link reusa consumeAuthCallback
 
   afterEach(() => {
     global.fetch = originalFetch;
-    window.location.hash = "";
+    window.history.pushState(null, "", "/admin");
     jest.restoreAllMocks();
   });
 
-  it("hash con access_token intercambia el token contra /admin/api/auth/exchange-token", async () => {
-    window.location.hash = "#access_token=fake-admin-token&token_type=bearer";
+  it("?token_hash=...&type=magiclink en la query intercambia el token contra /admin/api/auth/exchange-token", async () => {
+    window.history.pushState(null, "", "/admin?token_hash=fake-token-hash&type=magiclink");
 
     const fetchMock = jest.fn();
     global.fetch = fetchMock;
@@ -165,26 +165,52 @@ describe("AdminAuthProvider — callback de magic-link reusa consumeAuthCallback
     const { result } = renderHook(() => useAdminAuth(), { wrapper });
 
     await waitFor(() => expect(result.current.status).toBe("authenticated"));
-    expect(window.location.hash).toBe("");
-    expect(fetchMock.mock.calls[0][0]).toBe("/admin/api/auth/exchange-token");
+    expect(window.location.search).toBe("");
+    const [exchangeUrl, exchangeInit] = fetchMock.mock.calls[0];
+    expect(exchangeUrl).toBe("/admin/api/auth/exchange-token");
+    expect(JSON.parse((exchangeInit as RequestInit).body as string)).toEqual({
+      token_hash: "fake-token-hash",
+      type: "magiclink",
+    });
     expect(fetchMock.mock.calls[1][0]).toBe("/admin/api/auth/session");
   });
 
-  it("hash con error=otp_expired expone el mensaje de vencido (mismo texto que el tenant)", async () => {
-    window.location.hash =
-      "#error=access_denied&error_code=otp_expired&error_description=Link+expired";
+  it("sin token_hash en la query no intenta ningún intercambio, solo consulta la sesión", async () => {
+    window.history.pushState(null, "", "/admin");
 
-    global.fetch = jest
+    const fetchMock = jest
       .fn()
       .mockResolvedValue(
         mockResponse({ ok: true, status: 200, body: JSON.stringify({ authenticated: false }) }),
       );
+    global.fetch = fetchMock;
 
     const { result } = renderHook(() => useAdminAuth(), { wrapper });
 
     await waitFor(() => expect(result.current.status).toBe("unauthenticated"));
-    expect(result.current.authError).toBe(
-      "Tu link de acceso expiró o ya fue usado. Ingresá tu email para solicitar uno nuevo.",
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0][0]).toBe("/admin/api/auth/session");
+  });
+
+  it("exchange-token rechazado (token vencido/inválido) expone el mensaje de error del backend", async () => {
+    window.history.pushState(null, "", "/admin?token_hash=expired-hash&type=magiclink");
+
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+    fetchMock.mockResolvedValueOnce(
+      mockResponse({
+        ok: false,
+        status: 401,
+        body: JSON.stringify({ error: "Token inválido o expirado." }),
+      }),
     );
+    fetchMock.mockResolvedValueOnce(
+      mockResponse({ ok: true, status: 200, body: JSON.stringify({ authenticated: false }) }),
+    );
+
+    const { result } = renderHook(() => useAdminAuth(), { wrapper });
+
+    await waitFor(() => expect(result.current.status).toBe("unauthenticated"));
+    expect(result.current.authError).toBe("Token inválido o expirado.");
   });
 });

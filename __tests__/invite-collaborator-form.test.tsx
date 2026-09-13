@@ -18,7 +18,7 @@ describe("InviteCollaboratorForm (KAN-306)", () => {
 
   it("no envía nada si el email está vacío", () => {
     global.fetch = jest.fn();
-    render(<InviteCollaboratorForm onInvited={jest.fn()} />);
+    render(<InviteCollaboratorForm onInvited={jest.fn()} onReactivate={jest.fn()} />);
 
     fireEvent.click(screen.getByRole("button", { name: /otorgar acceso/i }));
 
@@ -45,7 +45,7 @@ describe("InviteCollaboratorForm (KAN-306)", () => {
     );
     const onInvited = jest.fn();
 
-    render(<InviteCollaboratorForm onInvited={onInvited} />);
+    render(<InviteCollaboratorForm onInvited={onInvited} onReactivate={jest.fn()} />);
 
     fireEvent.change(screen.getByPlaceholderText(/colaborador@ejemplo.com/), {
       target: { value: "ana@example.com" },
@@ -82,7 +82,7 @@ describe("InviteCollaboratorForm (KAN-306)", () => {
       }),
     );
 
-    render(<InviteCollaboratorForm onInvited={jest.fn()} />);
+    render(<InviteCollaboratorForm onInvited={jest.fn()} onReactivate={jest.fn()} />);
 
     const input = screen.getByPlaceholderText(/colaborador@ejemplo.com/) as HTMLInputElement;
     fireEvent.change(input, { target: { value: "ana@example.com" } });
@@ -104,7 +104,7 @@ describe("InviteCollaboratorForm (KAN-306)", () => {
     );
     const onInvited = jest.fn();
 
-    render(<InviteCollaboratorForm onInvited={onInvited} />);
+    render(<InviteCollaboratorForm onInvited={onInvited} onReactivate={jest.fn()} />);
 
     fireEvent.change(screen.getByPlaceholderText(/colaborador@ejemplo.com/), {
       target: { value: "no-existe@example.com" },
@@ -115,5 +115,61 @@ describe("InviteCollaboratorForm (KAN-306)", () => {
       await screen.findByText(/no existe ninguna cuenta registrada con ese email/i),
     ).toBeInTheDocument();
     expect(onInvited).not.toHaveBeenCalled();
+  });
+
+  // KAN-340: antes, reinvitar a un colaborador revocado daba el mismo 409 genérico que "ya es
+  // colaborador activo", sin ninguna salida clara — ahora el backend distingue el caso con
+  // `code: 'ALREADY_LINKED_REVOKED'` + `collaboratorId`, y el formulario ofrece reactivar ahí mismo.
+  it("KAN-340 - ante 409 ALREADY_LINKED_REVOKED, muestra un botón para reactivar directo y llama a onReactivate con el id correcto", async () => {
+    global.fetch = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: false,
+        status: 409,
+        body: {
+          error:
+            'Ese usuario ya está vinculado a tu agencia, pero tiene el acceso revocado. Reactivalo desde la pestaña "Revocados" en vez de volver a invitarlo.',
+          code: "ALREADY_LINKED_REVOKED",
+          collaboratorId: "c-revoked-1",
+        },
+      }),
+    );
+    const onReactivate = jest.fn().mockResolvedValue(undefined);
+
+    render(<InviteCollaboratorForm onInvited={jest.fn()} onReactivate={onReactivate} />);
+
+    fireEvent.change(screen.getByPlaceholderText(/colaborador@ejemplo.com/), {
+      target: { value: "revocado@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /otorgar acceso/i }));
+
+    expect(await screen.findByText(/reactivalo desde la pestaña "revocados"/i)).toBeInTheDocument();
+    const reactivateButton = await screen.findByRole("button", { name: /reactivar acceso/i });
+
+    fireEvent.click(reactivateButton);
+
+    await waitFor(() => expect(onReactivate).toHaveBeenCalledWith("c-revoked-1"));
+    expect(await screen.findByText("Acceso reactivado.")).toBeInTheDocument();
+  });
+
+  it("KAN-340 - un 409 genérico (colaborador ya activo, sin code) NO muestra el botón de reactivar", async () => {
+    global.fetch = jest.fn().mockResolvedValue(
+      mockResponse({
+        ok: false,
+        status: 409,
+        body: { error: "Ese usuario ya es colaborador de tu agencia." },
+      }),
+    );
+
+    render(<InviteCollaboratorForm onInvited={jest.fn()} onReactivate={jest.fn()} />);
+
+    fireEvent.change(screen.getByPlaceholderText(/colaborador@ejemplo.com/), {
+      target: { value: "activo@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /otorgar acceso/i }));
+
+    expect(
+      await screen.findByText("Ese usuario ya es colaborador de tu agencia."),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /reactivar acceso/i })).not.toBeInTheDocument();
   });
 });

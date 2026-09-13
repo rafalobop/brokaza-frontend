@@ -2,10 +2,8 @@
 
 /**
  * `ActiveSearchItem` (KAN-191) — port de `buildActiveSearchItem` en
- * `matchouse/src/dashboard/app.js` (líneas 1365-1405). Usa `window.confirm`
- * antes de archivar, igual que el legacy (`archiveSearch`, líneas
- * 1407-1425) — no se introduce un modal nuevo para esto, fuera de alcance
- * del ticket.
+ * `matchouse/src/dashboard/app.js` (líneas 1365-1405). Usa `ConfirmModal`
+ * antes de archivar, mismo patrón que `CollaboratorRow`/`PropertyRow`.
  */
 
 import { useState } from "react";
@@ -13,6 +11,7 @@ import { buildSearchSummary, SEARCH_STATUS_LABELS } from "@/lib/active-search-su
 import type { ActiveSearch } from "@/lib/matches-api";
 import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export interface ActiveSearchItemProps {
   search: ActiveSearch;
@@ -29,6 +28,7 @@ const STATUS_VARIANT: Record<ActiveSearch["status"], BadgeVariant> = {
 
 export function ActiveSearchItem({ search, onArchive, onReactivate }: ActiveSearchItemProps) {
   const [busy, setBusy] = useState(false);
+  const [confirmingArchive, setConfirmingArchive] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
   const isExpired = search.status === "expired";
@@ -36,9 +36,6 @@ export function ActiveSearchItem({ search, onArchive, onReactivate }: ActiveSear
   const isUrgent = search.status === "active" && search.days_remaining <= 2;
 
   async function handleArchive() {
-    if (!window.confirm("¿Archivar esta búsqueda? Dejará de aparecer en tus búsquedas activas.")) {
-      return;
-    }
     setBusy(true);
     setActionError(null);
     try {
@@ -46,6 +43,8 @@ export function ActiveSearchItem({ search, onArchive, onReactivate }: ActiveSear
     } catch {
       setActionError("No se pudo archivar la búsqueda.");
       setBusy(false);
+    } finally {
+      setConfirmingArchive(false);
     }
   }
 
@@ -98,7 +97,7 @@ export function ActiveSearchItem({ search, onArchive, onReactivate }: ActiveSear
               type="button"
               variant="danger"
               size="sm"
-              onClick={() => void handleArchive()}
+              onClick={() => setConfirmingArchive(true)}
               disabled={busy}
             >
               Archivar
@@ -106,6 +105,17 @@ export function ActiveSearchItem({ search, onArchive, onReactivate }: ActiveSear
           </div>
         ) : null}
       </div>
+
+      {confirmingArchive ? (
+        <ConfirmModal
+          title="Archivar búsqueda"
+          message="¿Archivar esta búsqueda? Dejará de aparecer en tus búsquedas activas."
+          confirmLabel="Archivar"
+          confirming={busy}
+          onConfirm={() => void handleArchive()}
+          onCancel={() => setConfirmingArchive(false)}
+        />
+      ) : null}
 
       {actionError ? <p className="text-error text-sm">{actionError}</p> : null}
     </div>

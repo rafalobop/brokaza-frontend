@@ -10,6 +10,7 @@ import { useMemo, useState } from "react";
 import type { ActiveSearchesStatus } from "@/lib/use-active-searches";
 import type { ActiveSearch } from "@/lib/matches-api";
 import { Card } from "@/components/ui/Card";
+import { Tabs } from "@/components/ui/Tabs";
 import { ActiveSearchItem } from "./ActiveSearchItem";
 
 export interface ActiveSearchesSectionProps {
@@ -51,20 +52,7 @@ export function ActiveSearchesSection({
     <Card>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-foreground text-lg font-semibold">Mis Búsquedas en Curso</h2>
-        <div className="flex flex-wrap gap-1">
-          {TABS.map(({ key, label }) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setTab(key)}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                tab === key ? "bg-accent text-white" : "text-text-secondary hover:bg-white/8"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <Tabs tabs={TABS} value={tab} onChange={setTab} size="xs" />
       </div>
 
       {status === "loading" ? (

@@ -59,6 +59,10 @@ export interface TenantProperty {
   sheet_name: string;
   latitude: number | null;
   longitude: number | null;
+  /** KAN-305: true cuando el tenant pidió que un admin revise esta ubicación (vía
+   * `requestCoordinateCorrection` más abajo) y todavía no se corrigió. Las coordenadas siguen
+   * siendo las mismas mientras tanto — este flag es solo de estado, no bloquea nada. */
+  needs_coordinate_review: boolean;
   /** Zona resuelta server-side (KAN-85, `neighborhoods`) a partir de lat/lng — `null` si la
    * propiedad no tiene coordenadas o no cae dentro/cerca de ninguna zona conocida. */
   zone: { id: string; name: string } | null;
@@ -141,8 +145,14 @@ export function createTenantProperty(
  * concurrencia optimista — ver `PATCH /api/catalog/properties/:id` en el backend). Si otra edición
  * ya pasó, `apiClient` lanza `ApiError` con `status: 409` y `body.property` trae el estado real
  * actual — el caller (`useTenantProperties`) lo usa para reconciliar la fila en la UI.
+ *
+ * KAN-305: `latitude`/`longitude` se excluyen a propósito — el backend ya no los acepta acá (salió
+ * de `UPDATE_FIELDS`, ver `properties.ts`), la única vía para señalar una coordenada mal ubicada es
+ * `requestCoordinateCorrection` más abajo.
  */
-export type UpdatePropertyInput = Partial<CreatePropertyInput> & { expectedUpdatedAt: string };
+export type UpdatePropertyInput = Partial<Omit<CreatePropertyInput, "latitude" | "longitude">> & {
+  expectedUpdatedAt: string;
+};
 
 export function updateTenantProperty(
   id: string,
@@ -152,6 +162,15 @@ export function updateTenantProperty(
     method: "PATCH",
     body: JSON.stringify(input),
   });
+}
+
+/** KAN-305: marca la propiedad para que un admin revise sus coordenadas — no las modifica, solo
+ * prende `needs_coordinate_review` (ver `POST /api/catalog/properties/:id/request_correction`). */
+export function requestCoordinateCorrection(id: string): Promise<{ property: TenantProperty }> {
+  return apiClient<{ property: TenantProperty }>(
+    `/api/catalog/properties/${id}/request_correction`,
+    { method: "POST" },
+  );
 }
 
 export function deleteTenantProperty(id: string): Promise<{ success: true }> {

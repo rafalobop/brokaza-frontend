@@ -38,21 +38,29 @@ Calidad general del código: notablemente alta. Tipado estricto sin `any` en `sr
 
 **Fix:** agregar manejo de flechas con roving focus, o adoptar un primitivo accesible existente (Radix/Headless UI) en vez de reimplementarlo.
 
-### 6. `ActiveSearchesSection`/`TeamSection` duplican el mismo patrón de tabs sin abstracción compartida
+### 6. ~~`ActiveSearchesSection`/`TeamSection` duplican el mismo patrón de tabs sin abstracción compartida~~ (resuelto 2026-09-13)
 
 `src/components/matches/ActiveSearchesSection.tsx:25-34,54-67` y `src/components/team/TeamSection.tsx:34-37,74-89` reimplementan el mismo widget de pestañas (array `{key,label}`, `useState<Tab>`, mismas clases) de forma independiente y ligeramente distinta entre sí.
 
-**Fix:** extraer un componente `Tabs` genérico a `components/ui/`.
+**Fix:** extraído `components/ui/Tabs.tsx` (genérico en `T extends string`, con `size?: "xs" | "sm"` y `className` para el wrapper) y ambos componentes ahora lo consumen. `tsc`/`eslint` limpios; tests de ambas secciones sin regresiones (el único fallo en `active-searches-section.test.tsx` es preexistente, reproducido idéntico contra el código sin tocar).
 
 ---
 
 ## 🟡 Medio / mantenibilidad
 
-### 7. Mensajes de error del backend mostrados crudos al usuario, sin capa de traducción
+### 7. ~~Mensajes de error del backend mostrados crudos al usuario, sin capa de traducción~~ (contrato de backend definido 2026-09-13)
 
 Patrón repetido en ~10 componentes (`PropertyForm.tsx:137`, `PropertyRow.tsx:103,119`, `AddPropertyModal.tsx:27`, `CollaboratorRow.tsx:54,67`, `InviteCollaboratorForm.tsx:67`, `LoginForm.tsx:95`, `AdminLoginForm.tsx:50`, `CoordinatesModal.tsx:87`): `err instanceof ApiError ? err.message : "<mensaje genérico>"`. `ApiError.message` viene del body de la respuesta del backend sin ninguna capa que distinga "mensaje seguro para mostrar" de "detalle interno" — aceptable para validaciones de negocio (400), pero sin contrato explícito.
 
 **Fix:** definir en el backend un contrato explícito de mensajes user-facing vs. debug; no confiar por defecto en `err.message` crudo.
+
+**Estado (`matchouse`):** auditados todos los `res.status(4xx).json({ error: ... })` del backend — el único punto donde un `.message` de excepción cruda llegaba al cliente era `uploadController.ts#confirmMapping` reenviando `ExcelMappingServiceError.message`, que en dos casos (`excelMapping.ts` — lectura/escritura del mapeo guardado) interpolaba `error.message` de Postgres/Supabase sin filtrar. El resto de los ~145 call sites ya usan strings curados a mano o pasan por `globalErrorHandler` (500 genérico, sin stack/mensaje real).
+
+Contrato aplicado a `ExcelMappingServiceError` (`src/services/excelMapping.ts`): tercer parámetro `userFacing: boolean` (default `false`). Solo el error de validación de negocio (mapeo confirmado que no resuelve campos requeridos) lo marca `true` — su mensaje ya era curado, seguro para el cliente. Los dos que envolvían fallos de Postgres perdieron la interpolación de `error.message` (ahora un texto genérico fijo) y quedan `userFacing: false`; la causa real sigue disponible en `.cause` para logging. `uploadController.ts` solo reenvía `error.message` al cliente si `userFacing === true`; si no, loguea `message`+`cause` y responde `500` genérico (antes era un `400` con el detalle crudo, semánticamente incorrecto para un fallo de infraestructura).
+
+`ZonesServiceError` (`zonesService.ts`) tiene el mismo patrón de interpolación pero no está expuesto hoy — ningún controller hace `instanceof ZonesServiceError`, cae al 500 genérico del catch-all. Queda igual por ahora (no hay leak real que arreglar), pero si algún controller alguna vez la captura específicamente, debe seguir el mismo contrato (`userFacing`) antes de reenviar `.message`.
+
+Del lado frontend, los ~10 componentes listados arriba pueden seguir mostrando `err.message` de `ApiError` sin cambios: el contrato ahora garantiza que ese mensaje, cuando viene de un 4xx con cuerpo `{error}`, es user-facing por construcción del backend.
 
 ### 8. WS de matches reintenta reconexión indefinidamente
 

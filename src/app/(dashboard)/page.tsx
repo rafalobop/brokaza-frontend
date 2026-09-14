@@ -8,6 +8,7 @@ import { NoTranslate } from "@/components/ui/NoTranslate";
 import { NewSearchForm } from "@/components/matches/NewSearchForm";
 import { useCatalogCount } from "@/lib/use-catalog-count";
 import { useMatchesContext } from "@/lib/matches-context";
+import { ONBOARDING_STEP_IDS } from "@/lib/onboarding-tour";
 
 /**
  * Resumen (`/`) — página home del dashboard: cards de métrica (row_1 del brief) + previews
@@ -36,7 +37,9 @@ export default function ResumenPage() {
         description="Estado general de tu cartera, búsquedas activas e interesados."
       />
 
-      <NewSearchForm onSubmitted={() => void activeSearches.refetch()} />
+      <div id={ONBOARDING_STEP_IDS.resumenSearch}>
+        <NewSearchForm onSubmitted={() => void activeSearches.refetch()} />
+      </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <MetricCard

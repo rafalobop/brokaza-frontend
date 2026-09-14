@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_Lao_Looped, Nunito_Sans } from "next/font/google";
+import { NextStepProvider } from "nextstepjs";
 import { ConnectionStatusBanner } from "@/components/ConnectionStatusBanner";
 import { AuthProvider } from "@/lib/auth-context";
 import { ProfileProvider } from "@/lib/profile-context";
@@ -66,7 +67,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ConnectionStatusBanner />
         <ThemeProvider>
           <AuthProvider>
-            <ProfileProvider>{children}</ProfileProvider>
+            <ProfileProvider>
+              <NextStepProvider>{children}</NextStepProvider>
+            </ProfileProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

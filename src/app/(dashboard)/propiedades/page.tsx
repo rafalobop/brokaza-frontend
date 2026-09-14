@@ -9,6 +9,7 @@ import { useState } from "react";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { UploadDropzone } from "@/components/upload/UploadDropzone";
 import { PropertiesTable } from "@/components/properties/PropertiesTable";
+import { ONBOARDING_STEP_IDS } from "@/lib/onboarding-tour";
 
 export default function PropiedadesPage() {
   const [refreshToken, setRefreshToken] = useState(0);
@@ -19,8 +20,12 @@ export default function PropiedadesPage() {
         title="Propiedades"
         description="Cargá tu cartera en Excel — se cruza automáticamente contra las búsquedas de otros agentes."
       />
-      <UploadDropzone onUploadSuccess={() => setRefreshToken((t) => t + 1)} />
-      <PropertiesTable refreshToken={refreshToken} />
+      <div id={ONBOARDING_STEP_IDS.propiedadesUpload}>
+        <UploadDropzone onUploadSuccess={() => setRefreshToken((t) => t + 1)} />
+      </div>
+      <div id={ONBOARDING_STEP_IDS.propiedadesTable}>
+        <PropertiesTable refreshToken={refreshToken} />
+      </div>
     </div>
   );
 }

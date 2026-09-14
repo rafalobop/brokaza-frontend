@@ -35,7 +35,7 @@ propia, todo dato real viene proxeado desde ahí.
 
 ```bash
 # en el repo backend (matchouse):
-npm run dev          # levanta en http://localhost:3000
+pnpm run dev          # levanta en http://localhost:3000
 
 # en este repo:
 pnpm install

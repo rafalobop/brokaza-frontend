@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/shell/PageHeader";
 import { IncomingMatchesSection } from "@/components/matches/IncomingMatchesSection";
 import { useMatchesContext } from "@/lib/matches-context";
 import { parseHighlightIds } from "@/lib/parse-highlight-param";
+import { ONBOARDING_STEP_IDS } from "@/lib/onboarding-tour";
 
 /**
  * Solo "Interesados en tus Propiedades" — decisión de producto: quien busca (agente A) no ve acá
@@ -33,12 +34,14 @@ function MatchesPageContent() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader title="Matches" description="Quién se interesó en tu cartera." notranslate />
-      <IncomingMatchesSection
-        status={incomingMatches.status}
-        matches={incomingMatches.matches}
-        error={incomingMatches.error}
-        highlightIds={highlightIds}
-      />
+      <div id={ONBOARDING_STEP_IDS.matchesList}>
+        <IncomingMatchesSection
+          status={incomingMatches.status}
+          matches={incomingMatches.matches}
+          error={incomingMatches.error}
+          highlightIds={highlightIds}
+        />
+      </div>
     </div>
   );
 }

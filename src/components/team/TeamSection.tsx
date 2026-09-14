@@ -18,6 +18,7 @@ import type { TeamStatus } from "@/lib/use-team";
 import type { Collaborator } from "@/lib/team-api";
 import { Card } from "@/components/ui/Card";
 import { Tabs } from "@/components/ui/Tabs";
+import { ONBOARDING_STEP_IDS } from "@/lib/onboarding-tour";
 import { InviteCollaboratorForm } from "./InviteCollaboratorForm";
 import { CollaboratorRow } from "./CollaboratorRow";
 
@@ -69,9 +70,11 @@ export function TeamSection({
 
   return (
     <div className="flex flex-col gap-6">
-      <InviteCollaboratorForm onInvited={onInvited} onReactivate={onReactivate} />
+      <div id={ONBOARDING_STEP_IDS.equipoInvite}>
+        <InviteCollaboratorForm onInvited={onInvited} onReactivate={onReactivate} />
+      </div>
 
-      <Card>
+      <Card id={ONBOARDING_STEP_IDS.equipoList}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-foreground text-lg font-semibold">Colaboradores</h2>
           <Tabs

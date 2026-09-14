@@ -28,20 +28,26 @@ puede "eliminar" para cumplir un conteo. Se ajustó el criterio para que el lím
 que el equipo realmente controla (librerías más allá del framework), manteniendo la intención real
 del ticket (mantener la superficie de dependencias chica y deliberada) sin pedir algo imposible.
 
-## Auditoría de dependencias actuales (2026-09-09)
+## Auditoría de dependencias actuales (actualizado 2026-09-14)
 
-Contadas para el límite (4 de 6):
+Contadas para el límite (7 de 7 — límite subido de 6 a 7, ver `scripts/check-dependency-limit.mjs`):
 
-| Paquete          | Versión  | Para qué                                                                                                                   |
-| ---------------- | -------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `@sentry/nextjs` | ^10.73.0 | Observabilidad de errores en producción, mismo pipeline de alertas que el backend (KAN-83/126 en `matchouse`).             |
-| `leaflet`        | ^1.9.4   | Motor de mapas — usado por la vista de matches/zonas (mismo mapa que el legacy, `matches-ui-design.md`).                   |
-| `lucide-react`   | ^1.33.0  | Set de iconos SVG, reemplazo del sprite de iconos del legacy.                                                              |
-| `react-leaflet`  | ^5.0.0   | Bindings de React sobre `leaflet` — va siempre junto a `leaflet` (par indisociable, no son dos decisiones independientes). |
+| Paquete          | Versión  | Para qué                                                                                                                                                                                                    |
+| ---------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@sentry/nextjs` | ^10.73.0 | Observabilidad de errores en producción, mismo pipeline de alertas que el backend (KAN-83/126 en `matchouse`).                                                                                              |
+| `leaflet`        | ^1.9.4   | Motor de mapas — usado por la vista de matches/zonas (mismo mapa que el legacy, `matches-ui-design.md`).                                                                                                    |
+| `lucide-react`   | ^1.33.0  | Set de iconos SVG, reemplazo del sprite de iconos del legacy.                                                                                                                                               |
+| `react-leaflet`  | ^5.0.0   | Bindings de React sobre `leaflet` — va siempre junto a `leaflet` (par indisociable, no son dos decisiones independientes).                                                                                  |
+| `cross-env`      | ^10.1.0  | Setea `NODE_ENV=production` de forma cross-platform en el script `start` (`server.ts` corre igual en CI/Windows/Linux).                                                                                     |
+| `ts-node`        | ^10.9.2  | El `start` de producción ejecuta `server.ts` (custom server, necesario para el proxy de WebSocket) directo con ts-node, sin paso de compilación previo — por eso es dependencia de runtime, no solo de dev. |
+| `typescript`     | ^5       | Peer requerido por `ts-node` para compilar `server.ts` al vuelo en producción (mismo motivo que la fila anterior).                                                                                          |
 
 No contadas (framework core): `next`, `react`, `react-dom`.
 
-**Margen actual: 2 dependencias antes de tocar el límite.**
+**Margen actual: 0 dependencias antes de tocar el límite otra vez.** `cross-env`, `ts-node` y
+`typescript` ya estaban en `dependencies` desde que se agregó el custom server (`server.ts`), pero
+nunca se habían sumado a esta auditoría ni se había subido `MAX_LIBRARIES` en consecuencia — el
+check quedó rompiendo el pipeline de CI en `main` hasta esta corrección.
 
 ## Validación automática
 

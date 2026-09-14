@@ -1,8 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
 import { Building2, LayoutGrid, Search, Sparkles, Users } from "lucide-react";
+import { NextStep, useNextStep } from "nextstepjs";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { IosInstallBanner } from "@/components/IosInstallBanner";
+import { OnboardingTourButton } from "@/components/OnboardingTourButton";
+import { OnboardingTourCard } from "@/components/OnboardingTourCard";
 import { ProfileGate } from "@/components/profile/ProfileGate";
 import { PushNotificationButton } from "@/components/PushNotificationButton";
 import { DashboardShell } from "@/components/shell/DashboardShell";
@@ -10,6 +14,12 @@ import { Loader } from "@/components/ui/Loader";
 import { SESSION_CHECK_ERROR_MESSAGE, useAuth } from "@/lib/auth-context";
 import { useProfile } from "@/lib/profile-context";
 import { MatchesProvider } from "@/lib/matches-context";
+import {
+  buildOnboardingTour,
+  hasSeenOnboarding,
+  markOnboardingSeen,
+  ONBOARDING_TOUR_NAME,
+} from "@/lib/onboarding-tour";
 import type { SidebarNavItem } from "@/components/shell/Sidebar";
 
 const BASE_NAV_ITEMS: SidebarNavItem[] = [
@@ -23,6 +33,25 @@ const BASE_NAV_ITEMS: SidebarNavItem[] = [
 // un colaborador no tiene nada para gestionar ahí (el backend le devuelve 403 igual, esto es la
 // primera capa, no la única — ver TeamSection para la segunda).
 const TEAM_NAV_ITEM: SidebarNavItem = { label: "Equipo", href: "/equipo", icon: Users };
+
+/**
+ * Dispara el tour de bienvenida una sola vez por browser (`hasSeenOnboarding`/`markOnboardingSeen`
+ * en `lib/onboarding-tour.ts`) — no renderiza nada, solo necesita el contexto de `NextStepProvider`
+ * (montado en `app/layout.tsx`) para poder arrancarlo. `OnboardingTourButton` en la topbar cubre el
+ * caso de querer volver a verlo después.
+ */
+function OnboardingAutostart() {
+  const { startNextStep } = useNextStep();
+
+  useEffect(() => {
+    if (hasSeenOnboarding()) return;
+    markOnboardingSeen();
+    startNextStep(ONBOARDING_TOUR_NAME);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo debe correr una vez al montar.
+  }, []);
+
+  return null;
+}
 
 /**
  * Layout del grupo de rutas `(dashboard)` — no agrega segmento a la URL (`/`, `/propiedades`,
@@ -69,19 +98,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <ProfileGate>
       <MatchesProvider>
-        <DashboardShell
-          brand="Brokaza"
-          navItems={navItems}
-          email={tenant?.email}
-          displayName={profile?.full_name || tenant?.email}
-          role={profile?.role}
-          onLogout={() => void logout()}
-          loggingOut={loggingOut}
-          topbarExtraActions={<PushNotificationButton enabled={status === "authenticated"} />}
-        >
-          <IosInstallBanner />
-          <div className="pt-4">{children}</div>
-        </DashboardShell>
+        <NextStep steps={buildOnboardingTour(navItems)} cardComponent={OnboardingTourCard}>
+          <OnboardingAutostart />
+          <DashboardShell
+            brand="Brokaza"
+            navItems={navItems}
+            email={tenant?.email}
+            displayName={profile?.full_name || tenant?.email}
+            role={profile?.role}
+            onLogout={() => void logout()}
+            loggingOut={loggingOut}
+            topbarExtraActions={
+              <>
+                <OnboardingTourButton />
+                <PushNotificationButton enabled={status === "authenticated"} />
+              </>
+            }
+          >
+            <IosInstallBanner />
+            <div className="pt-4">{children}</div>
+          </DashboardShell>
+        </NextStep>
       </MatchesProvider>
     </ProfileGate>
   );

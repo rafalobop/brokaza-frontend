@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { Config } from "jest";
 import nextJest from "next/jest.js";
 
@@ -22,15 +23,28 @@ const config: Config = {
 // porque `next/jest` necesita leer `next.config.ts` primero) e inyectar los dos paquetes en el
 // mismo allowlist que ya arma para `geist`, reusando su regex probado en vez de escribir uno
 // propio para la estructura de pnpm.
+//
+// `nextstepjs` (tour de onboarding) suma el mismo problema por otro motivo: su `package.json` solo
+// declara la condición `"import"` en `exports` (sin `"require"`), así que ni siquiera se resuelve
+// bajo CJS (`ERR_PACKAGE_PATH_NOT_EXPORTED`) — y como el propio `exports` bloquea también
+// `require.resolve("nextstepjs/dist/index.js")` (cualquier subpath no listado ahí tira el mismo
+// error), el `moduleNameMapper` de abajo apunta directo al archivo real por ruta de filesystem
+// (`node_modules/nextstepjs` es un symlink de nivel superior — dependencia directa, no anidada por
+// otro paquete — así que esta ruta fija es estable). Una vez resuelto ese archivo sigue siendo ESM
+// puro, así que también necesita sumarse al mismo allowlist de `transformIgnorePatterns`.
 async function resolveJestConfig() {
   const nextJestConfig = await createJestConfig(config)();
   return {
     ...nextJestConfig,
+    moduleNameMapper: {
+      ...nextJestConfig.moduleNameMapper,
+      "^nextstepjs$": path.join(process.cwd(), "node_modules/nextstepjs/dist/index.js"),
+    },
     transformIgnorePatterns: (nextJestConfig.transformIgnorePatterns ?? []).map((pattern) =>
       typeof pattern === "string"
         ? pattern.replace(
             /\(geist\|/g,
-            "(geist|react-leaflet|@react-leaflet\\+core|@react-leaflet[\\\\/]core|",
+            "(geist|react-leaflet|@react-leaflet\\+core|@react-leaflet[\\\\/]core|nextstepjs|",
           )
         : pattern,
     ),

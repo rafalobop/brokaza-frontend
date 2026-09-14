@@ -15,6 +15,20 @@ export interface SidebarNavItem {
   notranslate?: boolean;
 }
 
+/**
+ * `id` del link de sidebar para un nav item, usado por el tour de onboarding
+ * (`lib/onboarding-tour.ts`) como selector de cada paso. Vive acá (no en el tour) porque el DOM
+ * que produce el id es este componente.
+ *
+ * Nota: el drawer mobile reusa `SidebarContent` con los mismos `navItems`, así que mientras está
+ * abierto hay dos elementos con el mismo id en el DOM (aside desktop + drawer). `querySelector`
+ * matchea el primero (el del `aside`), que es el que el tour necesita — el drawer no se contempla
+ * como target por ahora.
+ */
+export function navItemStepId(href: string): string {
+  return `nav-item-${href === "/" ? "home" : href.replace(/\//g, "")}`;
+}
+
 interface SidebarProps {
   brand: string;
   navItems: SidebarNavItem[];
@@ -72,6 +86,7 @@ function SidebarContent({
           return (
             <Link
               key={item.href}
+              id={navItemStepId(item.href)}
               href={item.href}
               onClick={onNavigate}
               className={`flex w-full items-center rounded-2xl transition-colors duration-150 ${

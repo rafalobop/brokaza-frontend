@@ -30,7 +30,7 @@ del ticket (mantener la superficie de dependencias chica y deliberada) sin pedir
 
 ## Auditoría de dependencias actuales (actualizado 2026-09-14)
 
-Contadas para el límite (7 de 7 — límite subido de 6 a 7, ver `scripts/check-dependency-limit.mjs`):
+Contadas para el límite (8 de 8 — límite subido de 7 a 8, ver `scripts/check-dependency-limit.mjs`):
 
 | Paquete          | Versión  | Para qué                                                                                                                                                                                                    |
 | ---------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -41,27 +41,28 @@ Contadas para el límite (7 de 7 — límite subido de 6 a 7, ver `scripts/check
 | `cross-env`      | ^10.1.0  | Setea `NODE_ENV=production` de forma cross-platform en el script `start` (`server.ts` corre igual en CI/Windows/Linux).                                                                                     |
 | `ts-node`        | ^10.9.2  | El `start` de producción ejecuta `server.ts` (custom server, necesario para el proxy de WebSocket) directo con ts-node, sin paso de compilación previo — por eso es dependencia de runtime, no solo de dev. |
 | `typescript`     | ^5       | Peer requerido por `ts-node` para compilar `server.ts` al vuelo en producción (mismo motivo que la fila anterior).                                                                                          |
+| `nextstepjs`     | ^2.3.0   | Motor del tour de onboarding guiado para agentes nuevos (resaltar pasos, avanzar/retroceder, persistencia de progreso) — no hay API nativa del browser que cubra eso.                                       |
 
 No contadas (framework core): `next`, `react`, `react-dom`.
 
-**Margen actual: 0 dependencias antes de tocar el límite otra vez.** `cross-env`, `ts-node` y
-`typescript` ya estaban en `dependencies` desde que se agregó el custom server (`server.ts`), pero
-nunca se habían sumado a esta auditoría ni se había subido `MAX_LIBRARIES` en consecuencia — el
-check quedó rompiendo el pipeline de CI en `main` hasta esta corrección.
+**Margen actual: 0 dependencias antes de tocar el límite otra vez.** Mismo patrón que la corrección
+anterior de `cross-env`/`ts-node`/`typescript`: `nextstepjs` se agregó junto con el flujo de
+onboarding sin subir `MAX_LIBRARIES` en el mismo commit, lo que rompió el pipeline de CI hasta esta
+corrección.
 
 ## Validación automática
 
 `scripts/check-dependency-limit.mjs` (paso "Dependency limit (KAN-333)" en
 `.github/workflows/ci.yml`, disponible local con `pnpm run check:dependency-limit`) falla el build
-si `dependencies` en `package.json` (excluyendo el framework core) supera las 7 librerías.
+si `dependencies` en `package.json` (excluyendo el framework core) supera las 8 librerías.
 
 ## Proceso para agregar una dependencia nueva
 
 1. Antes de instalar, preguntarse: ¿esto se puede resolver sin una librería nueva (código propio,
    una API nativa del browser, algo que ya está en `node_modules` de otra dependencia)?
-2. Si hace falta la librería igual, instalarla — si el conteo sigue en 7 o menos, no hay que hacer
+2. Si hace falta la librería igual, instalarla — si el conteo sigue en 8 o menos, no hay que hacer
    nada más además de esta guía.
-3. Si el conteo pasa de 7, el PR **tiene que**:
+3. Si el conteo pasa de 8, el PR **tiene que**:
    - Subir `MAX_LIBRARIES` en `scripts/check-dependency-limit.mjs`, con un comentario en el commit
      explicando qué resuelve la dependencia nueva y por qué no alcanzaba con lo que ya había.
    - Agregar una fila a la tabla de auditoría de arriba.

@@ -53,15 +53,15 @@ check quedó rompiendo el pipeline de CI en `main` hasta esta corrección.
 
 `scripts/check-dependency-limit.mjs` (paso "Dependency limit (KAN-333)" en
 `.github/workflows/ci.yml`, disponible local con `pnpm run check:dependency-limit`) falla el build
-si `dependencies` en `package.json` (excluyendo el framework core) supera las 6 librerías.
+si `dependencies` en `package.json` (excluyendo el framework core) supera las 7 librerías.
 
 ## Proceso para agregar una dependencia nueva
 
 1. Antes de instalar, preguntarse: ¿esto se puede resolver sin una librería nueva (código propio,
    una API nativa del browser, algo que ya está en `node_modules` de otra dependencia)?
-2. Si hace falta la librería igual, instalarla — si el conteo sigue en 6 o menos, no hay que hacer
+2. Si hace falta la librería igual, instalarla — si el conteo sigue en 7 o menos, no hay que hacer
    nada más además de esta guía.
-3. Si el conteo pasa de 6, el PR **tiene que**:
+3. Si el conteo pasa de 7, el PR **tiene que**:
    - Subir `MAX_LIBRARIES` en `scripts/check-dependency-limit.mjs`, con un comentario en el commit
      explicando qué resuelve la dependencia nueva y por qué no alcanzaba con lo que ya había.
    - Agregar una fila a la tabla de auditoría de arriba.

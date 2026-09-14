@@ -24,7 +24,10 @@ const FRAMEWORK_CORE = new Set(["next", "react", "react-dom"]);
 // (el "start" script corre `cross-env NODE_ENV=production ts-node server.ts` — el custom server
 // se ejecuta con ts-node directo, sin paso de compilación previo), pero nunca se habían sumado
 // a la auditoría cuando se agregaron. Ver docs/dependency-management-guideline.md.
-const MAX_LIBRARIES = 7;
+// Subido de 7 a 8: `nextstepjs` agrega el flujo de onboarding guiado (tour paso a paso para
+// agentes nuevos) — no hay una API nativa ni algo ya presente en node_modules que resuelva ese
+// caso. Ver docs/dependency-management-guideline.md.
+const MAX_LIBRARIES = 8;
 
 const dependencies = Object.keys(pkg.dependencies ?? {});
 const countedLibraries = dependencies.filter((name) => !FRAMEWORK_CORE.has(name));

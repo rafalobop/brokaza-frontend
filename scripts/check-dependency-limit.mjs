@@ -20,7 +20,11 @@ const pkgPath = path.join(__dirname, "..", "package.json");
 const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
 
 const FRAMEWORK_CORE = new Set(["next", "react", "react-dom"]);
-const MAX_LIBRARIES = 6;
+// Subido de 6 a 7: `cross-env`, `ts-node` y `typescript` son dependencias de producción reales
+// (el "start" script corre `cross-env NODE_ENV=production ts-node server.ts` — el custom server
+// se ejecuta con ts-node directo, sin paso de compilación previo), pero nunca se habían sumado
+// a la auditoría cuando se agregaron. Ver docs/dependency-management-guideline.md.
+const MAX_LIBRARIES = 7;
 
 const dependencies = Object.keys(pkg.dependencies ?? {});
 const countedLibraries = dependencies.filter((name) => !FRAMEWORK_CORE.has(name));

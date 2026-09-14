@@ -59,7 +59,7 @@ describe("MappingConfirmModal (KAN-217)", () => {
     ).toBeInTheDocument();
 
     await waitFor(() => expect(screen.getByText("Domicilio")).toBeInTheDocument());
-    const domicilioSelect = screen.getByRole("button", { name: "Domicilio — Hoja1" });
+    const domicilioSelect = screen.getByRole("combobox", { name: "Domicilio — Hoja1" });
     expect(domicilioSelect).toHaveTextContent("Dirección");
   });
 
@@ -99,7 +99,7 @@ describe("MappingConfirmModal (KAN-217)", () => {
     );
 
     await waitFor(() => expect(screen.getByText("Precio")).toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: "Precio — Hoja1" }));
+    fireEvent.click(screen.getByRole("combobox", { name: "Precio — Hoja1" }));
     fireEvent.click(screen.getByRole("button", { name: "Costo" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Confirmar y cargar" }));

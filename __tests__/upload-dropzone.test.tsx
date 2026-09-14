@@ -344,7 +344,7 @@ describe("UploadDropzone (KAN-216/338)", () => {
       await screen.findByText("Confirmar mapeo de columnas");
       await screen.findByText("Precio");
 
-      fireEvent.click(screen.getByRole("button", { name: "Precio — Hoja1" }));
+      fireEvent.click(screen.getByRole("combobox", { name: "Precio — Hoja1" }));
       fireEvent.click(screen.getByRole("button", { name: "Costo" }));
 
       fetchMock.mockResolvedValueOnce(

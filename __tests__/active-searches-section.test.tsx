@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ActiveSearchesSection } from "@/components/matches/ActiveSearchesSection";
 import type { ActiveSearch } from "@/lib/matches-api";
 
@@ -17,16 +17,6 @@ function buildSearch(overrides: Partial<ActiveSearch>): ActiveSearch {
 }
 
 describe("ActiveSearchesSection (KAN-191)", () => {
-  let confirmSpy: jest.SpyInstance;
-
-  beforeEach(() => {
-    confirmSpy = jest.spyOn(window, "confirm").mockReturnValue(true);
-  });
-
-  afterEach(() => {
-    confirmSpy.mockRestore();
-  });
-
   it("muestra el estado de carga", () => {
     render(
       <ActiveSearchesSection
@@ -99,7 +89,7 @@ describe("ActiveSearchesSection (KAN-191)", () => {
     expect(screen.queryByText(/restante/)).not.toBeInTheDocument();
   });
 
-  it("Archivar pide confirmación y llama a onArchive si se confirma", () => {
+  it("Archivar pide confirmación y llama a onArchive si se confirma", async () => {
     const onArchive = jest.fn().mockResolvedValue(undefined);
     const search = buildSearch({});
     render(
@@ -114,12 +104,14 @@ describe("ActiveSearchesSection (KAN-191)", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Archivar" }));
 
-    expect(confirmSpy).toHaveBeenCalled();
-    expect(onArchive).toHaveBeenCalledWith("s1");
+    expect(screen.getByText("Archivar búsqueda")).toBeInTheDocument();
+    const archiveButtons = screen.getAllByRole("button", { name: "Archivar" });
+    fireEvent.click(archiveButtons[archiveButtons.length - 1]);
+
+    await waitFor(() => expect(onArchive).toHaveBeenCalledWith("s1"));
   });
 
   it("Archivar no llama a onArchive si el usuario cancela la confirmación", () => {
-    confirmSpy.mockReturnValue(false);
     const onArchive = jest.fn();
     const search = buildSearch({});
     render(
@@ -133,7 +125,9 @@ describe("ActiveSearchesSection (KAN-191)", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Archivar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
 
+    expect(screen.queryByText("Archivar búsqueda")).not.toBeInTheDocument();
     expect(onArchive).not.toHaveBeenCalled();
   });
 
@@ -154,7 +148,7 @@ describe("ActiveSearchesSection (KAN-191)", () => {
     fireEvent.click(screen.getByRole("button", { name: "Reactivar" }));
 
     expect(onReactivate).toHaveBeenCalledWith("s1");
-    expect(confirmSpy).not.toHaveBeenCalled();
+    expect(screen.queryByText("Archivar búsqueda")).not.toBeInTheDocument();
   });
 
   it("el tab Archivadas agrupa 'cancelled'/'matched' y no muestra acciones", () => {

@@ -566,7 +566,7 @@ describe("ProfileGate (KAN-167)", () => {
     renderGate();
     await waitFor(() => expect(screen.getByLabelText("Nombre")).toBeEnabled());
 
-    expect(screen.getByRole("button", { name: "Código de país" })).toHaveTextContent(
+    expect(screen.getByRole("combobox", { name: "Código de país" })).toHaveTextContent(
       "Argentina (+54)",
     );
   });

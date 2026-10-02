@@ -1,5 +1,27 @@
 # Mini-diseño: descomposición en componentes de la UI de Matches (KAN-188)
 
+> **⚠️ Documento histórico — la implementación evolucionó después de KAN-189/190/191 y ya no
+> coincide con lo que describe este mini-diseño.** Diferencias conocidas, a fecha de esta nota:
+>
+> - Los componentes reales hoy son `ActiveSearchesSection`, `ActiveSearchItem`,
+>   `IncomingMatchesSection`, `IncomingMatchItem`, `NewSearchForm` — no existen
+>   `MatchesDashboard`/`MatchesSection`/`MatchControls`/`MatchListContainer`/`MatchItem`/
+>   `RejectionModal` como se planteaba en §3/§7.
+> - La sección "Búsquedas con Resultados" ("Últimos Matches", resultados de la propia búsqueda
+>   del tenant) **se eliminó de la UI** — decisión de producto documentada en un comentario de
+>   código, no en un doc formal (`src/lib/matches-context.tsx` y
+>   `src/app/(dashboard)/matches/page.tsx`): quien busca no ve acá los resultados de su propia
+>   búsqueda, el único que se entera de un match es el dueño de la propiedad.
+> - Sí existe un store/Context global (`MatchesProvider` en `matches-context.tsx` +
+>   `RealtimeSocketProvider` en `realtime-socket-context.tsx`, montados en el layout del
+>   dashboard) — lo opuesto a lo que dice §3/§6 sobre "no hay un store global, cada sección es
+>   dueña de su propio hook".
+> - Las 4 secciones ya no viven en una sola página con `<details>` colapsables (§1): hoy son
+>   rutas separadas (`/matches`, `/busquedas`).
+>
+> Se deja el documento como referencia del razonamiento original (inventario del legacy,
+> mapeo de AC), no como fuente de verdad de la arquitectura actual.
+
 **Gate de §6 de `MIGRATION_PLAN.md`** — este documento es el entregable de KAN-188 en sí
 mismo (complejidad Alta: "Diseño de descomposición en componentes de la UI de Matches").
 No se toca código de producto en este ticket; KAN-189/190/191 implementan lo que acá se

@@ -57,6 +57,10 @@ en `docs/admin-auth-design.md`.
 
 ## 4. Regresión de la suite
 
+Snapshot histórico al momento de este checklist (2026-08-21) — la suite creció bastante desde
+entonces (63 test suites / 434 tests a fecha de esta revisión de docs); estos números no
+reflejan el estado actual, son evidencia de que la regresión pasaba en ese punto en el tiempo.
+
 Estado de la suite completa de `brokaza-frontend` al momento de este checklist (rama
 `feature/KAN-243`, incluye Upload + Matches + Admin):
 
@@ -74,9 +78,11 @@ eslint .: sin errores
 
 - **Retiro del código legacy** (`matchouse/src/admin-dashboard/`) — Fase 5 (KAN-258), no este
   ticket. Este checklist es el insumo que habilita ese retiro más adelante, no lo ejecuta.
-- **Dashboard de métricas** (`GET /api/metrics`, polling cada 7s en el legacy) — no forma parte
-  del roadmap de Fase 4 (§12 solo lista 4 historias: auth/listado/spike/coordenadas). Sigue
-  sirviéndose desde `admin-dashboard/` legacy hasta que exista un ticket dedicado.
+- **Dashboard de métricas** (`GET /api/metrics`, polling cada 7s en el legacy) — no formaba parte
+  del roadmap de Fase 4 (§12 solo lista 4 historias: auth/listado/spike/coordenadas) al momento de
+  este checklist. **Actualización:** se implementó después en KAN-342 (`src/app/admin/page.tsx`,
+  8 métricas con polling de 10s), junto con el fix del login por magic-link. Paridad de ese
+  módulo no cubierta por este checklist ni por su sign-off de §6.
 - **E2E real contra un backend Express corriendo con sesión admin activa** — no disponible en
   este entorno de desarrollo. Toda la evidencia de §1/§2 es de tests unitarios/de componente con
   mocks de `apiClient`/`fetch`, salvo la verificación puntual de KAN-241 (SSR real de

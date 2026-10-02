@@ -1,6 +1,9 @@
 # Mini-diseño — Auth del panel admin (KAN-239)
 
-**Estado:** propuesta, pendiente de aprobación antes de implementar.
+**Estado:** implementado y en producción (KAN-239/240/241/242, paridad completa en
+`admin-parity-checklist.md`; el dashboard de métricas y el fix del login por magic-link llegaron
+después en KAN-342). Lo que sigue describe la propuesta original — sirve como referencia del
+razonamiento detrás del prefijo `/admin/api/*`, no como estado pendiente.
 
 ## 1. Por qué hace falta un mini-diseño (aunque el ticket esté marcado "Baja" en §12)
 

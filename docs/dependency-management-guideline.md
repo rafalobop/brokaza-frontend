@@ -5,10 +5,11 @@ KAN-333 (auditoría, 2026-09-09). Criterio para agregar dependencias de producci
 
 ## Regla
 
-**Máximo 6 librerías de producción**, sin contar el framework en sí (`next`, `react`,
-`react-dom` — no son una elección del equipo, son la base sobre la que corre toda la app; sin
-ellas no hay proyecto). El límite corre sobre lo que queda: cualquier paquete que el equipo
-decide agregar a `dependencies` en `package.json` porque resuelve un problema puntual.
+**Máximo 8 librerías de producción** (límite original de 6, subido dos veces — ver §"Auditoría"
+más abajo), sin contar el framework en sí (`next`, `react`, `react-dom` — no son una elección del
+equipo, son la base sobre la que corre toda la app; sin ellas no hay proyecto). El límite corre
+sobre lo que queda: cualquier paquete que el equipo decide agregar a `dependencies` en
+`package.json` porque resuelve un problema puntual.
 
 El objetivo es el mismo que ya aplicó este proyecto en otras decisiones de infraestructura (ver
 `docs/rate-limit-backends.md` en `matchouse`, "no agregar infraestructura sin necesidad real"):

@@ -8,10 +8,13 @@ migración (ver `MIGRATION_PLAN.md` en el backend, KAN-143, para el plan complet
 
 **Estado actual:** ya no es scaffold — la mayoría de los módulos de negocio del dashboard de tenant
 están portados y en uso: auth (magic link), perfil, catálogo/propiedades (alta, edición, upload de
-Excel con mapeo de columnas), búsquedas y matches (con actualización en vivo vía WebSocket), push
-notifications, onboarding de instalación PWA en iOS, y el panel admin (métricas, listado de
-propiedades, corrección de coordenadas en mapa). El estado real y qué falta por portar vive en el
-`MIGRATION_PLAN.md` del backend, no en este README.
+Excel con mapeo de columnas), búsquedas y matches (con actualización en vivo vía WebSocket, sobre
+un único socket compartido — `RealtimeSocketProvider`), equipo (invitación y listado de
+colaboradores), push notifications, onboarding de instalación PWA en iOS, un tour guiado de
+onboarding del dashboard (`nextstepjs`), y el panel admin con paridad funcional completa contra el
+legacy (auth por allowlist, dashboard de métricas, listado de propiedades, corrección de
+coordenadas en mapa). El estado real y qué falta por portar vive en el `MIGRATION_PLAN.md` del
+backend, no en este README.
 
 **Repo separado del backend a propósito (decisión posterior a KAN-145):** aunque la Fase 0 del plan de migración despliega este frontend con _rewrites_ same-origin hacia Express (menor riesgo inicial, evita resolver CORS/cookies cross-origin de entrada), se optó por separar el repo desde el arranque en vez de esperar a la Fase 5 (retiro del legacy) — el costo de partir un monorepo crece con el tiempo (historia de git mezclada, CI acoplado, tooling compartido que hay que desenredar), y separarlo ya evita pagar ese costo después. El proxy/rewrites de KAN-150 sigue siendo necesario y no cambia por esto — sigue resolviendo el problema de cookies same-origin entre dos despliegues distintos, solo que ahora también entre dos repos distintos.
 
@@ -111,10 +114,10 @@ Workflow: `.github/workflows/ci.yml`. Se dispara en:
 Pasos, en orden (cualquiera que falle corta el pipeline):
 
 1. `pnpm install --frozen-lockfile` — falla si `pnpm-lock.yaml` está desactualizado respecto a `package.json`, en vez de resolver versiones nuevas silenciosamente en CI.
-2. `pnpm run check:dependency-limit` — falla si `dependencies` (excluyendo `next`/`react`/`react-dom`) supera las 6 librerías sin que el PR haya subido el límite a mano en `scripts/check-dependency-limit.mjs` con su justificación (KAN-333, ver `docs/dependency-management-guideline.md`).
+2. `pnpm run check:dependency-limit` — falla si `dependencies` (excluyendo `next`/`react`/`react-dom`) supera las 8 librerías (límite actual, sin margen — ver `scripts/check-dependency-limit.mjs`) sin que el PR haya subido el límite a mano con su justificación (KAN-333, ver `docs/dependency-management-guideline.md`).
 3. `pnpm lint`
 4. `pnpm format:check`
-5. `pnpm test` — suite de Jest (356 tests). Antes de esto (hasta 2026-08-31) el CI no corría tests en absoluto, solo lint/format/build — un PR podía mergearse con la suite en rojo sin que nadie lo notara.
+5. `pnpm test` — suite de Jest (434 tests, 63 test suites). Antes de esto (hasta 2026-08-31) el CI no corría tests en absoluto, solo lint/format/build — un PR podía mergearse con la suite en rojo sin que nadie lo notara.
 6. `pnpm build` — incluye el type-check completo (ver nota de `pnpm typecheck` arriba).
 
 ### Plan de contingencia de CI
@@ -129,3 +132,12 @@ Pasos, en orden (cualquiera que falle corta el pipeline):
 ## Deploy
 
 Todavía no definido — depende de cómo se resuelva el proxy same-origin hacia Express de KAN-150 (rewrites de Next.js). No asumir Vercel ni ningún proveedor específico hasta que ese ticket lo defina.
+
+### Gate de acceso pre-lanzamiento
+
+`src/proxy.ts` (el `middleware.ts` de siempre, renombrado en Next 16) puede bloquear el acceso
+público a `app.brokaza.com` mientras el producto no está lanzado. Con `SITE_LOCKED=true` cualquier
+visitante es redirigido a `brokaza.com`; el equipo sigue entrando con
+`https://app.brokaza.com/?preview_key=<SITE_LOCK_BYPASS_TOKEN>`. No requiere tocar código para
+liberar la app — solo poner `SITE_LOCKED=false` (o quitar la variable) en el entorno de producción.
+Ver `.env.example`.

@@ -141,3 +141,5 @@ visitante es redirigido a `brokaza.com`; el equipo sigue entrando con
 `https://app.brokaza.com/?preview_key=<SITE_LOCK_BYPASS_TOKEN>`. No requiere tocar código para
 liberar la app — solo poner `SITE_LOCKED=false` (o quitar la variable) en el entorno de producción.
 Ver `.env.example`.
+
+<!-- test: push de prueba para validar Railway "Wait for CI" -->

@@ -83,7 +83,7 @@ function renderGate() {
 // Pase de UI (2026-09-04, punto 8): el formulario pasó a 2 pasos — "Datos personales"
 // (Nombre/Apellido/Teléfono) y "Inmobiliaria" (Matrícula/Inmobiliaria/Ciudad). `fillStep1` +
 // `goToStep2` reemplazan lo que antes hacía `fillForm` en un solo paso.
-function fillStep1(phoneLocalNumber = "38155512") {
+function fillStep1(phoneLocalNumber = "3815551234") {
   fireEvent.change(screen.getByLabelText("Nombre"), { target: { value: "Juan" } });
   fireEvent.change(screen.getByLabelText("Apellido"), { target: { value: "Pérez" } });
   // Código de país queda en el default ("+54") — solo se completa el número local.
@@ -511,7 +511,7 @@ describe("ProfileGate (KAN-167)", () => {
     expect(sentBody).not.toHaveProperty("license_number");
     expect(sentBody).not.toHaveProperty("agency_name");
     expect(sentBody).toEqual(
-      expect.objectContaining({ phone_country_code: "+54", phone_local_number: "38155512" }),
+      expect.objectContaining({ phone_country_code: "+54", phone_local_number: "3815551234" }),
     );
   });
 
@@ -555,7 +555,7 @@ describe("ProfileGate (KAN-167)", () => {
     expect(screen.getByLabelText("Inmobiliaria")).toBeEnabled();
   });
 
-  // --- Pase de UI (2026-09-04, puntos 3/4): código de país + 8 dígitos obligatorios ---
+  // --- Pase de UI (2026-09-04, puntos 3/4): código de país + 10 dígitos obligatorios ---
 
   it("el teléfono usa +54 (Argentina) por default", async () => {
     const fetchMock = jest.fn();
@@ -571,7 +571,7 @@ describe("ProfileGate (KAN-167)", () => {
     );
   });
 
-  it("un número local con menos de 8 dígitos muestra error y no avanza al paso 2", async () => {
+  it("un número local con menos de 10 dígitos muestra error y no avanza al paso 2", async () => {
     const fetchMock = jest.fn();
     global.fetch = fetchMock;
     fetchMock.mockResolvedValueOnce(AUTHENTICATED_SESSION);
@@ -585,7 +585,7 @@ describe("ProfileGate (KAN-167)", () => {
     const callsBefore = fetchMock.mock.calls.length;
     fireEvent.click(screen.getByRole("button", { name: /siguiente/i }));
 
-    expect(await screen.findByText(/el teléfono debe tener 8 dígitos/i)).toBeInTheDocument();
+    expect(await screen.findByText(/el teléfono debe tener 10 dígitos/i)).toBeInTheDocument();
     expect(fetchMock.mock.calls.length).toBe(callsBefore);
     // Sigue en el paso 1 — Ciudad (paso 2) no está en pantalla.
     expect(screen.queryByRole("combobox", { name: "Ciudad" })).not.toBeInTheDocument();
@@ -610,7 +610,7 @@ describe("ProfileGate (KAN-167)", () => {
 
     fireEvent.change(screen.getByLabelText("Apellido"), { target: { value: "Pérez" } });
     fireEvent.change(screen.getByLabelText("Número de teléfono"), {
-      target: { value: "38155512" },
+      target: { value: "3815551234" },
     });
     expect(screen.getByText("3/3")).toBeInTheDocument();
   });
@@ -630,6 +630,6 @@ describe("ProfileGate (KAN-167)", () => {
 
     expect(screen.getByText("Paso 1 de 2: Datos personales")).toBeInTheDocument();
     expect(screen.getByLabelText("Nombre")).toHaveValue("Juan");
-    expect(screen.getByLabelText("Número de teléfono")).toHaveValue("38155512");
+    expect(screen.getByLabelText("Número de teléfono")).toHaveValue("3815551234");
   });
 });

@@ -37,7 +37,7 @@
  *   ese valor; solo si viniera vacío (el dueño nunca completó el suyo, caso borde) se deja
  *   editable como fallback para no dejar al colaborador sin salida.
  * - Puntos 3/4: el teléfono pasa de un input único de texto libre a un selector de código de país
- *   (default Argentina, "+54") + un input numérico de exactamente 8 dígitos para el número local
+ *   (default Argentina, "+54") + un input numérico de exactamente 10 dígitos para el número local
  *   — validado client-side antes de pegarle a la red (mismo criterio que la validación de email
  *   en `LoginForm.tsx`), y otra vez server-side (`matchouse/src/utils/profileValidation.ts`).
  * - Punto 7: en pantallas grandes el formulario pasaba por una sola columna angosta (max-w-sm),
@@ -68,7 +68,7 @@ interface LocalitiesResponse {
   localities: string[];
 }
 
-const PHONE_LOCAL_NUMBER_LENGTH = 8;
+const PHONE_LOCAL_NUMBER_LENGTH = 10;
 const TOTAL_STEPS = 2;
 
 const COUNTRY_CODES = [

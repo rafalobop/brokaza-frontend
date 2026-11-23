@@ -1,4 +1,37 @@
-# brokaza-frontend
+# Brokaza — Frontend
+
+> Next.js 16 dashboard and admin panel for Brokaza — live matches, Excel inventory upload, PWA.
+
+## Overview
+
+**Brokaza Frontend** is the Next.js 16 (App Router) client for Brokaza's multi-tenant real estate
+matching platform. It ships the tenant-facing dashboard — property inventory upload from Excel
+with interactive column mapping, natural-language search, live match updates — and a full-featured
+admin panel, consuming the companion Express/TypeScript backend through a same-origin proxy.
+
+### Key features
+
+- **Live match updates** pushed over a single shared WebSocket connection, no polling
+- **Excel-based inventory upload** with interactive, user-confirmed column mapping
+- **Role-based team management** — agency owners invite/revoke collaborators by email
+- **Progressive Web App** install flow, including a dedicated iOS onboarding banner
+- **Guided onboarding tour** for first-time dashboard users
+- **Admin panel** with full feature parity against the legacy dashboard it replaces
+- **Strict TypeScript**, enforced formatting/lint/dependency-budget gates, 430+ Jest tests
+
+### Tech stack
+
+Next.js 16 (App Router, Turbopack) · TypeScript (strict) · Tailwind CSS v4 · ESLint + Prettier · Jest + React Testing Library · pnpm
+
+**Backend API:** [github.com/rafalobop/brokaza-backend](https://github.com/rafalobop/brokaza-backend)
+
+---
+
+_The sections below are written in Spanish, this project's original development language._
+
+---
+
+## Descripción (ES)
 
 Frontend de Brokaza en Next.js (App Router) + TypeScript: dashboard de tenant (carga de cartera,
 búsquedas, matches en vivo) y panel admin, consumiendo la API pura de Express del repo `brokaza`
@@ -33,11 +66,11 @@ backend, no en este README.
 
 ## Getting started
 
-Necesitás el backend (`matchouse`) corriendo en paralelo — este frontend no tiene lógica de negocio
-propia, todo dato real viene proxeado desde ahí.
+Necesitás el backend (`brokaza-backend`) corriendo en paralelo — este frontend no tiene lógica de
+negocio propia, todo dato real viene proxeado desde ahí.
 
 ```bash
-# en el repo backend (matchouse):
+# en el repo backend (brokaza-backend):
 pnpm run dev          # levanta en http://localhost:3000
 
 # en este repo:
